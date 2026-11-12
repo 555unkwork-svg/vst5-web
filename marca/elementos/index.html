@@ -1,0 +1,320 @@
+<title>Elementos vst5</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: hoja de especificaciones. Arriba una ventana de plugin de prueba (plugin × tema); abajo cada elemento con sus estados y medidas.
+   La página usa los tokens de marca; dentro de .plug rigen los tokens del tema del plugin (--p-*). */
+:root{
+  --bg:#F1EFEA; --fg:#171614; --muted:#6E6A62; --line:#D8D5CE; --panel:#FAF9F6; --chip:#E7E4DE;
+  --d:"Archivo",ui-sans-serif,system-ui,sans-serif; --m:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#121110;--fg:#F1EFEA;--muted:#B5B1A9;--line:#33302C;--panel:#1B1A18;--chip:#2A2826;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121110;--fg:#F1EFEA;--muted:#B5B1A9;--line:#33302C;--panel:#1B1A18;--chip:#2A2826;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:400 15px/1.55 var(--d);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:40px 72px}
+.wrap{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:44px}
+h1{font:800 clamp(34px,6vw,56px)/1 var(--d);font-stretch:125%;margin:8px 0 14px;letter-spacing:-.01em;text-wrap:balance}
+h2{font:800 26px/1.1 var(--d);font-stretch:112%;margin:0;text-wrap:balance}
+h3{font:700 16px/1.2 var(--d);margin:0}
+p{margin:0;max-width:68ch}
+.muted{color:var(--muted)}
+.mono{font:500 12px var(--m);letter-spacing:.06em;text-transform:uppercase}
+.sec{display:flex;flex-direction:column;gap:18px}
+.sec-h{display:flex;align-items:baseline;gap:12px;border-top:2px solid var(--fg);padding-top:10px}
+.sw{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.sw .mono{margin-right:4px;color:var(--muted)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel)}
+.seg button{border:0;background:none;padding:8px 14px;font:600 14px var(--d);color:var(--fg);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.seg button:focus-visible{outline:2px solid var(--fg);outline-offset:-3px}
+.stagebox{border:1px solid var(--line);border-radius:12px;background:var(--chip);padding:16px;overflow:hidden}
+.stage{width:100%;position:relative}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:600px;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+th{font:500 11px var(--m);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+td:first-child{font-weight:700;white-space:nowrap}
+td code,p code{font:12px var(--m)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.card{border:1px solid var(--line);border-radius:10px;background:var(--panel);overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.card .demo{padding:20px;display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;justify-content:center}
+.card .spec{padding:12px 16px 16px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:6px;font-size:14px}
+.card .spec ul{margin:0;padding-left:18px;display:grid;gap:3px;color:var(--muted)}
+.state{display:flex;flex-direction:column;align-items:center;gap:6px}
+.state>span:last-child{font:500 10.5px var(--m);letter-spacing:.06em;text-transform:uppercase;color:var(--p-dim)}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.rule{border:1px solid var(--line);border-radius:8px;padding:14px;background:var(--panel)}
+.rule b{display:block;margin-bottom:4px}
+
+/* ====== Elementos de plugin (escala 1 = 100 %) ====== */
+.plug{--sp1:4px;--sp2:8px;--sp3:12px;--sp4:16px;--sp5:24px;--r1:3px;--r2:6px;
+  background:var(--p-body);color:var(--p-ink);font:400 12px/1.35 var(--d);font-stretch:100%;-webkit-font-smoothing:antialiased}
+.plug .lbl{font:600 12px var(--d);color:var(--p-ink)}
+.plug .val{font:500 11px var(--m);color:var(--p-dim);font-variant-numeric:tabular-nums}
+.plug .cap{font:500 10px var(--m);letter-spacing:.1em;text-transform:uppercase;color:var(--p-dim)}
+:where(.plug) button{font:inherit;color:inherit}
+/* Perilla */
+.knob{display:flex;flex-direction:column;align-items:center;gap:2px;user-select:none}
+.knob svg{display:block;cursor:ns-resize;touch-action:none;color:var(--p-key)}
+.knob svg:focus-visible{outline:2px solid var(--p-focus);outline-offset:2px;border-radius:50%}
+.knob .tick{stroke:var(--p-dim)}
+.knob .five{stroke:var(--p-acc)}
+.knob .track{stroke:var(--p-line)}
+.knob .arc{stroke:var(--p-acc)}
+.knob .ptr{stroke:var(--p-ptr)}
+.knob.dis{opacity:.4}
+.knob.hov svg{filter:brightness(1.12)}
+/* Teclas (botones) */
+.key{border:0;border-radius:var(--r1);height:24px;padding:0 10px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;
+  font:600 11px var(--d)!important;letter-spacing:.02em;background:var(--p-key);color:var(--p-keyink)!important;
+  box-shadow:0 2px 0 var(--p-keyedge),inset 0 1px 0 rgba(255,255,255,.08);transition:filter .15s,transform .08s,box-shadow .08s}
+.key:hover,.key.hov{filter:brightness(1.15)}
+.key:active,.key.prs{transform:translateY(2px);box-shadow:0 0 0 var(--p-keyedge),inset 0 1px 2px rgba(0,0,0,.4)}
+.key:focus-visible,.key.foc{outline:2px solid var(--p-focus);outline-offset:2px}
+.key[disabled],.key.dis{opacity:.4;cursor:not-allowed;filter:none}
+.key.ghost{background:transparent;color:var(--p-ink)!important;box-shadow:inset 0 0 0 1px var(--p-line)}
+.key.acc{background:var(--p-acc);color:var(--p-accink)!important;box-shadow:0 2px 0 var(--p-accedge)}
+.key .led{width:6px;height:6px;border-radius:50%;background:var(--p-ledoff);box-shadow:inset 0 1px 1px rgba(0,0,0,.5)}
+.key[aria-pressed="true"] .led{background:var(--p-acc);box-shadow:0 0 6px var(--p-acc)}
+/* Selector segmentado */
+.segp{display:inline-flex;gap:2px;padding:2px;border-radius:var(--r2);background:var(--p-well)}
+.segp button{border:0;height:24px;min-width:32px;padding:0 8px;border-radius:var(--r1);background:transparent;cursor:pointer;color:var(--p-ink);font:600 11px var(--d)!important;display:grid;place-items:center}
+.segp button svg{width:22px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8}
+.segp button[aria-pressed="true"]{background:var(--p-key);color:var(--p-keyink)}
+.segp button[aria-pressed="true"] svg{stroke:var(--p-acc)}
+.segp button:focus-visible{outline:2px solid var(--p-focus);outline-offset:1px}
+/* Menú y campo */
+.menu{height:24px;border-radius:var(--r1);background:var(--p-well);border:1px solid var(--p-line);display:inline-flex;align-items:center;gap:8px;padding:0 6px 0 8px;font:500 11px var(--m)!important;color:var(--p-ink);cursor:pointer;min-width:120px;justify-content:space-between}
+.menu::after{content:"";width:0;height:0;border:4px solid transparent;border-top:5px solid var(--p-dim);margin-top:4px}
+.field{height:22px;min-width:64px;border-radius:var(--r1);background:var(--p-screen);color:var(--p-screenink);font:500 11px var(--m);display:inline-flex;align-items:center;justify-content:flex-end;padding:0 6px;box-shadow:inset 0 1px 3px rgba(0,0,0,.5);font-variant-numeric:tabular-nums}
+.field.edit{outline:1px solid var(--p-acc)}
+/* Pantalla */
+.screen{background:var(--p-screen);color:var(--p-screenink);border-radius:var(--r2);box-shadow:inset 0 2px 8px rgba(0,0,0,.55);position:relative;overflow:hidden}
+.screen canvas{display:block;width:100%;height:100%}
+.screen .st{position:absolute;left:8px;right:8px;top:6px;display:flex;justify-content:space-between;font:500 10px var(--m);letter-spacing:.06em;text-transform:uppercase;color:var(--p-screendim)}
+/* Panel */
+.panelp{background:var(--p-panel);border-radius:var(--r2);padding:var(--sp3);display:flex;flex-direction:column;gap:var(--sp2);box-shadow:inset 0 0 0 1px var(--p-line)}
+/* Medidor */
+.meter{display:flex;gap:3px;align-items:stretch}
+.meter i{height:100%;width:6px;background:var(--p-screen);border-radius:2px;position:relative;overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.35)}
+.meter i b{position:absolute;left:0;right:0;bottom:0;background:var(--p-meter)}
+.meter i u{position:absolute;left:0;right:0;height:2px;background:var(--p-ink)}
+.meter i.over{box-shadow:inset 0 3px 0 var(--p-over)}
+/* Pad */
+.pad{width:56px;height:56px;border:0;border-radius:var(--r2);background:var(--p-pad);color:var(--p-padink);cursor:pointer;position:relative;padding:5px 6px;display:flex;flex-direction:column;justify-content:space-between;text-align:left;
+  box-shadow:0 3px 0 var(--p-padedge),inset 0 1px 0 rgba(255,255,255,.1);transition:transform .06s,box-shadow .06s,background-color .12s}
+.pad .n{font:500 10px var(--m);opacity:.8}.pad .t{font:500 9px var(--m);opacity:.6;letter-spacing:.04em}
+.pad.hit,.pad:active{transform:translateY(3px);box-shadow:0 0 0 var(--p-padedge),0 0 14px color-mix(in srgb,var(--p-acc) 70%,transparent);background:var(--p-acc);color:var(--p-accink)}
+.pad.sel{box-shadow:0 3px 0 var(--p-padedge),inset 0 0 0 2px var(--p-acc)}
+.pad:focus-visible{outline:2px solid var(--p-focus);outline-offset:2px}
+.pad.empty{opacity:.55}
+/* Ventana */
+.win{width:800px;height:500px;display:grid;grid-template-rows:40px 1fr 28px;border-radius:8px;overflow:hidden;box-shadow:0 30px 60px -30px rgba(0,0,0,.6)}
+.whead{display:flex;align-items:center;gap:var(--sp3);padding:0 var(--sp4);border-bottom:1px solid var(--p-line)}
+.whead svg.logo{height:20px;width:auto;color:var(--p-ink)}
+.whead .preset{display:flex;align-items:center;gap:4px;margin-left:auto}
+.whead .ver{font:500 10px var(--m);color:var(--p-dim)}
+.ibtn{width:24px;height:24px;border:0;border-radius:var(--r1);background:transparent;color:var(--p-ink);cursor:pointer;display:grid;place-items:center}
+.ibtn:hover{background:var(--p-well)}
+.ibtn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ibtn:focus-visible{outline:2px solid var(--p-focus)}
+.wbody{display:grid;grid-template-columns:1fr 264px;gap:var(--sp3);padding:var(--sp3)}
+.wleft{display:grid;grid-template-rows:1fr auto;gap:var(--sp3);min-height:0}
+.wfoot{display:flex;align-items:center;gap:var(--sp3);padding:0 var(--sp4);border-top:1px solid var(--p-line);font:500 10px var(--m);color:var(--p-dim)}
+.wfoot .msg{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.krow{display:flex;justify-content:space-between;gap:var(--sp2)}
+.pads{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}
+.pads .pad{width:auto;height:44px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+<header>
+  <span class="mono muted">vst5 · guía de elementos de interfaz · v1</span>
+  <h1>Un mismo entorno para todos los plugins</h1>
+  <p class="muted">Cada plugin tiene su máquina y su color, pero todos se arman con las mismas piezas, medidas y reglas. Abajo hay una ventana de prueba: cambiá de plugin y de tema para ver que todo sigue siendo vst5. Todas las medidas son a 100 % de tamaño.</p>
+</header>
+
+<section class="sec">
+  <div class="sec-h"><span class="mono">01</span><h2>Ventana de prueba</h2></div>
+  <div class="sw">
+    <span class="mono">Plugin</span>
+    <div class="seg" id="selPlug" role="group" aria-label="Plugin"><button aria-pressed="true" data-v="clip5">clip5</button><button aria-pressed="false" data-v="sampler5">sampler5</button><button aria-pressed="false" data-v="drum5">drum5</button></div>
+    <span class="mono" style="margin-left:12px">Tema</span>
+    <div class="seg" id="selTheme" role="group" aria-label="Tema"><button aria-pressed="true" data-v="oficial">Oficial</button><button aria-pressed="false" data-v="vst5">vst5</button><button aria-pressed="false" data-v="oscuro">Oscuro</button></div>
+  </div>
+  <div class="stagebox"><div class="stage" id="stage"><div class="plug win" id="win"></div></div></div>
+  <p class="muted" style="font-size:14px">Las perillas, teclas, selectores y pads funcionan: arrastrá en vertical (con Shift va más fino), usá la rueda o las flechas, y hacé doble clic para volver al valor de fábrica.</p>
+</section>
+
+<section class="sec">
+  <div class="sec-h"><span class="mono">02</span><h2>Estructura de la ventana</h2></div>
+  <div class="tbl"><table>
+    <tr><th>Zona</th><th>Medida</th><th>Contenido</th></tr>
+    <tr><td>Cabecera</td><td>40 px de alto</td><td>Logo del plugin a la izquierda. A la derecha: presets (anterior, menú, siguiente), deshacer, rehacer, ajustes y versión. Siempre en ese orden.</td></tr>
+    <tr><td>Cuerpo</td><td>Margen 12 px, separación 12 px</td><td>Pantalla a la izquierda: lo que el plugin «muestra». Columna de controles de 264 px a la derecha: lo que el plugin «hace». Abajo, la fila propia del plugin (medidores, pads).</td></tr>
+    <tr><td>Pie</td><td>28 px de alto</td><td>Ayuda contextual: al pasar por un control dice qué hace y su valor exacto. A la derecha, tamaño de ventana y uso de CPU si aplica.</td></tr>
+    <tr><td>Tamaños</td><td>800 × 500 base</td><td>Escalable de 75 a 200 % en pasos de 25. Todo se dibuja en vectores, nada se pixela. El tamaño elegido se recuerda por plugin.</td></tr>
+    <tr><td>Grilla</td><td>Base de 4 px</td><td>Espacios: 4, 8, 12, 16, 24. Radios: 3 px en controles, 6 px en paneles, pantallas y pads.</td></tr>
+  </table></div>
+</section>
+
+<section class="sec">
+  <div class="sec-h"><span class="mono">03</span><h2>Elementos y estados</h2></div>
+  <div class="grid" id="specimens"></div>
+</section>
+
+<section class="sec">
+  <div class="sec-h"><span class="mono">04</span><h2>Temas</h2></div>
+  <p class="muted">Tres por plugin, siempre los mismos nombres. La pantalla es oscura en todos los temas: ahí se leen las formas de onda y los valores. El color del plugin marca solo lo encendido, lo activo, lo seleccionado y el valor de las perillas.</p>
+  <div class="tbl"><table id="themeTbl"></table></div>
+</section>
+
+<section class="sec">
+  <div class="sec-h"><span class="mono">05</span><h2>Reglas de interacción</h2></div>
+  <div class="rules">
+    <div class="rule"><b>Perillas</b><span class="muted">Arrastre vertical; Shift para ajuste fino; rueda; flechas (Shift más fino); doble clic vuelve al valor de fábrica; clic en el valor abre la edición numérica.</span></div>
+    <div class="rule"><b>«En 5»</b><span class="muted">Si un parámetro tiene punto neutro, el valor de fábrica queda al mediodía y el arco de valor nace desde ahí. Si no, el arco nace desde la izquierda.</span></div>
+    <div class="rule"><b>Teclado</b><span class="muted">Tab recorre los controles con anillo de foco visible. Enter edita el valor, Esc cancela o cierra. Si la DAW se queda con una tecla, el clic dentro del plugin devuelve el foco.</span></div>
+    <div class="rule"><b>Movimiento</b><span class="muted">Presionar: 80 ms. Pasar por encima: 150 ms. Los valores y medidores nunca se animan para «verse lindo»: muestran el dato real. Medidores con caída de 300 ms y pico retenido 1,5 s.</span></div>
+    <div class="rule"><b>Textos</b><span class="muted">De vos, en una o dos palabras por control. El pie explica el resto. Unidades siempre: dB, Hz, %, st, ms. Decimal con coma.</span></div>
+    <div class="rule"><b>Tamaño mínimo</b><span class="muted">Nada clickeable de menos de 24 × 24 px a 100 %. Textos de 10 px como mínimo y solo en etiquetas en mayúscula; valores y etiquetas de controles, 11–12 px.</span></div>
+    <div class="rule"><b>Contraste</b><span class="muted">Texto a 4,5:1 contra su fondo en los tres temas. El color del plugin no se usa para texto sobre fondo claro.</span></div>
+    <div class="rule"><b>Íconos</b><span class="muted">Trazo de 1,8 px, puntas redondeadas, 14 px dentro de un botón de 24. Sin emojis ni íconos rellenos de otras librerías.</span></div>
+  </div>
+</section>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+/* ---------- Tokens de tema (mismos nombres en el código JUCE: vst5_ui_tokens.h) ---------- */
+const ACC={clip5:{acc:'#F2C230',accink:'#171614',accedge:'#B88F14'},sampler5:{acc:'#D93A2B',accink:'#FFFFFF',accedge:'#9E2519'},drum5:{acc:'#6FA83A',accink:'#171614',accedge:'#4C7826'}};
+const BASE={
+ vst5:{body:'#F1EFEA',panel:'#FAF9F6',well:'#E2DFD8',line:'#D8D5CE',ink:'#171614',dim:'#6E6A62',key:'#171614',keyink:'#F1EFEA',keyedge:'#000000',ptr:'#F1EFEA',screen:'#171614',screenink:'#F1EFEA',screendim:'#A29E96',pad:'#2A2927',padink:'#F1EFEA',padedge:'#0E0D0C',ledoff:'#4A4742',focus:'#171614',meter:'#F1EFEA',over:'#FF3B2F'},
+ oscuro:{body:'#1B1A18',panel:'#232220',well:'#121110',line:'#3A3834',ink:'#F1EFEA',dim:'#A29E96',key:'#3A3834',keyink:'#F1EFEA',keyedge:'#0A0A09',ptr:'#F1EFEA',screen:'#0E0D0C',screenink:'#F1EFEA',screendim:'#8C8880',pad:'#3A3834',padink:'#F1EFEA',padedge:'#0A0A09',ledoff:'#2A2826',focus:'#F1EFEA',meter:'#F1EFEA',over:'#FF4D40'},
+};
+const OFICIAL={
+ clip5:{body:'#C9C6BE',panel:'#D8D5CE',well:'#B8B5AD',line:'#A9A59C',ink:'#171614',dim:'#46423C',key:'#232220',keyink:'#F1EFEA',keyedge:'#000000',ptr:'#F1EFEA',screen:'#121211',screenink:'#F1EFEA',screendim:'#A29E96',pad:'#232220',padink:'#F1EFEA',padedge:'#000000',ledoff:'#4A4742',focus:'#171614',meter:'#F1EFEA',over:'#FF3B2F'},
+ sampler5:{body:'#EDEDEA',panel:'#F7F7F4',well:'#DEDFDB',line:'#CBCCC7',ink:'#141516',dim:'#5F625E',key:'#1E1F21',keyink:'#F5F3EE',keyedge:'#000000',ptr:'#F5F3EE',screen:'#0B0C0D',screenink:'#F5F3EE',screendim:'#9C9F9A',pad:'#1E1F21',padink:'#F5F3EE',padedge:'#000000',ledoff:'#4A4C4A',focus:'#141516',meter:'#F5F3EE',over:'#FF3B2F'},
+ drum5:{body:'#A9A8A2',panel:'#B9B8B2',well:'#97968F',line:'#8A8982',ink:'#121211',dim:'#33322E',key:'#3B3B38',keyink:'#EDEDE8',keyedge:'#1A1A18',ptr:'#EDEDE8',screen:'#1B2316',screenink:'#CFE3B4',screendim:'#8AA273',pad:'#4A4A47',padink:'#EDEDE8',padedge:'#1F1F1D',ledoff:'#2E2E2B',focus:'#121211',meter:'#CFE3B4',over:'#FF4D40'},
+};
+const themeFor=(p,t)=>Object.assign({},t==='oficial'?OFICIAL[p]:BASE[t],ACC[p]);
+const applyTheme=(el,p,t)=>{const o=themeFor(p,t);for(const k in o)el.style.setProperty('--p-'+k,o[k]);};
+
+/* ---------- Perilla ---------- */
+const DEG=a=>a*Math.PI/180;
+function knobSVG(size,ticks){const r=50,s=[];
+  if(ticks){for(let i=0;i<=10;i++){const a=DEG(-135+i*27),five=i===5,r1=five?39:41,r2=five?49:47;
+    s.push(`<line class="${five?'five':'tick'}" x1="${50+Math.sin(a)*r1}" y1="${50-Math.cos(a)*r1}" x2="${50+Math.sin(a)*r2}" y2="${50-Math.cos(a)*r2}" stroke-width="${five?4:2.5}" stroke-linecap="round"/>`);}}
+  const R=ticks?33:40;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" role="slider" tabindex="0"><path class="track" d="${arc(R,-135,135)}" fill="none" stroke-width="5" stroke-linecap="round"/><path class="arc" d="" fill="none" stroke-width="5" stroke-linecap="round"/><circle cx="50" cy="50" r="${R-8}" fill="currentColor"/><line class="ptr" x1="50" y1="${50-(R-8)*0.3}" x2="50" y2="${50-(R-8)+4}" stroke-width="5" stroke-linecap="round"/></svg>`;}
+function arc(R,a0,a1){if(Math.abs(a1-a0)<.5)return'';const p=a=>[50+Math.sin(DEG(a))*R,50-Math.cos(DEG(a))*R];const [x0,y0]=p(a0),[x1,y1]=p(a1);
+  return `M${x0.toFixed(2)} ${y0.toFixed(2)} A${R} ${R} 0 ${Math.abs(a1-a0)>180?1:0} ${a1>a0?1:0} ${x1.toFixed(2)} ${y1.toFixed(2)}`;}
+function knob(el,{size=56,ticks=true,label,fmt=v=>v.toFixed(1),def=5,bip=true,v=def,onHelp}={}){
+  el.className='knob';el.innerHTML=knobSVG(size,ticks)+(label?`<span class="lbl">${label}</span><span class="val"></span>`:'');
+  const svg=el.querySelector('svg'),a=el.querySelector('.arc'),p=el.querySelector('.ptr'),out=el.querySelector('.val'),R=ticks?33:40;
+  svg.setAttribute('aria-label',label||'Perilla');svg.setAttribute('aria-valuemin',0);svg.setAttribute('aria-valuemax',10);
+  const set=n=>{v=Math.max(0,Math.min(10,Math.round(n*100)/100));const ang=-135+v*27,from=bip?0:-135;
+    a.setAttribute('d',v===def&&bip?'':arc(R,Math.min(from,ang),Math.max(from,ang)));p.setAttribute('transform',`rotate(${ang} 50 50)`);
+    const t=fmt(v);if(out)out.textContent=t;svg.setAttribute('aria-valuenow',v);svg.setAttribute('aria-valuetext',t);onHelp&&onHelp(label,t);};
+  let y0=null,v0;svg.addEventListener('pointerdown',e=>{y0=e.clientY;v0=v;svg.setPointerCapture(e.pointerId)});
+  svg.addEventListener('pointermove',e=>{if(y0!==null)set(v0+(y0-e.clientY)/(e.shiftKey?80:20))});
+  svg.addEventListener('pointerup',()=>y0=null);svg.addEventListener('pointercancel',()=>y0=null);
+  svg.addEventListener('dblclick',()=>set(def));
+  svg.addEventListener('wheel',e=>{e.preventDefault();set(v+(e.deltaY<0?.25:-.25))},{passive:false});
+  svg.addEventListener('keydown',e=>{const d={ArrowUp:1,ArrowRight:1,ArrowDown:-1,ArrowLeft:-1}[e.key];if(d){e.preventDefault();set(v+d*(e.shiftKey?.05:.25))}});
+  svg.addEventListener('pointerenter',()=>onHelp&&onHelp(label,fmt(v)));
+  set(v);return{set};}
+const F={db:(a,b)=>v=>((a+(b-a)*v/10)>0?'+':'')+(a+(b-a)*v/10).toFixed(1).replace('.',',')+' dB',pct:v=>Math.round(v*10)+' %',st:v=>{const s=Math.round((v-5)*2.4);return(s>0?'+':'')+s+' st'},
+  hz:v=>{const h=20*Math.pow(1000,v/10);return h>=1000?(h/1000).toFixed(1).replace('.',',')+' kHz':Math.round(h)+' Hz'},ms:v=>Math.round(v*v*10)+' ms',swing:v=>Math.round(50+v*2.5)+' %'};
+
+/* ---------- Íconos ---------- */
+const IC={prev:'<path d="M9 3 4 7l5 4"/>',next:'<path d="m5 3 5 4-5 4"/>',undo:'<path d="M4 6h6a3 3 0 0 1 0 6H6"/><path d="M6 3 3 6l3 3"/>',redo:'<path d="M10 6H4a3 3 0 0 0 0 6h4"/><path d="m8 3 3 3-3 3"/>',gear:'<circle cx="7" cy="7" r="2"/><path d="M7 1.5v2M7 10.5v2M1.5 7h2M10.5 7h2M3.1 3.1l1.4 1.4M9.5 9.5l1.4 1.4M3.1 10.9l1.4-1.4M9.5 4.5l1.4-1.4"/>'};
+const ibtn=(n,l)=>`<button class="ibtn" type="button" aria-label="${l}" title="${l}"><svg viewBox="0 0 14 14">${IC[n]}</svg></button>`;
+const CURVES=['M2 13 C 8 8, 11 3, 20 3','M2 13 L 9 6 Q 11 3 14 3 L 20 3','M2 13 L 12 3 L 20 3','M2 13 L 20 1'];
+
+/* ---------- Logos de plugin (perilla + nombre en texto; en los plugins se usa el SVG del kit) ---------- */
+const plugLogo=p=>`<svg class="logo" viewBox="0 0 ${p.length*15+34} 24" aria-label="${p}"><g transform="translate(2 2) scale(.3125)"><circle cx="32" cy="32" r="19" fill="currentColor"/><line x1="32" y1="27" x2="32" y2="17" stroke="var(--p-acc)" stroke-width="5" stroke-linecap="round"/>${[...Array(11)].map((_,i)=>{const a=DEG(-135+i*27),f=i===5;return`<line x1="${32+Math.sin(a)*(f?22:23)}" y1="${32-Math.cos(a)*(f?22:23)}" x2="${32+Math.sin(a)*(f?30:28)}" y2="${32-Math.cos(a)*(f?30:28)}" stroke="${f?'var(--p-acc)':'currentColor'}" stroke-width="${f?4:2.5}" stroke-linecap="round"/>`}).join('')}</g><text x="28" y="18" font-family="Archivo,sans-serif" font-weight="800" font-size="17" style="font-stretch:125%" fill="currentColor">${p}</text></svg>`;
+
+/* ---------- Ventana de prueba ---------- */
+const CFG={
+ clip5:{preset:'Bus de batería',screen:'Curva E/S · Techo −0,3 dB',knobs:[['Techo',F.db(-12,0),9.75,false],['Densidad',F.pct,5,true],['Salida',F.db(-6,6),5,true]],seg:['Curva',CURVES],keys:['Oversampling 4x','True peak'],row:'meters'},
+ sampler5:{preset:'Break 92 Am',screen:'break_92_Am.wav · 16 cortes',knobs:[['Tono',F.st,5,true],['Swing',F.swing,0,false],['Filtro',F.hz,10,false]],seg:['Cortar',['Golpes','Grilla','Azar']],keys:['Sincro','Mono'],row:'pads'},
+ drum5:{preset:'Kit boom bap',screen:'Pad A01 · Roll 1/16',knobs:[['Roll',v=>['1/4','1/8','1/8T','1/16','1/16T','1/32','1/32T','1/64'][Math.min(7,Math.floor(v/10*8))],5,false],['Swing',F.swing,2,false],['Decay',F.ms,5,false]],seg:['Banco',['A','B','C','D']],keys:['Latch','Rate ramp'],row:'pads'},
+};
+let P='clip5',T='oficial',seed=1;
+const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+function renderWin(){
+  const w=$('#win'),c=CFG[P];applyTheme(w,P,T);
+  w.innerHTML=`<div class="whead">${plugLogo(P)}<div class="preset">${ibtn('prev','Preset anterior')}<span class="menu" role="button" tabindex="0">${c.preset}</span>${ibtn('next','Preset siguiente')}</div>${ibtn('undo','Deshacer')}${ibtn('redo','Rehacer')}${ibtn('gear','Ajustes: tamaño y tema')}<span class="ver">v1.0.0</span></div>
+  <div class="wbody"><div class="wleft"><div class="screen" id="scr"><canvas></canvas><div class="st"><span>${c.screen}</span><span>${T}</span></div></div>${c.row==='meters'?`<div class="panelp" style="flex-direction:row;align-items:center;gap:16px"><span class="cap">Entrada</span><div class="meter" style="height:44px" id="m1"></div><span class="cap">Salida</span><div class="meter" style="height:44px" id="m2"></div><span class="cap" style="margin-left:auto">LUFS</span><span class="field">−8,4</span><span class="cap">Pico</span><span class="field">−0,3 dB</span></div>`:`<div class="pads" id="pads"></div>`}</div>
+  <div class="panelp"><span class="cap">${c.seg[0]}</span><div class="segp" role="group" aria-label="${c.seg[0]}">${c.seg[1].map((s,i)=>`<button type="button" aria-pressed="${i===(P==='clip5'?1:0)}" ${P==='clip5'?`aria-label="Curva ${['suave','media','dura','sin recorte'][i]}"`:''}>${P==='clip5'?`<svg viewBox="0 0 22 14"><path d="${s}"/></svg>`:s}</button>`).join('')}</div>
+  <div class="krow" id="krow" style="margin-block:8px"></div>
+  <span class="cap">Opciones</span><div style="display:flex;gap:8px;flex-wrap:wrap">${c.keys.map((k,i)=>`<button class="key" type="button" aria-pressed="${i===0}"><i class="led"></i>${k}</button>`).join('')}</div>
+  <div style="display:flex;align-items:center;gap:8px;margin-top:auto"><span class="cap">Mezcla</span><span style="flex:1"></span><span class="field">100 %</span></div></div></div>
+  <div class="wfoot"><span class="msg" id="help">Pasá por un control para ver qué hace.</span><span>100 %</span></div>`;
+  const help=(l,t)=>{$('#help').textContent=`${l}: ${t}`};
+  c.knobs.forEach(([l,f,d,b])=>{const k=document.createElement('div');$('#krow').append(k);knob(k,{size:64,label:l,fmt:f,def:d,bip:b,onHelp:help})});
+  w.querySelectorAll('.segp').forEach(g=>g.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;g.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));}));
+  w.querySelectorAll('.key').forEach(b=>b.addEventListener('click',()=>b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')!=='true')));
+  if(c.row==='pads'){const names=P==='sampler5'?null:['KICK','SNARE','HAT','OHAT','CLAP','RIM','TOM','PERC'];
+    $('#pads').innerHTML=[...Array(8)].map((_,i)=>`<button class="pad${i===0?' sel':''}" type="button" aria-label="Pad ${i+1}"><span class="n">${P==='drum5'?'A':''}${String(i+1).padStart(2,'0')}</span><span class="t">${names?names[i]:'CORTE '+(i+1)}</span></button>`).join('');
+    $('#pads').addEventListener('pointerdown',e=>{const b=e.target.closest('.pad');if(!b)return;$('#pads').querySelectorAll('.pad').forEach(x=>x.classList.toggle('sel',x===b));b.classList.add('hit');setTimeout(()=>b.classList.remove('hit'),140);help(b.getAttribute('aria-label'),b.querySelector('.t').textContent)});}
+  else{['m1','m2'].forEach((id,j)=>{$('#'+id).innerHTML=[0,1].map(()=>`<i class="${j===0?'over':''}"><b style="height:${j?82:96}%"></b><u style="bottom:${j?88:97}%"></u></i>`).join('')})}
+  drawScreen();fit();
+}
+function drawScreen(){const cv=$('#scr canvas'),r=cv.getBoundingClientRect(),dpr=2;cv.width=r.width*dpr;cv.height=r.height*dpr;const g=cv.getContext('2d');g.scale(dpr,dpr);
+  const W=r.width,H=r.height,o=themeFor(P,T);g.strokeStyle=o.screendim;g.globalAlpha=.25;g.lineWidth=1;
+  for(let i=1;i<8;i++){g.beginPath();g.moveTo(W*i/8,24);g.lineTo(W*i/8,H-8);g.stroke()}for(let i=1;i<4;i++){g.beginPath();g.moveTo(8,24+(H-32)*i/4);g.lineTo(W-8,24+(H-32)*i/4);g.stroke()}g.globalAlpha=1;
+  seed=7;
+  if(P==='clip5'){const y=x=>{const c=.86;return x<c?x:c+(1-c)*Math.tanh((x-c)/(1-c))*.15};g.lineWidth=2.5;g.strokeStyle=o.screenink;g.beginPath();
+    for(let i=0;i<=100;i++){const x=i/100;g[i?'lineTo':'moveTo'](16+(W-32)*x,H-12-(H-40)*y(x))}g.stroke();
+    g.setLineDash([4,4]);g.strokeStyle=o.acc;g.lineWidth=1.5;g.beginPath();g.moveTo(16,H-12-(H-40)*.86);g.lineTo(W-16,H-12-(H-40)*.86);g.stroke();g.setLineDash([]);}
+  else if(P==='sampler5'){const mid=24+(H-32)/2;g.fillStyle=o.screenink;for(let x=8;x<W-8;x+=2){const t=(x-8)/(W-16),env=Math.pow(1-((t*8)%1),2.2)*.9+.08,a=env*(H-40)/2*(.6+rnd()*.4);g.fillRect(x,mid-a,1.4,a*2)}
+    g.fillStyle=o.acc;for(let i=0;i<16;i++){const x=8+(W-16)*i/16;g.fillRect(x,24,1.5,H-32);g.font='500 9px "IBM Plex Mono"';g.fillText(String(i+1),x+3,H-10)}}
+  else{const rows=4,cols=16,cw=(W-24)/cols,rh=(H-44)/rows;g.font='500 9px "IBM Plex Mono"';
+    for(let r=0;r<rows;r++){g.fillStyle=o.screendim;g.fillText(['KICK','SNARE','HAT','CLAP'][r],10,30+rh*r+rh/2);for(let c=0;c<cols;c++){const on=[[0,6,10],[4,12],[0,2,4,6,8,10,12,14],[12]][r].includes(c)||(r===2&&c%2===0);
+      g.fillStyle=on?(r===2&&c>=12?o.acc:o.screenink):o.screendim;g.globalAlpha=on?1:.25;g.fillRect(56+((W-68)/cols)*c,28+rh*r+4,(W-68)/cols-3,rh-8)}g.globalAlpha=1}}
+}
+function fit(){const st=$('#stage'),w=$('#win'),s=Math.min(1,st.clientWidth/800);w.style.transform=`scale(${s})`;w.style.transformOrigin='0 0';st.style.height=500*s+'px';}
+addEventListener('resize',()=>{fit();drawScreen()});
+['selPlug','selTheme'].forEach(id=>$('#'+id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$('#'+id).querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));if(id==='selPlug')P=b.dataset.v;else T=b.dataset.v;renderWin();renderSpecs();renderThemes();}));
+
+/* ---------- Muestrario de elementos ---------- */
+const card=(title,demo,specs)=>`<article class="card"><div class="demo plug spec-box">${demo}</div><div class="spec"><h3>${title}</h3><ul>${specs.map(s=>`<li>${s}</li>`).join('')}</ul></div></article>`;
+const st=(name,html)=>`<div class="state">${html}<span>${name}</span></div>`;
+function renderSpecs(){
+  const kn=(id)=>`<div id="${id}"></div>`;
+  $('#specimens').innerHTML=[
+   card('Perilla',st('Grande 72',kn('kL'))+st('Media 56',kn('kM'))+st('Chica 40',kn('kS'))+st('Deshab.',kn('kD')),
+     ['Diámetro 72 / 56 / 40 px. La chica no lleva escala, solo arco.','Escala 0–10 con la marca del 5 en el color del plugin; arco de valor de 5 px en el mismo color.','Etiqueta: Archivo 600, 12 px. Valor: Plex Mono 500, 11 px, debajo.','Bipolar (nace en 5) si el parámetro tiene punto neutro; si no, nace en 0.']),
+   card('Tecla',st('Normal','<button class="key" type="button">Exportar</button>')+st('Encima','<button class="key hov" type="button">Exportar</button>')+st('Presionada','<button class="key prs" type="button">Exportar</button>')+st('Foco','<button class="key foc" type="button">Exportar</button>')+st('Deshab.','<button class="key dis" type="button" disabled>Exportar</button>'),
+     ['Alto 24 px, relleno lateral 10, radio 3. Archivo 600, 11 px.','Borde inferior de 2 px que desaparece al presionar (baja 2 px en 80 ms).','Foco: anillo de 2 px a 2 px de distancia. Deshabilitada: 40 % de opacidad.']),
+   card('Tecla con LED y principal',st('Apagada','<button class="key" type="button" aria-pressed="false"><i class="led"></i>Latch</button>')+st('Encendida','<button class="key" type="button" aria-pressed="true"><i class="led"></i>Latch</button>')+st('Principal','<button class="key acc" type="button">Aplicar</button>')+st('Secundaria','<button class="key ghost" type="button">Cancelar</button>'),
+     ['El estado de encendido se muestra con el LED de 6 px, no cambiando el color de la tecla.','Principal (color del plugin): una sola por panel o diálogo.','Secundaria: solo contorno.']),
+   card('Selector segmentado',st('Íconos',`<div class="segp">${CURVES.map((c,i)=>`<button type="button" aria-pressed="${i===1}"><svg viewBox="0 0 22 14"><path d="${c}"/></svg></button>`).join('')}</div>`)+st('Texto','<div class="segp"><button type="button" aria-pressed="true">Golpes</button><button type="button" aria-pressed="false">Grilla</button><button type="button" aria-pressed="false">Azar</button></div>'),
+     ['Para 2 a 5 opciones excluyentes. Más de 5: menú.','Fondo hundido; la opción elegida es una tecla con el ícono en el color del plugin.','Segmentos de 24 px de alto y 32 de ancho mínimo.']),
+   card('Menú, campo y valor',st('Menú','<span class="menu" role="button" tabindex="0">Bus de batería</span>')+st('Campo','<span class="field">−0,3 dB</span>')+st('Editando','<span class="field edit">−0,3</span>'),
+     ['Menú: 24 px, Plex Mono 11 px, flecha a la derecha. Lista propia, no la del sistema.','Campo: pantalla chica de 22 px, valor alineado a la derecha, con unidad.','Al editar: contorno del color del plugin; Enter confirma, Esc cancela; acepta coma o punto.']),
+   card('Pantalla y panel',st('Pantalla','<div class="screen" style="width:150px;height:64px"><div class="st"><span>break.wav</span><span>92</span></div></div>')+st('Panel','<div class="panelp" style="width:130px;height:64px"><span class="cap">Salida</span></div>'),
+     ['Pantalla: siempre oscura, sombra interior, radio 6. Texto en Plex Mono; datos en el tono de pantalla y marcas en el color del plugin.','Panel: agrupa controles relacionados. Título en mayúsculas, Plex Mono 10 px con espaciado.','Grilla de la pantalla al 25 % de opacidad.']),
+   card('Medidor',st('Normal','<div class="meter" style="height:80px"><i><b style="height:60%"></b><u style="bottom:68%"></u></i><i><b style="height:56%"></b><u style="bottom:64%"></u></i></div>')+st('Recorte','<div class="meter" style="height:80px"><i class="over"><b style="height:98%"></b><u style="bottom:98%"></u></i><i class="over"><b style="height:96%"></b><u style="bottom:97%"></u></i></div>'),
+     ['Barras de 6 px por canal, separadas 3 px, siempre sobre fondo de pantalla. Valor en el tono de pantalla, no en verde-amarillo-rojo.','Pico retenido: línea de 2 px durante 1,5 s.','Recorte: franja roja arriba que queda hasta hacer clic en el medidor.']),
+   card('Pad',st('Normal','<button class="pad" type="button"><span class="n">01</span><span class="t">KICK</span></button>')+st('Elegido','<button class="pad sel" type="button"><span class="n">02</span><span class="t">SNARE</span></button>')+st('Golpe','<button class="pad hit" type="button"><span class="n">03</span><span class="t">HAT</span></button>')+st('Vacío','<button class="pad empty" type="button"><span class="n">04</span><span class="t">—</span></button>'),
+     ['56 × 56 px (44 de alto en filas compactas), radio 6. Número arriba, nombre abajo, en Plex Mono.','Golpe: se hunde 3 px y se ilumina en el color del plugin; dura lo que dura la nota.','Elegido: anillo interior de 2 px del color del plugin.']),
+   card('Botones de ícono',['prev','next','undo','redo','gear'].map(n=>st(n==='gear'?'ajustes':n==='prev'?'anterior':n==='next'?'siguiente':n==='undo'?'deshacer':'rehacer',ibtn(n,n))).join(''),
+     ['24 × 24 px con ícono de 14 px, trazo 1,8, puntas redondeadas.','Sin fondo; al pasar, fondo hundido.','Siempre con nombre accesible y ayuda en el pie.']),
+  ].join('');
+  document.querySelectorAll('.spec-box').forEach(el=>applyTheme(el,P,T));
+  knob($('#kL'),{size:72,label:'Techo',fmt:F.db(-12,0),def:9.75,bip:false});knob($('#kM'),{size:56,label:'Densidad',fmt:F.pct});
+  knob($('#kS'),{size:40,ticks:false,label:'Mezcla',fmt:F.pct,def:10,bip:false});knob($('#kD'),{size:56,label:'Salida',fmt:F.db(-6,6)});$('#kD').classList.add('dis');
+}
+function renderThemes(){const keys=[['body','Cuerpo'],['panel','Panel'],['ink','Texto'],['dim','Texto secundario'],['key','Tecla y perilla'],['screen','Pantalla'],['screenink','Texto de pantalla'],['acc','Color del plugin']];
+  const cell=h=>`<td><span style="display:inline-flex;align-items:center;gap:8px"><i style="width:18px;height:18px;border-radius:4px;background:${h};box-shadow:inset 0 0 0 1px rgba(128,128,128,.4)"></i><code>${h}</code></span></td>`;
+  $('#themeTbl').innerHTML=`<tr><th>Token (${P})</th><th>Oficial</th><th>vst5</th><th>Oscuro</th></tr>`+keys.map(([k,n])=>`<tr><td>${n} <code style="font-weight:400">${k}</code></td>${['oficial','vst5','oscuro'].map(t=>cell(themeFor(P,t)[k])).join('')}</tr>`).join('');}
+renderWin();renderSpecs();renderThemes();
+document.fonts&&document.fonts.ready.then(drawScreen);
+</script>
