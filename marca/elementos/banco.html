@@ -1,0 +1,234 @@
+<title>Banco de pruebas vst5</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: informe de prueba. Arriba la investigación; después un banco por plugin (ventana escalada + ficha); al final los hallazgos.
+   Página con tokens de marca; dentro de .plug rigen los tokens del tema de cada plugin. */
+:root{--bg:#F1EFEA;--fg:#171614;--muted:#6E6A62;--line:#D8D5CE;--panel:#FAF9F6;--chip:#E7E4DE;--new:#171614;
+  --d:"Archivo",ui-sans-serif,system-ui,sans-serif;--m:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#121110;--fg:#F1EFEA;--muted:#B5B1A9;--line:#33302C;--panel:#1B1A18;--chip:#2A2826;--new:#F1EFEA;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121110;--fg:#F1EFEA;--muted:#B5B1A9;--line:#33302C;--panel:#1B1A18;--chip:#2A2826;--new:#F1EFEA;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:400 15px/1.55 var(--d);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:40px 72px}
+.wrap{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:48px}
+h1{font:800 clamp(34px,6vw,56px)/1 var(--d);font-stretch:125%;margin:8px 0 14px;letter-spacing:-.01em;text-wrap:balance}
+h2{font:800 26px/1.1 var(--d);font-stretch:112%;margin:0;text-wrap:balance}
+h3{font:800 22px/1.1 var(--d);font-stretch:112%;margin:0}
+p{margin:0;max-width:68ch}
+.muted{color:var(--muted)}
+.mono{font:500 12px var(--m);letter-spacing:.06em;text-transform:uppercase}
+.sec{display:flex;flex-direction:column;gap:18px}
+.sec-h{display:flex;align-items:baseline;gap:12px;border-top:2px solid var(--fg);padding-top:10px}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+th{font:500 11px var(--m);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+td:first-child{font-weight:700;white-space:nowrap}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel)}
+.seg button{border:0;background:none;padding:8px 14px;font:600 14px var(--d);color:var(--fg);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.seg button:focus-visible{outline:2px solid var(--fg);outline-offset:-3px}
+.bench{display:flex;flex-direction:column;gap:14px}
+.bench-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px}
+.stagebox{border:1px solid var(--line);border-radius:12px;background:var(--chip);padding:16px;overflow:hidden}
+.stage{width:100%;position:relative}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.note{border:1px solid var(--line);border-radius:8px;padding:12px 14px;background:var(--panel);font-size:14px}
+.note b{display:block;font:500 11px var(--m);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.new-tag{display:inline-block;border:1px solid var(--new);border-radius:4px;padding:0 6px;font:500 10px var(--m);letter-spacing:.06em;margin-left:6px;vertical-align:2px}
+ul.list{margin:0;padding-left:20px;display:grid;gap:6px;max-width:72ch}
+</style>
+<link rel="stylesheet" href="vst5-ui.css">
+<style>
+/* Elementos nuevos que pidió el banco (propuestos para la guía v1.1) */
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--p-line)}
+.tabs button{border:0;background:transparent;height:28px;padding:0 12px;cursor:pointer;font:500 10px var(--m)!important;letter-spacing:.1em;text-transform:uppercase;color:var(--p-dim);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button[aria-selected="true"]{color:var(--p-ink);border-bottom-color:var(--p-acc)}
+.tabs button:focus-visible{outline:2px solid var(--p-focus);outline-offset:-2px}
+.piano{display:flex;height:64px;position:relative;border-radius:var(--r2);overflow:hidden;background:var(--p-well);padding:2px;gap:2px}
+.piano .w{flex:1;background:var(--p-keyink);border-radius:0 0 3px 3px;border:0;cursor:pointer;position:relative}
+.piano .b{position:absolute;top:2px;width:3.6%;height:58%;background:var(--p-key);border-radius:0 0 3px 3px;z-index:1;border:0;cursor:pointer}
+.piano .on{background:var(--p-acc)!important}
+.notesel{display:grid;grid-template-columns:repeat(6,1fr);gap:2px;padding:2px;border-radius:var(--r2);background:var(--p-well)}
+.notesel button{height:24px;border:0;border-radius:var(--r1);background:transparent;color:var(--p-dim);cursor:pointer;font:500 10px var(--m)!important;padding:0}
+.notesel button[aria-pressed="true"]{background:var(--p-key);color:var(--p-keyink)}
+.notesel button:focus-visible{outline:2px solid var(--p-focus)}
+.meter.gr i b{top:0;bottom:auto;background:var(--p-acc)}
+.krow{flex-wrap:wrap;row-gap:8px}
+.krow.g3{display:grid;grid-template-columns:repeat(3,1fr);justify-items:center}
+.krow.g4{display:grid;grid-template-columns:repeat(4,1fr);justify-items:center}
+</style>
+
+<div class="wrap">
+<header>
+  <span class="mono muted">vst5 · banco de pruebas de la guía de elementos</span>
+  <h1>Los plugins más usados, armados con nuestras piezas</h1>
+  <p class="muted">Tomé las seis categorías de plugin que más aparecen en las listas de productores y armé una versión vst5 de cada una, usando solo los elementos de la guía. Donde una pieza no alcanzó, la dibujé y la marqué como <span class="new-tag">NUEVO</span>. No copian a los originales: resuelven el mismo trabajo con nuestro lenguaje.</p>
+</header>
+
+<section class="sec">
+  <div class="sec-h"><span class="mono">01</span><h2>Qué se usa más</h2></div>
+  <div class="tbl"><table>
+    <tr><th>Categoría</th><th>Referentes más nombrados</th><th>Versión de prueba</th><th>Qué le exige a la guía</th></tr>
+    <tr><td>Ecualizador</td><td>FabFilter Pro-Q, TDR Nova</td><td>eq5</td><td>Pantalla grande con bandas que se arrastran, controles que siguen a la banda elegida.</td></tr>
+    <tr><td>Compresor</td><td>FabFilter Pro-C, emulaciones del 1176</td><td>comp5</td><td>Cuatro perillas principales, medidor de reducción de ganancia, carácter.</td></tr>
+    <tr><td>Reverb</td><td>Valhalla VintageVerb y Supermassive</td><td>verb5</td><td>Seis perillas, tipos de espacio, ver la cola en el tiempo.</td></tr>
+    <tr><td>Delay</td><td>Soundtoys EchoBoy, Valhalla Delay</td><td>delay5</td><td>Sincro con el tempo, repeticiones visibles, perillas chicas de cinta.</td></tr>
+    <tr><td>Sintetizador</td><td>Serum, Vital</td><td>synth5</td><td>Muchísimos controles: secciones, envolvente, teclado. La prueba más dura.</td></tr>
+    <tr><td>Afinación</td><td>Antares Auto-Tune, Melodyne</td><td>tune5</td><td>Tonalidad, selección de notas, ver la voz y su corrección.</td></tr>
+  </table></div>
+  <p class="muted" style="font-size:14px">Los limitadores y saturadores (Pro-L, Ozone, Decapitator, RC-20) quedan cubiertos por clip5: usan las mismas piezas.</p>
+</section>
+
+<section class="sec">
+  <div class="sec-h"><span class="mono">02</span><h2>Los seis bancos</h2></div>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center"><span class="mono muted">Tema para todos</span>
+    <div class="seg" id="selTheme" role="group" aria-label="Tema"><button aria-pressed="true" data-v="oficial">Oficial</button><button aria-pressed="false" data-v="vst5">vst5</button><button aria-pressed="false" data-v="oscuro">Oscuro</button></div></div>
+  <div id="benches" style="display:flex;flex-direction:column;gap:40px"></div>
+</section>
+
+<section class="sec">
+  <div class="sec-h"><span class="mono">03</span><h2>Hallazgos</h2></div>
+  <div class="notes">
+    <div class="note"><b>Aguantó sin cambios</b>La estructura de ventana sirvió para cinco de seis. Perilla, tecla con LED, selector, campo, menú, pantalla y medidor sirvieron en todos.</div>
+    <div class="note"><b>Pantalla oscura</b>Fue la decisión más útil: EQ, reverb, delay y afinación son, sobre todo, algo para mirar. Con la pantalla oscura siempre, los seis se leen igual.</div>
+    <div class="note"><b>Temas oficiales</b>Van de negro (comp5) a crema (delay5) sin romper nada, porque todo sale de los mismos tokens.</div>
+    <div class="note"><b>Columna de 264 px</b>Entran 3 perillas de 64 por fila, o 4 de 52. Con 5 o más, las perillas tienen que ir en grilla de 3 o 4 columnas: si se reparten solas, quedan desparejas.</div>
+  </div>
+  <h3 style="margin-top:6px">Lo que hay que sumar a la guía (v1.1)</h3>
+  <ul class="list">
+    <li><b>Pantalla interactiva</b> (eq5): puntos que se arrastran sobre la pantalla, con número, en el color del plugin; la banda elegida se controla también con perillas.</li>
+    <li><b>Pestañas</b> (synth5): para secciones cuando no entra todo. Plex Mono 10 px, subrayado en el color del plugin.</li>
+    <li><b>Ventana grande, 960 × 600</b> (synth5): para instrumentos complejos. Misma estructura, más espacio.</li>
+    <li><b>Teclado</b> (synth5): dos octavas, la nota sonando en el color del plugin. También le sirve a sampler5 y drum5 para tocar sin controlador.</li>
+    <li><b>Envolvente</b> (synth5): pantalla chica con la forma ADSR y cuatro perillas chicas. Reutilizable en sampler5 y drum5.</li>
+    <li><b>Selector de notas</b> (tune5): las 12 notas encendibles, en dos filas de 6 porque los nombres en español (Do♯, Sol♯) no entran en una. sampler5 lo puede usar en «llevar a tonalidad».</li>
+    <li><b>Medidor de reducción</b> (comp5): el mismo medidor, pero baja desde arriba y en el color del plugin.</li>
+  </ul>
+  <h3 style="margin-top:6px">El límite real: el color</h3>
+  <p>Con nueve plugins los colores empiezan a parecerse: tune5 (celeste) se confunde con delay5 (azul), y comp5 (magenta) queda cerca de sampler5 (rojo). Propuesta: un color por <b>familia</b> (dinámica, espacio, tono, instrumentos) y que cada plugin se diferencie dentro de su familia por el tema oficial y la máquina de referencia. Así la paleta no se agota cuando lleguen más plugins.</p>
+</section>
+</div>
+
+<script src="vst5-ui.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+/* ---------- Plugins de prueba: color y tema oficial (derivado de vst5 u oscuro) ---------- */
+const off=(b,o)=>Object.assign({},BASE[b],o);
+Object.assign(ACC,{
+ eq5:{acc:'#1FA6A0',accink:'#171614',accedge:'#137470'},comp5:{acc:'#C2417A',accink:'#FFFFFF',accedge:'#8A2B55'},
+ verb5:{acc:'#7A4FD0',accink:'#FFFFFF',accedge:'#54349A'},delay5:{acc:'#2F6FD6',accink:'#FFFFFF',accedge:'#1F4E9C'},
+ synth5:{acc:'#E8862A',accink:'#171614',accedge:'#A85E19'},tune5:{acc:'#4FB3D9',accink:'#171614',accedge:'#2F7EA0'}});
+Object.assign(OFICIAL,{
+ eq5:off('vst5',{body:'#C3C6C4',panel:'#D3D6D4',well:'#B2B5B3',line:'#9FA3A1',dim:'#3F4442'}),
+ comp5:off('oscuro',{body:'#141413',panel:'#1E1D1B',key:'#C9C6BE',keyink:'#171614',keyedge:'#7A776F',ptr:'#171614',pad:'#C9C6BE',padink:'#171614'}),
+ verb5:off('oscuro',{body:'#1E1B26',panel:'#26222F',well:'#15131B',line:'#3A3448',dim:'#ABA4BC',key:'#3A3448',screen:'#0F0D14'}),
+ delay5:off('vst5',{body:'#E6DCC8',panel:'#EFE7D6',well:'#D6CBB4',line:'#C4B89E',dim:'#5E5546',screen:'#1A1712'}),
+ synth5:off('oscuro',{body:'#202326',panel:'#282C30',well:'#16181A',line:'#3A3F44',dim:'#A6ADB3',key:'#3A3F44'}),
+ tune5:off('vst5',{body:'#E9EEF1',panel:'#F6F8F9',well:'#D8DFE3',line:'#C2CBD0',dim:'#56616A'})});
+
+/* ---------- Ayudas ---------- */
+const NOTES=['Do','Do#','Re','Re#','Mi','Fa','Fa#','Sol','Sol#','La','La#','Si'];
+const fz=v=>{const h=20*Math.pow(1000,v/10);return h>=1000?(h/1000).toFixed(1).replace('.',',')+' kHz':Math.round(h)+' Hz'};
+const ms=(a,b)=>v=>Math.round(a+(b-a)*Math.pow(v/10,2))+' ms', pct=v=>Math.round(v*10)+' %', sec=v=>(0.2+v*v*0.2).toFixed(1).replace('.',',')+' s';
+let T='oficial';
+function grid(g,W,H,o,cols=8,rows=4){g.strokeStyle=o.screendim;g.globalAlpha=.22;g.lineWidth=1;for(let i=1;i<cols;i++){g.beginPath();g.moveTo(W*i/cols,24);g.lineTo(W*i/cols,H-8);g.stroke()}for(let i=1;i<rows;i++){g.beginPath();g.moveTo(8,24+(H-32)*i/rows);g.lineTo(W-8,24+(H-32)*i/rows);g.stroke()}g.globalAlpha=1}
+function canvasOf(scr){const cv=scr.querySelector('canvas'),r=scr.getBoundingClientRect(),z=scr.closest('.win').__scale||1,W=r.width/z,H=r.height/z;cv.width=W*2;cv.height=H*2;const g=cv.getContext('2d');g.scale(2,2);return{g,W,H,cv}}
+function knobs(row,list,help,size=64){list.forEach(([l,f,d,b,ticks=true])=>{const k=document.createElement('div');row.append(k);knob(k,{size,ticks,label:l,fmt:f,def:d,bip:b,onHelp:help})})}
+
+/* ---------- Definición de cada banco ---------- */
+const DEF={
+ eq5:{ref:'Pro-Q · TDR Nova',size:[800,500],preset:'Voz al frente',screenLbl:'Bandas 1–5 · arrastrá los puntos',
+  right:`<span class="cap">Banda</span><div class="segp" data-k="band">${[1,2,3,4,5].map(i=>`<button type="button" aria-pressed="${i===3}">${i}</button>`).join('')}</div><div class="krow" data-k="kn"></div><span class="cap">Forma</span><div class="segp"><button type="button" aria-pressed="false">Corte</button><button type="button" aria-pressed="false">Estante</button><button type="button" aria-pressed="true">Campana</button></div>`,
+  bottom:`<div class="panelp" style="flex-direction:row;align-items:center;gap:10px"><button class="key" type="button" aria-pressed="true"><i class="led"></i>Analizador</button><button class="key" type="button" aria-pressed="false"><i class="led"></i>Ganancia automática</button><span class="cap" style="margin-left:auto">Salida</span><span class="field">0,0 dB</span></div>`,
+  init(w,help){const B=[{f:1.4,g:5.6,q:.6},{f:3.2,g:4.2,q:1.2},{f:5.6,g:6.4,q:1},{f:7.4,g:4.6,q:2},{f:9,g:6,q:.7}];let sel=2;
+   const scr=w.querySelector('.screen'),segB=w.querySelector('[data-k=band]');let ready=false;
+   const kn=[];[['Frecuencia',fz,5.6,false],['Ganancia',v=>{const d=(v-5)*3.6;return(d>0?'+':'')+d.toFixed(1).replace('.',',')+' dB'},5,true],['Q',v=>(0.2*Math.pow(50,v/10)).toFixed(2).replace('.',','),5,false]].forEach(([l,f,d,b],i)=>{const k=document.createElement('div');w.querySelector('[data-k=kn]').append(k);
+     kn.push(knob(k,{size:64,label:l,fmt:f,def:d,bip:b,onHelp:(l2,t)=>{help(l2,t);const v=+k.querySelector('svg').getAttribute('aria-valuenow');if(i===0)B[sel].f=v;else if(i===1)B[sel].g=v;else B[sel].q=.3+v/5;draw()}}))});
+   const pick=i=>{sel=i;segB.querySelectorAll('button').forEach((b,j)=>b.setAttribute('aria-pressed',j===i));kn[0].set(B[i].f);kn[1].set(B[i].g);kn[2].set((B[i].q-.3)*5);draw()};
+   segB.addEventListener('click',e=>{const b=e.target.closest('button');if(b)pick([...segB.children].indexOf(b))});
+   const xy=(b,W,H)=>[12+(W-24)*b.f/10,24+(H-36)*(1-b.g/10)];
+   function draw(){if(!ready)return;const {g,W,H}=canvasOf(scr),o=themeFor('eq5',T);grid(g,W,H,o,10,4);
+     g.globalAlpha=.35;g.fillStyle=o.screendim;let sd=3;for(let x=12;x<W-12;x+=3){sd=(sd*16807)%2147483647;const a=(H-40)*(.25+.35*Math.sin(x/W*3)+.15*sd/2147483647);g.fillRect(x,H-8-a,2,a)}g.globalAlpha=1;
+     const y0=24+(H-36)/2,curve=x=>B.reduce((s,b)=>s+(b.g-5)*Math.exp(-Math.pow((x-b.f)*b.q*.9,2)),0);
+     g.lineWidth=2.5;g.strokeStyle=o.screenink;g.beginPath();for(let i=0;i<=200;i++){const x=i/20,y=y0-curve(x)*(H-36)/10;g[i?'lineTo':'moveTo'](12+(W-24)*x/10,y)}g.stroke();
+     B.forEach((b,i)=>{const [x,y]=xy(b,W,H);g.beginPath();g.arc(x,y,i===sel?9:7,0,7);g.fillStyle=i===sel?o.acc:o.screen;g.fill();g.lineWidth=2;g.strokeStyle=o.acc;g.stroke();g.fillStyle=i===sel?o.accink:o.screenink;g.font='500 9px "IBM Plex Mono"';g.textAlign='center';g.fillText(i+1,x,y+3)});g.textAlign='left'}
+   let drag=null;scr.addEventListener('pointerdown',e=>{const r=scr.getBoundingClientRect(),z=w.__scale||1,px=(e.clientX-r.left)/z,py=(e.clientY-r.top)/z,W=r.width/z,H=r.height/z;
+     let best=-1,bd=24;B.forEach((b,i)=>{const [x,y]=xy(b,W,H),d=Math.hypot(px-x,py-y);if(d<bd){bd=d;best=i}});if(best<0)return;pick(best);drag={W,H,r,z};scr.setPointerCapture(e.pointerId)});
+   scr.addEventListener('pointermove',e=>{if(!drag)return;const {W,H,r,z}=drag,b=B[sel];b.f=Math.max(0,Math.min(10,((e.clientX-r.left)/z-12)/(W-24)*10));b.g=Math.max(0,Math.min(10,10-((e.clientY-r.top)/z-24)/(H-36)*10));kn[0].set(b.f);kn[1].set(b.g)});
+   scr.addEventListener('pointerup',()=>drag=null);scr.style.cursor='crosshair';ready=true;return draw;}},
+ comp5:{ref:'Pro-C · 1176',size:[800,500],preset:'Bus de voces',screenLbl:'Curva · umbral −18 dB · 4:1',
+  right:`<span class="cap">Carácter</span><div class="segp"><button type="button" aria-pressed="true">Limpio</button><button type="button" aria-pressed="false">FET</button><button type="button" aria-pressed="false">Óptico</button></div><div class="krow" data-k="kn"></div><span class="cap">Opciones</span><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="key" type="button" aria-pressed="true"><i class="led"></i>Compensar</button><button class="key" type="button" aria-pressed="false"><i class="led"></i>Sidechain</button></div>`,
+  bottom:`<div class="panelp" style="flex-direction:row;align-items:center;gap:14px"><span class="cap">Entrada</span><div class="meter" style="height:44px"><i><b style="height:78%"></b><u style="bottom:84%"></u></i><i><b style="height:74%"></b><u style="bottom:82%"></u></i></div><span class="cap">Reducción</span><div class="meter gr" style="height:44px"><i><b style="height:34%"></b></i><i><b style="height:30%"></b></i></div><span class="cap">Salida</span><div class="meter" style="height:44px"><i><b style="height:80%"></b><u style="bottom:86%"></u></i><i><b style="height:78%"></b><u style="bottom:85%"></u></i></div><span class="cap" style="margin-left:auto">GR</span><span class="field">−5,8 dB</span></div>`,
+  init(w,help){knobs(w.querySelector('[data-k=kn]'),[['Umbral',v=>'−'+(30-v*3).toFixed(0)+' dB',4,false],['Ratio',v=>(1+v*v*.19).toFixed(1).replace('.',',')+':1',3.2,false],['Ataque',ms(0,100),2,false],['Liberación',ms(20,1000),5,false]],help,52);
+   const scr=w.querySelector('.screen');return()=>{const {g,W,H}=canvasOf(scr),o=themeFor('comp5',T);grid(g,W,H,o,6,6);const t=.55,r=4,k=.08,x0=16,y0=H-12,S=Math.min(W-32,H-40);
+    g.strokeStyle=o.screendim;g.setLineDash([3,4]);g.beginPath();g.moveTo(x0,y0);g.lineTo(x0+S,y0-S);g.stroke();g.setLineDash([]);
+    g.lineWidth=2.5;g.strokeStyle=o.screenink;g.beginPath();for(let i=0;i<=100;i++){const x=i/100;let y=x;if(x>t+k)y=t+(x-t)/r;else if(x>t-k){const d=x-t+k;y=x+(1/r-1)*d*d/(4*k)}g[i?'lineTo':'moveTo'](x0+S*x,y0-S*y)}g.stroke();
+    g.strokeStyle=o.acc;g.lineWidth=1.5;g.beginPath();g.moveTo(x0+S*t,24);g.lineTo(x0+S*t,H-8);g.stroke();g.beginPath();g.arc(x0+S*.82,y0-S*(t+(.82-t)/r),5,0,7);g.fillStyle=o.acc;g.fill();
+    g.fillStyle=o.screendim;g.font='500 10px "IBM Plex Mono"';g.fillText('ENTRADA →',x0+S+12,y0-4);g.fillText('UMBRAL',x0+S*t+6,36)}}},
+ verb5:{ref:'Valhalla VintageVerb · Supermassive',size:[800,500],preset:'Placa brillante',screenLbl:'Respuesta en el tiempo · 2,4 s',
+  right:`<span class="cap">Espacio</span><div class="segp"><button type="button" aria-pressed="false">Sala</button><button type="button" aria-pressed="true">Placa</button><button type="button" aria-pressed="false">Hall</button><button type="button" aria-pressed="false">Cosmos</button></div><div class="krow" data-k="kn"></div>`,
+  bottom:`<div class="panelp" style="flex-direction:row;align-items:center;gap:10px"><button class="key" type="button" aria-pressed="false"><i class="led"></i>Congelar</button><span class="cap" style="margin-left:auto">Mezcla</span><span class="field">28 %</span></div>`,
+  init(w,help){knobs(w.querySelector('[data-k=kn]'),[['Decay',sec,5,false],['Pre-delay',ms(0,250),3,false],['Tamaño',pct,6,false],['Brillo',fz,7,false],['Ancho',pct,10,false],['Modulación',pct,3,false]],help,56);
+   const scr=w.querySelector('.screen');return()=>{const {g,W,H}=canvasOf(scr),o=themeFor('verb5',T);grid(g,W,H,o,10,4);let sd=5;const rn=()=>(sd=(sd*16807)%2147483647)/2147483647,base=H-10,pre=.08;
+    g.fillStyle=o.acc;g.fillRect(14,24,3,base-24);
+    for(let x=0;x<1;x+=.004){if(x<pre)continue;const t=(x-pre)/(1-pre),env=Math.exp(-t*4.2),a=(base-30)*env*(.55+rn()*.45);g.fillStyle=x<pre+.06?o.acc:o.screenink;g.globalAlpha=x<pre+.06?1:.85;g.fillRect(14+(W-28)*x,base-a,2,a)}g.globalAlpha=1;
+    g.strokeStyle=o.screendim;g.setLineDash([3,4]);g.beginPath();g.moveTo(14+(W-28)*pre,24);g.lineTo(14+(W-28)*pre,base);g.stroke();g.setLineDash([]);g.fillStyle=o.screendim;g.font='500 10px "IBM Plex Mono"';g.fillText('PRE-DELAY',18+(W-28)*pre,40);g.fillText('REFLEXIONES',18+(W-28)*(pre+.07),56)}}},
+ delay5:{ref:'Soundtoys EchoBoy · Valhalla Delay',size:[800,500],preset:'Eco de cinta 1/8D',screenLbl:'Repeticiones · 92 BPM · 1/8D',
+  right:`<span class="cap">Tiempo</span><div class="segp"><button type="button" aria-pressed="false">1/4</button><button type="button" aria-pressed="false">1/8</button><button type="button" aria-pressed="true">1/8D</button><button type="button" aria-pressed="false">1/16</button><button type="button" aria-pressed="false">ms</button></div><div class="krow" data-k="kn"></div><span class="cap">Opciones</span><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="key" type="button" aria-pressed="true"><i class="led"></i>Ping-pong</button><button class="key" type="button" aria-pressed="true"><i class="led"></i>Cinta</button></div>`,
+  bottom:`<div class="panelp" style="flex-direction:row;align-items:center;justify-content:space-between" data-k="small"><span class="cap">Cinta</span></div>`,
+  init(w,help){knobs(w.querySelector('[data-k=kn]'),[['Feedback',pct,4.5,false],['Tono',v=>(v<5?'Oscuro ':v>5?'Brillante ':'Neutro ')+Math.abs(Math.round((v-5)*20))+' %',5,true],['Mezcla',pct,3,false]],help,64);
+   knobs(w.querySelector('[data-k=small]'),[['Wow',pct,3,false,false],['Flutter',pct,2,false,false],['Ruido',pct,1,false,false],['Saturación',pct,4,false,false]],help,40);
+   const scr=w.querySelector('.screen');return()=>{const {g,W,H}=canvasOf(scr),o=themeFor('delay5',T);grid(g,W,H,o,12,2);const mid=24+(H-32)/2;g.fillStyle=o.screendim;g.fillRect(12,mid,W-24,1);
+    for(let i=0;i<10;i++){const x=24+i*(W-48)/9,a=(H-48)/2*Math.pow(.62,i),up=i%2===0;g.fillStyle=i===0?o.screenink:o.acc;g.globalAlpha=i===0?1:.95-i*.06;g.fillRect(x-4,up?mid-a:mid,8,a)}g.globalAlpha=1;
+    g.fillStyle=o.screendim;g.font='500 10px "IBM Plex Mono"';g.fillText('IZQ',W-36,40);g.fillText('DER',W-36,H-14)}}},
+ synth5:{ref:'Serum · Vital',size:[960,600],preset:'Bajo reese',screenLbl:'Oscilador A · tabla «Analógica» · posición 42',big:true,
+  right:`<div class="krow g3" data-k="kn"></div><span class="cap">Envolvente 1 <span class="new-tag" style="border-color:var(--p-dim)">NUEVO</span></span><div class="screen" style="height:70px" data-k="env"><canvas></canvas></div><div class="krow g4" data-k="adsr"></div>`,
+  bottom:`<div class="piano" data-k="piano"></div>`,
+  init(w,help){knobs(w.querySelector('[data-k=kn]'),[['Posición',v=>Math.round(v*25.6)+'',4.2,false],['Desafinar',pct,2,false],['Voces',v=>String(1+Math.round(v*1.5)),3,false],['Nivel',pct,7.5,false],['Fase',v=>Math.round(v*36)+'°',0,false],['Paneo',v=>v===5?'C':(v<5?'I ':'D ')+Math.round(Math.abs(v-5)*20),5,true]],help,52);
+   knobs(w.querySelector('[data-k=adsr]'),[['A',ms(0,2000),1,false,false],['D',ms(0,2000),4,false,false],['S',pct,6,false,false],['R',ms(0,4000),3,false,false]],help,40);
+   const pn=w.querySelector('[data-k=piano]');const wk=[0,2,4,5,7,9,11];let html='';for(let o2=0;o2<2;o2++)wk.forEach(n=>html+=`<button class="w" type="button" aria-label="${NOTES[n]}${o2+2}"></button>`);
+   const bk=[1,3,6,8,10],pos={1:1,3:2,6:4,8:5,10:6};for(let o2=0;o2<2;o2++)bk.forEach(n=>html+=`<button class="b" type="button" aria-label="${NOTES[n]}${o2+2}" style="left:calc(${((o2*7+pos[n])/14*100).toFixed(2)}% - 1.8%)"></button>`);
+   pn.innerHTML=html;pn.addEventListener('pointerdown',e=>{const b=e.target.closest('button');if(!b)return;b.classList.add('on');help('Nota',b.getAttribute('aria-label'));const up=()=>{b.classList.remove('on');removeEventListener('pointerup',up)};addEventListener('pointerup',up)});
+   pn.querySelectorAll('.w')[2].classList.add('on');
+   const scr=w.querySelector('.wleft .screen'),env=w.querySelector('[data-k=env]');
+   return()=>{let {g,W,H}=canvasOf(scr),o=themeFor('synth5',T);grid(g,W,H,o,8,4);
+    for(let k=11;k>=0;k--){const off2=k*9,sh=k/11;g.strokeStyle=k===4?o.acc:o.screenink;g.globalAlpha=k===4?1:.18+(.2*(1-sh));g.lineWidth=k===4?2.5:1.2;g.beginPath();
+     for(let i=0;i<=160;i++){const x=i/160,y=Math.sin(x*Math.PI*2)*(1-sh)+(x<.5?1:-1)*sh*.85+Math.sin(x*Math.PI*6)*.15*sh;g[i?'lineTo':'moveTo'](40+off2+(W-140)*x,(H/2+20-off2)-y*(H/4.2))}g.stroke()}g.globalAlpha=1;
+    ({g,W,H}=canvasOf(env));g.strokeStyle=o.acc;g.lineWidth=2;g.beginPath();const p=[[8,H-6],[W*.12,10],[W*.38,H*.42],[W*.72,H*.42],[W-8,H-6]];p.forEach((q,i)=>g[i?'lineTo':'moveTo'](...q));g.stroke();g.fillStyle=o.screenink;p.slice(1,4).forEach(q=>{g.beginPath();g.arc(q[0],q[1],3,0,7);g.fill()})}}},
+ tune5:{ref:'Auto-Tune · Melodyne',size:[800,500],preset:'Voz trap dura',screenLbl:'Afinación en vivo · La menor',
+  right:`<span class="cap">Tonalidad</span><div style="display:flex;gap:6px"><span class="menu" role="button" tabindex="0" style="min-width:0;flex:1">La</span><span class="menu" role="button" tabindex="0" style="min-width:0;flex:1">Menor</span></div><span class="cap">Notas <span class="new-tag" style="border-color:var(--p-dim)">NUEVO</span></span><div class="notesel" data-k="notes">${NOTES.map((n,i)=>`<button type="button" aria-pressed="${[0,2,4,5,7,9,11].includes(i)}" aria-label="${n}">${n.replace('#','♯')}</button>`).join('')}</div><div class="krow" data-k="kn"></div><span class="cap">Opciones</span><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="key" type="button" aria-pressed="true"><i class="led"></i>Formantes</button><button class="key" type="button" aria-pressed="false"><i class="led"></i>Vibrato</button></div>`,
+  bottom:`<div class="panelp" style="flex-direction:row;align-items:center;gap:10px"><span class="cap">Nota</span><span class="field">La 3</span><span class="cap">Desvío</span><span class="field">+12 ct</span><span class="cap" style="margin-left:auto">Latencia</span><span class="field">0 ms</span></div>`,
+  init(w,help){knobs(w.querySelector('[data-k=kn]'),[['Velocidad',v=>v>=9.9?'Instantánea':Math.round(400-v*40)+' ms',8,false],['Humanizar',pct,2,false],['Mezcla',pct,10,false]],help,64);
+   w.querySelector('[data-k=notes]').addEventListener('click',e=>{const b=e.target.closest('button');if(b){b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')!=='true');help('Nota '+b.getAttribute('aria-label'),b.getAttribute('aria-pressed')==='true'?'permitida':'saltear')}});
+   const scr=w.querySelector('.screen');return()=>{const {g,W,H}=canvasOf(scr),o=themeFor('tune5',T);const rows=12,rh=(H-34)/rows;g.font='500 9px "IBM Plex Mono"';
+    for(let r=0;r<rows;r++){const n=NOTES[(9+rows-1-r)%12],y=26+r*rh;g.fillStyle=o.screendim;g.globalAlpha=n.includes('#')?.08:.16;g.fillRect(44,y,W-52,rh-1);g.globalAlpha=.9;g.fillText(n,8,y+rh*.7)}g.globalAlpha=1;
+    const target=x=>[3,3,5,5,5,7,7,8,8,7,5,5][Math.min(11,Math.floor(x*12))],yOf=s=>26+(rows-1-s)*rh+rh/2;
+    g.strokeStyle=o.screendim;g.lineWidth=1.5;g.beginPath();for(let i=0;i<=300;i++){const x=i/300,s=target(x)+Math.sin(x*70)*.35+Math.sin(x*13)*.2;g[i?'lineTo':'moveTo'](44+(W-52)*x,yOf(s))}g.stroke();
+    g.strokeStyle=o.acc;g.lineWidth=3;g.beginPath();for(let i=0;i<=300;i++){const x=i/300;g[i?'lineTo':'moveTo'](44+(W-52)*x,yOf(target(x)))}g.stroke()}}},
+};
+
+/* ---------- Armado de cada ventana ---------- */
+function build(name){const d=DEF[name],[W,H]=d.size,b=document.createElement('div');b.className='plug win';b.style.width=W+'px';b.style.height=H+'px';
+  if(d.big)b.style.gridTemplateRows='40px 1fr 28px';applyTheme(b,name,T);
+  b.innerHTML=`<div class="whead">${plugLogo(name)}<div class="preset">${ibtn('prev','Preset anterior')}<span class="menu" role="button" tabindex="0">${d.preset}</span>${ibtn('next','Preset siguiente')}</div>${ibtn('undo','Deshacer')}${ibtn('redo','Rehacer')}${ibtn('gear','Ajustes: tamaño y tema')}<span class="ver">v1.0.0</span></div>
+   <div class="wbody" style="${d.big?'grid-template-columns:1fr 300px':''}"><div class="wleft">${d.big?`<div style="display:grid;grid-template-rows:auto 1fr;min-height:0"><div class="tabs" role="tablist">${['Osc A','Osc B','Filtro','Envolventes','Efectos'].map((t,i)=>`<button type="button" role="tab" aria-selected="${i===0}">${t}</button>`).join('')}</div><div class="screen" style="margin-top:8px"><canvas></canvas><div class="st"><span>${d.screenLbl}</span><span>${T}</span></div></div></div>`:`<div class="screen"><canvas></canvas><div class="st"><span>${d.screenLbl}</span><span>${T}</span></div></div>`}${d.bottom}</div><div class="panelp">${d.right}</div></div>
+   <div class="wfoot"><span class="msg">Pasá por un control para ver qué hace.</span><span>${d.big?'960 × 600 · ':''}100 %</span></div>`;
+  return b;}
+function renderAll(){const host=$('#benches');host.innerHTML='';
+  for(const name in DEF){const d=DEF[name],sec=document.createElement('article');sec.className='bench';
+    sec.innerHTML=`<div class="bench-h"><h3>${name}</h3><span class="mono muted">Referentes: ${d.ref}</span></div><div class="stagebox"><div class="stage"></div></div>`;host.append(sec);
+    const w=build(name);sec.querySelector('.stage').append(w);const help=(l,t)=>{w.querySelector('.msg').textContent=`${l}: ${t}`};
+    w.querySelectorAll('.segp:not([data-k])').forEach(g=>g.addEventListener('click',e=>{const bt=e.target.closest('button');if(bt)g.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===bt))}));
+    w.querySelectorAll('.key').forEach(k=>k.addEventListener('click',()=>k.setAttribute('aria-pressed',k.getAttribute('aria-pressed')!=='true')));
+    w.querySelectorAll('.tabs').forEach(t=>t.addEventListener('click',e=>{const bt=e.target.closest('button');if(bt)t.querySelectorAll('button').forEach(x=>x.setAttribute('aria-selected',x===bt))}));
+    fitOne(w,d.size);w.__draw=d.init(w,help);w.__draw();}
+}
+function fitOne(w,[W,H]){const st=w.parentElement,s=Math.min(1,st.clientWidth/W);w.__scale=s;w.style.transform=`scale(${s})`;w.style.transformOrigin='0 0';st.style.height=H*s+'px';}
+addEventListener('resize',()=>document.querySelectorAll('.win').forEach(w=>{const n=w.querySelector('svg.logo').getAttribute('aria-label');fitOne(w,DEF[n].size);w.__draw&&w.__draw()}));
+$('#selTheme').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$('#selTheme').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));T=b.dataset.v;renderAll()});
+renderAll();document.fonts&&document.fonts.ready.then(()=>document.querySelectorAll('.win').forEach(w=>w.__draw&&w.__draw()));
+</script>

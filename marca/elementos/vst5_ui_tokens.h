@@ -1,4 +1,4 @@
-// vst5_ui_tokens.h — generado desde marca/elementos/index.html. No editar a mano: cambiá la guía y regeneralo.
+// vst5_ui_tokens.h — generado desde marca/elementos/vst5-ui.js. No editar a mano: cambiá la guía y regeneralo.
 #pragma once
 #include <juce_graphics/juce_graphics.h>
 
