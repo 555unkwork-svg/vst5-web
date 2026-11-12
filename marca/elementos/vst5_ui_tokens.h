@@ -29,7 +29,7 @@ namespace vst5::ui
 
     namespace text   // Archivo (100 % de ancho) e IBM Plex Mono, embebidas como BinaryData
     {
-        constexpr float label = 12.0f, value = 11.0f, caption = 10.0f, button = 11.0f, pad = 10.0f;
+        constexpr float label = 12.0f, value = 11.0f, caption = 10.0f, button = 11.0f, padNumber = 11.0f, padName = 10.0f;
         constexpr float captionTracking = 0.10f;
     }
 

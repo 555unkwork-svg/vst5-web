@@ -56,7 +56,7 @@
 /* Pad */
 .pad{width:56px;height:56px;border:0;border-radius:var(--r2);background:var(--p-pad);color:var(--p-padink);cursor:pointer;position:relative;padding:5px 6px;display:flex;flex-direction:column;justify-content:space-between;text-align:left;
   box-shadow:0 3px 0 var(--p-padedge),inset 0 1px 0 rgba(255,255,255,.1);transition:transform .06s,box-shadow .06s,background-color .12s}
-.pad .n{font:500 10px var(--m);opacity:.8}.pad .t{font:500 9px var(--m);opacity:.6;letter-spacing:.04em}
+.pad .n{font:500 11px var(--m);opacity:.85}.pad .t{font:500 10px var(--m);opacity:.75;letter-spacing:.04em}
 .pad.hit,.pad:active{transform:translateY(3px);box-shadow:0 0 0 var(--p-padedge),0 0 14px color-mix(in srgb,var(--p-acc) 70%,transparent);background:var(--p-acc);color:var(--p-accink)}
 .pad.sel{box-shadow:0 3px 0 var(--p-padedge),inset 0 0 0 2px var(--p-acc)}
 .pad:focus-visible{outline:2px solid var(--p-focus);outline-offset:2px}

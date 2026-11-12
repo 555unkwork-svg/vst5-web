@@ -45,7 +45,7 @@ ul.list{margin:0;padding-left:20px;display:grid;gap:6px;max-width:72ch}
 <style>
 /* Elementos nuevos que pidió el banco (propuestos para la guía v1.1) */
 .tabs{display:flex;gap:2px;border-bottom:1px solid var(--p-line)}
-.tabs button{border:0;background:transparent;height:28px;padding:0 12px;cursor:pointer;font:500 10px var(--m)!important;letter-spacing:.1em;text-transform:uppercase;color:var(--p-dim);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button{border:0;background:transparent;height:28px;padding:0 12px;cursor:pointer;font:500 11px var(--m)!important;letter-spacing:.08em;text-transform:uppercase;color:var(--p-dim);border-bottom:2px solid transparent;margin-bottom:-1px}
 .tabs button[aria-selected="true"]{color:var(--p-ink);border-bottom-color:var(--p-acc)}
 .tabs button:focus-visible{outline:2px solid var(--p-focus);outline-offset:-2px}
 .piano{display:flex;height:64px;position:relative;border-radius:var(--r2);overflow:hidden;background:var(--p-well);padding:2px;gap:2px}
@@ -53,7 +53,7 @@ ul.list{margin:0;padding-left:20px;display:grid;gap:6px;max-width:72ch}
 .piano .b{position:absolute;top:2px;width:3.6%;height:58%;background:var(--p-key);border-radius:0 0 3px 3px;z-index:1;border:0;cursor:pointer}
 .piano .on{background:var(--p-acc)!important}
 .notesel{display:grid;grid-template-columns:repeat(6,1fr);gap:2px;padding:2px;border-radius:var(--r2);background:var(--p-well)}
-.notesel button{height:24px;border:0;border-radius:var(--r1);background:transparent;color:var(--p-dim);cursor:pointer;font:500 10px var(--m)!important;padding:0}
+.notesel button{height:24px;border:0;border-radius:var(--r1);background:transparent;color:var(--p-dim);cursor:pointer;font:500 11px var(--m)!important;padding:0}
 .notesel button[aria-pressed="true"]{background:var(--p-key);color:var(--p-keyink)}
 .notesel button:focus-visible{outline:2px solid var(--p-focus)}
 .meter.gr i b{top:0;bottom:auto;background:var(--p-acc)}

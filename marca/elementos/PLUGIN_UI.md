@@ -33,7 +33,7 @@ Este es el contrato visual de todos los plugins vst5. Complementa `BRAND.md`.
   - El valor va en el tono de pantalla. Nada de escalas verde-amarillo-rojo.
   - Pico retenido: 1,5 s. Caída: 300 ms.
   - Recorte: franja roja arriba que queda hasta hacer clic en el medidor.
-- **Pad**: 56 × 56 px (44 de alto en filas compactas), radio 6. Número arriba y nombre abajo, en Plex Mono.
+- **Pad**: 56 × 56 px (44 de alto en filas compactas), radio 6. Número arriba (11 px) y nombre abajo (10 px, en mayúsculas), en Plex Mono.
   - Golpe: se hunde 3 px y se ilumina en el color del plugin.
   - Elegido: anillo interior de 2 px del color del plugin.
 - **Botón de ícono**: 24 × 24 px con ícono de 14 px, trazo 1,8 y puntas redondeadas. Sin fondo; al pasar el mouse, fondo hundido. Siempre con nombre accesible.
