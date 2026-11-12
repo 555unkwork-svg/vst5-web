@@ -1,0 +1,11 @@
+{
+  "dolarMep": 1580,
+  "factorArgentina": 0.6,
+  "redondeoArs": 500,
+  "productos": {
+    "clip5":    { "nombre": "clip5",    "usd": 19, "disponible": true },
+    "sampler5": { "nombre": "sampler5", "usd": 24, "disponible": true },
+    "drum5":    { "nombre": "drum5",    "usd": 24, "disponible": false },
+    "pack":     { "nombre": "Pack vst5", "usd": 49, "disponible": true, "incluye": ["clip5", "sampler5", "drum5"] }
+  }
+}
