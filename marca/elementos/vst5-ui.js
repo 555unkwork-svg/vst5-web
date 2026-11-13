@@ -10,7 +10,15 @@ const OFICIAL={
  sampler5:{body:'#EDEDEA',panel:'#F7F7F4',well:'#DEDFDB',line:'#CBCCC7',ink:'#141516',dim:'#5F625E',key:'#1E1F21',keyink:'#F5F3EE',keyedge:'#000000',ptr:'#F5F3EE',screen:'#0B0C0D',screenink:'#F5F3EE',screendim:'#9C9F9A',pad:'#1E1F21',padink:'#F5F3EE',padedge:'#000000',ledoff:'#4A4C4A',focus:'#141516',meter:'#F5F3EE',over:'#FF3B2F'},
  drum5:{body:'#A9A8A2',panel:'#B9B8B2',well:'#97968F',line:'#8A8982',ink:'#121211',dim:'#33322E',key:'#3B3B38',keyink:'#EDEDE8',keyedge:'#1A1A18',ptr:'#EDEDE8',screen:'#1B2316',screenink:'#CFE3B4',screendim:'#8AA273',pad:'#4A4A47',padink:'#EDEDE8',padedge:'#1F1F1D',ledoff:'#2E2E2B',focus:'#121211',meter:'#CFE3B4',over:'#FF4D40'},
 };
-const themeFor=(p,t)=>Object.assign({},t==='oficial'?OFICIAL[p]:BASE[t],ACC[p]);
+/* Color del plugin sobre superficie (accsurf): el mismo tono, oscurecido o aclarado lo justo para llegar a 3:1
+   (WCAG 1.4.11) contra el cuerpo y el panel del tema. Lo usan las marcas que caen sobre superficies: arco y 5 de las
+   perillas, raya de la pestaña elegida, fila elegida de una lista, contorno al editar. Sobre teclas, pads y pantalla va acc. */
+const lum=h=>{const c=[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255).map(v=>v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4));return .2126*c[0]+.7152*c[1]+.0722*c[2]};
+const contrast=(a,b)=>{const x=lum(a),y=lum(b);return(Math.max(x,y)+.05)/(Math.min(x,y)+.05)};
+const mixHex=(h,to,t)=>'#'+[1,3,5].map(i=>Math.round(parseInt(h.slice(i,i+2),16)*(1-t)+parseInt(to.slice(i,i+2),16)*t).toString(16).padStart(2,'0')).join('').toUpperCase();
+function surfAcc(o){const s=[o.body,o.panel],ok=c=>s.every(x=>contrast(c,x)>=3);if(ok(o.acc))return o.acc;
+  const to=(lum(o.body)+lum(o.panel))/2>.18?'#000000':'#FFFFFF';for(let k=1;k<=50;k++){const c=mixHex(o.acc,to,k/50);if(ok(c))return c}return to}
+const themeFor=(p,t)=>{const o=Object.assign({},t==='oficial'?OFICIAL[p]:BASE[t],ACC[p]);o.accsurf=surfAcc(o);return o};
 const applyTheme=(el,p,t)=>{const o=themeFor(p,t);for(const k in o)el.style.setProperty('--p-'+k,o[k]);};
 
 /* ---------- Perilla ---------- */
