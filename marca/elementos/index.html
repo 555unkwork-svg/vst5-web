@@ -200,7 +200,7 @@ function renderSpecs(){
   knob($('#kL'),{size:72,label:'Techo',fmt:F.db(-12,0),def:9.75,bip:false});knob($('#kM'),{size:56,label:'Densidad',fmt:F.pct});
   knob($('#kS'),{size:40,ticks:false,label:'Mezcla',fmt:F.pct,def:10,bip:false});knob($('#kD'),{size:56,label:'Salida',fmt:F.db(-6,6)});$('#kD').classList.add('dis');
 }
-function renderThemes(){const keys=[['body','Cuerpo'],['panel','Panel'],['ink','Texto'],['dim','Texto secundario'],['key','Tecla y perilla'],['screen','Pantalla'],['screenink','Texto de pantalla'],['acc','Color del plugin'],['accsurf','Color sobre superficie']];
+function renderThemes(){const keys=[['body','Cuerpo'],['panel','Panel'],['ink','Texto'],['dim','Texto secundario'],['key','Tecla y perilla'],['screen','Pantalla'],['screenink','Texto de pantalla'],['acc','Color del plugin'],['accsurf','Color sobre superficie'],['acckey','Color sobre tecla y pad']];
   const cell=h=>`<td><span style="display:inline-flex;align-items:center;gap:8px"><i style="width:18px;height:18px;border-radius:4px;background:${h};box-shadow:inset 0 0 0 1px rgba(128,128,128,.4)"></i><code>${h}</code></span></td>`;
   $('#themeTbl').innerHTML=`<tr><th>Token (${P})</th><th>Oficial</th><th>vst5</th><th>Oscuro</th></tr>`+keys.map(([k,n])=>`<tr><td>${n} <code style="font-weight:400">${k}</code></td>${['oficial','vst5','oscuro'].map(t=>cell(themeFor(P,t)[k])).join('')}</tr>`).join('');}
 renderWin();renderSpecs();renderThemes();

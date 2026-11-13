@@ -3,7 +3,7 @@
 const fs=require('fs'),path=require('path'),dir=__dirname;
 const src=fs.readFileSync(path.join(dir,'vst5-ui.js'),'utf8');
 const {ACC,BASE,OFICIAL,themeFor}=new Function(src+';return{ACC,BASE,OFICIAL,themeFor}')();
-const KEYS=['body','panel','well','line','ink','dim','key','keyink','keyedge','ptr','screen','screenink','screendim','pad','padink','padedge','ledoff','focus','meter','over','acc','accink','accedge','accsurf'];
+const KEYS=['body','panel','well','line','ink','dim','key','keyink','keyedge','ptr','screen','screenink','screendim','pad','padink','padedge','ledoff','focus','meter','over','acc','accink','accedge','accsurf','acckey'];
 const plugins=Object.keys(ACC),col=h=>`juce::Colour (0xff${h.slice(1).toUpperCase()})`;
 for(const p of plugins)for(const t of ['oficial','vst5','oscuro']){const o=themeFor(p,t);for(const k of KEYS)if(!/^#[0-9a-f]{6}$/i.test(o[k]||''))throw new Error(`${p}/${t}: falta ${k}`)}
 const HEAD=`// vst5_ui_tokens.h — generado desde marca/elementos/vst5-ui.js. No editar a mano: cambiá la guía y regeneralo.
@@ -17,7 +17,7 @@ namespace vst5::ui
 
     struct Palette
     {
-        juce::Colour body, panel, well, line, ink, dim, key, keyink, keyedge, ptr, screen, screenink, screendim, pad, padink, padedge, ledoff, focus, meter, over, acc, accink, accedge,\n                     accsurf;   // color del plugin sobre cuerpo y panel: 3:1 en cada tema (calculado)
+        juce::Colour body, panel, well, line, ink, dim, key, keyink, keyedge, ptr, screen, screenink, screendim, pad, padink, padedge, ledoff, focus, meter, over, acc, accink, accedge,\n                     accsurf,   // color del plugin sobre cuerpo y panel: 3:1 en cada tema (calculado)\n                     acckey;    // color del plugin sobre tecla y pad: 3:1 en cada tema (calculado)
     };
 
     // Medidas a 100 %. Multiplicar por la escala de la ventana (0.75 a 2.0).

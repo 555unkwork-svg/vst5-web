@@ -16,9 +16,11 @@ const OFICIAL={
 const lum=h=>{const c=[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255).map(v=>v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4));return .2126*c[0]+.7152*c[1]+.0722*c[2]};
 const contrast=(a,b)=>{const x=lum(a),y=lum(b);return(Math.max(x,y)+.05)/(Math.min(x,y)+.05)};
 const mixHex=(h,to,t)=>'#'+[1,3,5].map(i=>Math.round(parseInt(h.slice(i,i+2),16)*(1-t)+parseInt(to.slice(i,i+2),16)*t).toString(16).padStart(2,'0')).join('').toUpperCase();
-function surfAcc(o){const s=[o.body,o.panel],ok=c=>s.every(x=>contrast(c,x)>=3);if(ok(o.acc))return o.acc;
-  const to=(lum(o.body)+lum(o.panel))/2>.18?'#000000':'#FFFFFF';for(let k=1;k<=50;k++){const c=mixHex(o.acc,to,k/50);if(ok(c))return c}return to}
-const themeFor=(p,t)=>{const o=Object.assign({},t==='oficial'?OFICIAL[p]:BASE[t],ACC[p]);o.accsurf=surfAcc(o);return o};
+/* acckey: lo mismo contra la tecla y el pad (LED encendido, anillo del pad elegido, ícono del segmento elegido). */
+function toneFor(acc,s){const ok=c=>s.every(x=>contrast(c,x)>=3);if(ok(acc))return acc;
+  const to=s.reduce((a,x)=>a+lum(x),0)/s.length>.18?'#000000':'#FFFFFF';for(let k=1;k<=50;k++){const c=mixHex(acc,to,k/50);if(ok(c))return c}return to}
+const surfAcc=o=>toneFor(o.acc,[o.body,o.panel]);
+const themeFor=(p,t)=>{const o=Object.assign({},t==='oficial'?OFICIAL[p]:BASE[t],ACC[p]);o.accsurf=surfAcc(o);o.acckey=toneFor(o.acc,[o.key,o.pad]);return o};
 const applyTheme=(el,p,t)=>{const o=themeFor(p,t);for(const k in o)el.style.setProperty('--p-'+k,o[k]);};
 
 /* ---------- Perilla ---------- */
