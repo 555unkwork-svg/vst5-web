@@ -1,6 +1,6 @@
 // vst5-ui.js — tokens de tema y elementos (perilla, íconos, logo). Fuente de vst5_ui_tokens.h.
 /* ---------- Tokens de tema (mismos nombres en el código JUCE: vst5_ui_tokens.h) ---------- */
-const ACC={clip5:{acc:'#D93A2B',accink:'#FFFFFF',accedge:'#9E2519'},sampler5:{acc:'#D93A2B',accink:'#FFFFFF',accedge:'#9E2519'},drum5:{acc:'#6FA83A',accink:'#171614',accedge:'#4C7826'}};
+const ACC={clip5:{acc:'#D93A2B',accink:'#FFFFFF',accedge:'#9E2519'},sampler5:{acc:'#E8862A',accink:'#171614',accedge:'#A85E19'},drum5:{acc:'#6FA83A',accink:'#171614',accedge:'#4C7826'}};
 const BASE={
  vst5:{body:'#F1EFEA',panel:'#FAF9F6',well:'#E2DFD8',line:'#D8D5CE',ink:'#171614',dim:'#6E6A62',key:'#171614',keyink:'#F1EFEA',keyedge:'#000000',ptr:'#F1EFEA',screen:'#171614',screenink:'#F1EFEA',screendim:'#A29E96',pad:'#2A2927',padink:'#F1EFEA',padedge:'#0E0D0C',ledoff:'#4A4742',focus:'#171614',meter:'#F1EFEA',over:'#FF3B2F'},
  oscuro:{body:'#1B1A18',panel:'#232220',well:'#121110',line:'#3A3834',ink:'#F1EFEA',dim:'#A29E96',key:'#3A3834',keyink:'#F1EFEA',keyedge:'#0A0A09',ptr:'#F1EFEA',screen:'#0E0D0C',screenink:'#F1EFEA',screendim:'#8C8880',pad:'#3A3834',padink:'#F1EFEA',padedge:'#0A0A09',ledoff:'#2A2826',focus:'#F1EFEA',meter:'#F1EFEA',over:'#FF4D40'},

@@ -53,7 +53,7 @@ Cada plugin tiene exactamente tres temas: **oficial** (el de fábrica, su máqui
 
 El color del plugin solo marca lo encendido, lo activo, lo seleccionado y el valor de las perillas. Nunca se usa para texto sobre fondo claro ni para superficies grandes.
 
-**Color por familia.** El color viene de la familia del plugin. Los plugins de una misma familia comparten color y se diferencian por su tema oficial. Las familias se definen más adelante; mientras tanto, cada plugin conserva su color. clip5 pasó a rojo `#D93A2B`. Colores libres para familias nuevas: `#2F6FD6`, `#7A4FD0` y `#1FA6A0`. Un color nuevo tiene que distinguirse a simple vista de los demás y llevar su color de texto (`accink`) con contraste de 4,5:1.
+**Color por familia.** El color viene de la familia del plugin. Los plugins de una misma familia comparten color y se diferencian por su tema oficial. Las familias se definen más adelante; mientras tanto, cada plugin conserva su color. clip5 pasó a rojo `#D93A2B` y sampler5 a naranja `#E8862A`. Colores libres para familias nuevas: `#2F6FD6`, `#7A4FD0` y `#1FA6A0`. Un color nuevo tiene que distinguirse a simple vista de los demás y llevar su color de texto (`accink`) con contraste de 4,5:1.
 
 ## Interacción
 - **Perillas:**
