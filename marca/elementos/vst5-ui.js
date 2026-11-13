@@ -1,6 +1,6 @@
 // vst5-ui.js — tokens de tema y elementos (perilla, íconos, logo). Fuente de vst5_ui_tokens.h.
 /* ---------- Tokens de tema (mismos nombres en el código JUCE: vst5_ui_tokens.h) ---------- */
-const ACC={clip5:{acc:'#F2C230',accink:'#171614',accedge:'#B88F14'},sampler5:{acc:'#D93A2B',accink:'#FFFFFF',accedge:'#9E2519'},drum5:{acc:'#6FA83A',accink:'#171614',accedge:'#4C7826'}};
+const ACC={clip5:{acc:'#D93A2B',accink:'#FFFFFF',accedge:'#9E2519'},sampler5:{acc:'#D93A2B',accink:'#FFFFFF',accedge:'#9E2519'},drum5:{acc:'#6FA83A',accink:'#171614',accedge:'#4C7826'}};
 const BASE={
  vst5:{body:'#F1EFEA',panel:'#FAF9F6',well:'#E2DFD8',line:'#D8D5CE',ink:'#171614',dim:'#6E6A62',key:'#171614',keyink:'#F1EFEA',keyedge:'#000000',ptr:'#F1EFEA',screen:'#171614',screenink:'#F1EFEA',screendim:'#A29E96',pad:'#2A2927',padink:'#F1EFEA',padedge:'#0E0D0C',ledoff:'#4A4742',focus:'#171614',meter:'#F1EFEA',over:'#FF3B2F'},
  oscuro:{body:'#1B1A18',panel:'#232220',well:'#121110',line:'#3A3834',ink:'#F1EFEA',dim:'#A29E96',key:'#3A3834',keyink:'#F1EFEA',keyedge:'#0A0A09',ptr:'#F1EFEA',screen:'#0E0D0C',screenink:'#F1EFEA',screendim:'#8C8880',pad:'#3A3834',padink:'#F1EFEA',padedge:'#0A0A09',ledoff:'#2A2826',focus:'#F1EFEA',meter:'#F1EFEA',over:'#FF4D40'},
@@ -41,7 +41,7 @@ const F={db:(a,b)=>v=>((a+(b-a)*v/10)>0?'+':'')+(a+(b-a)*v/10).toFixed(1).replac
   hz:v=>{const h=20*Math.pow(1000,v/10);return h>=1000?(h/1000).toFixed(1).replace('.',',')+' kHz':Math.round(h)+' Hz'},ms:v=>Math.round(v*v*10)+' ms',swing:v=>Math.round(50+v*2.5)+' %'};
 
 /* ---------- Íconos ---------- */
-const IC={prev:'<path d="M9 3 4 7l5 4"/>',next:'<path d="m5 3 5 4-5 4"/>',undo:'<path d="M4 6h6a3 3 0 0 1 0 6H6"/><path d="M6 3 3 6l3 3"/>',redo:'<path d="M10 6H4a3 3 0 0 0 0 6h4"/><path d="m8 3 3 3-3 3"/>',gear:'<circle cx="7" cy="7" r="2"/><path d="M7 1.5v2M7 10.5v2M1.5 7h2M10.5 7h2M3.1 3.1l1.4 1.4M9.5 9.5l1.4 1.4M3.1 10.9l1.4-1.4M9.5 4.5l1.4-1.4"/>'};
+const IC={prev:'<path d="M9 3 4 7l5 4"/>',next:'<path d="m5 3 5 4-5 4"/>',undo:'<path d="M4 6h6a3 3 0 0 1 0 6H6"/><path d="M6 3 3 6l3 3"/>',redo:'<path d="M10 6H4a3 3 0 0 0 0 6h4"/><path d="m8 3 3 3-3 3"/>',x:'<path d="M3.5 3.5l7 7M10.5 3.5l-7 7"/>',gear:'<circle cx="7" cy="7" r="2"/><path d="M7 1.5v2M7 10.5v2M1.5 7h2M10.5 7h2M3.1 3.1l1.4 1.4M9.5 9.5l1.4 1.4M3.1 10.9l1.4-1.4M9.5 4.5l1.4-1.4"/>'};
 const ibtn=(n,l)=>`<button class="ibtn" type="button" aria-label="${l}" title="${l}"><svg viewBox="0 0 14 14">${IC[n]}</svg></button>`;
 const CURVES=['M2 13 C 8 8, 11 3, 20 3','M2 13 L 9 6 Q 11 3 14 3 L 20 3','M2 13 L 12 3 L 20 3','M2 13 L 20 1'];
 

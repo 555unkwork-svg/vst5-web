@@ -20,7 +20,7 @@ namespace vst5::ui
         constexpr int radiusControl = 3, radiusPanel = 6;
         constexpr int knobL = 72, knobM = 56, knobS = 40, knobArc = 5;
         constexpr int keyH = 24, keyPadX = 10, keyEdge = 2, led = 6, segmentMinW = 32;
-        constexpr int field = 22, iconButton = 24, icon = 14;
+        constexpr int field = 22, iconButton = 24, icon = 14, menuRow = 24, sheetW = 400;
         constexpr int pad = 56, padCompactH = 44, padPress = 3;
         constexpr int meterBar = 6, meterGap = 3;
         constexpr float iconStroke = 1.8f;
@@ -29,7 +29,7 @@ namespace vst5::ui
 
     namespace text   // Archivo (100 % de ancho) e IBM Plex Mono, embebidas como BinaryData
     {
-        constexpr float label = 12.0f, value = 11.0f, caption = 10.0f, button = 11.0f, padNumber = 11.0f, padName = 10.0f;
+        constexpr float label = 12.0f, value = 11.0f, caption = 10.0f, button = 11.0f, padNumber = 11.0f, padName = 10.0f, help = 11.0f, version = 11.0f;
         constexpr float captionTracking = 0.10f;
     }
 
@@ -39,9 +39,9 @@ namespace vst5::ui
     {
         if (p == Plugin::clip5)
         {
-            if (t == Theme::oficial) return Palette { juce::Colour (0xffC9C6BE), juce::Colour (0xffD8D5CE), juce::Colour (0xffB8B5AD), juce::Colour (0xffA9A59C), juce::Colour (0xff171614), juce::Colour (0xff46423C), juce::Colour (0xff232220), juce::Colour (0xffF1EFEA), juce::Colour (0xff000000), juce::Colour (0xffF1EFEA), juce::Colour (0xff121211), juce::Colour (0xffF1EFEA), juce::Colour (0xffA29E96), juce::Colour (0xff232220), juce::Colour (0xffF1EFEA), juce::Colour (0xff000000), juce::Colour (0xff4A4742), juce::Colour (0xff171614), juce::Colour (0xffF1EFEA), juce::Colour (0xffFF3B2F), juce::Colour (0xffF2C230), juce::Colour (0xff171614), juce::Colour (0xffB88F14) };
-            if (t == Theme::vst5) return Palette { juce::Colour (0xffF1EFEA), juce::Colour (0xffFAF9F6), juce::Colour (0xffE2DFD8), juce::Colour (0xffD8D5CE), juce::Colour (0xff171614), juce::Colour (0xff6E6A62), juce::Colour (0xff171614), juce::Colour (0xffF1EFEA), juce::Colour (0xff000000), juce::Colour (0xffF1EFEA), juce::Colour (0xff171614), juce::Colour (0xffF1EFEA), juce::Colour (0xffA29E96), juce::Colour (0xff2A2927), juce::Colour (0xffF1EFEA), juce::Colour (0xff0E0D0C), juce::Colour (0xff4A4742), juce::Colour (0xff171614), juce::Colour (0xffF1EFEA), juce::Colour (0xffFF3B2F), juce::Colour (0xffF2C230), juce::Colour (0xff171614), juce::Colour (0xffB88F14) };
-            if (t == Theme::oscuro) return Palette { juce::Colour (0xff1B1A18), juce::Colour (0xff232220), juce::Colour (0xff121110), juce::Colour (0xff3A3834), juce::Colour (0xffF1EFEA), juce::Colour (0xffA29E96), juce::Colour (0xff3A3834), juce::Colour (0xffF1EFEA), juce::Colour (0xff0A0A09), juce::Colour (0xffF1EFEA), juce::Colour (0xff0E0D0C), juce::Colour (0xffF1EFEA), juce::Colour (0xff8C8880), juce::Colour (0xff3A3834), juce::Colour (0xffF1EFEA), juce::Colour (0xff0A0A09), juce::Colour (0xff2A2826), juce::Colour (0xffF1EFEA), juce::Colour (0xffF1EFEA), juce::Colour (0xffFF4D40), juce::Colour (0xffF2C230), juce::Colour (0xff171614), juce::Colour (0xffB88F14) };
+            if (t == Theme::oficial) return Palette { juce::Colour (0xffC9C6BE), juce::Colour (0xffD8D5CE), juce::Colour (0xffB8B5AD), juce::Colour (0xffA9A59C), juce::Colour (0xff171614), juce::Colour (0xff46423C), juce::Colour (0xff232220), juce::Colour (0xffF1EFEA), juce::Colour (0xff000000), juce::Colour (0xffF1EFEA), juce::Colour (0xff121211), juce::Colour (0xffF1EFEA), juce::Colour (0xffA29E96), juce::Colour (0xff232220), juce::Colour (0xffF1EFEA), juce::Colour (0xff000000), juce::Colour (0xff4A4742), juce::Colour (0xff171614), juce::Colour (0xffF1EFEA), juce::Colour (0xffFF3B2F), juce::Colour (0xffD93A2B), juce::Colour (0xffFFFFFF), juce::Colour (0xff9E2519) };
+            if (t == Theme::vst5) return Palette { juce::Colour (0xffF1EFEA), juce::Colour (0xffFAF9F6), juce::Colour (0xffE2DFD8), juce::Colour (0xffD8D5CE), juce::Colour (0xff171614), juce::Colour (0xff6E6A62), juce::Colour (0xff171614), juce::Colour (0xffF1EFEA), juce::Colour (0xff000000), juce::Colour (0xffF1EFEA), juce::Colour (0xff171614), juce::Colour (0xffF1EFEA), juce::Colour (0xffA29E96), juce::Colour (0xff2A2927), juce::Colour (0xffF1EFEA), juce::Colour (0xff0E0D0C), juce::Colour (0xff4A4742), juce::Colour (0xff171614), juce::Colour (0xffF1EFEA), juce::Colour (0xffFF3B2F), juce::Colour (0xffD93A2B), juce::Colour (0xffFFFFFF), juce::Colour (0xff9E2519) };
+            if (t == Theme::oscuro) return Palette { juce::Colour (0xff1B1A18), juce::Colour (0xff232220), juce::Colour (0xff121110), juce::Colour (0xff3A3834), juce::Colour (0xffF1EFEA), juce::Colour (0xffA29E96), juce::Colour (0xff3A3834), juce::Colour (0xffF1EFEA), juce::Colour (0xff0A0A09), juce::Colour (0xffF1EFEA), juce::Colour (0xff0E0D0C), juce::Colour (0xffF1EFEA), juce::Colour (0xff8C8880), juce::Colour (0xff3A3834), juce::Colour (0xffF1EFEA), juce::Colour (0xff0A0A09), juce::Colour (0xff2A2826), juce::Colour (0xffF1EFEA), juce::Colour (0xffF1EFEA), juce::Colour (0xffFF4D40), juce::Colour (0xffD93A2B), juce::Colour (0xffFFFFFF), juce::Colour (0xff9E2519) };
         }
         if (p == Plugin::sampler5)
         {

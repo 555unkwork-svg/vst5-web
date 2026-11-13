@@ -2,7 +2,7 @@
 
 Este es el contrato visual de todos los plugins vst5. Complementa `BRAND.md`.
 - Referencia visual interactiva: `marca/elementos/index.html`. Abrila en un navegador.
-- Colores y medidas en código: `vst5_ui_tokens.h`. Copialo al plugin y no lo edites a mano.
+- Colores y medidas en código: `vst5_ui_tokens.h`. Copialo al plugin y no lo edites a mano: se regenera con `node marca/elementos/generar_tokens.js` (colores de `vst5-ui.js`, medidas en la plantilla del generador).
 
 **Regla general:** cada plugin tiene su máquina y su color, pero se arma con estas piezas, estas medidas y estas reglas. Si un plugin necesita un elemento que no está acá, se diseña siguiendo las mismas reglas y después se suma a esta guía.
 
@@ -11,7 +11,7 @@ Este es el contrato visual de todos los plugins vst5. Complementa `BRAND.md`.
 |---|---|---|
 | Cabecera | 40 px | Logo del plugin (SVG del kit) a la izquierda. A la derecha, en este orden: preset anterior, menú de presets, preset siguiente, deshacer, rehacer, ajustes (tamaño y tema), versión en Plex Mono. |
 | Cuerpo | margen 12, separación 12 | Pantalla a la izquierda: lo que el plugin muestra. Columna de controles de 264 px a la derecha: lo que el plugin hace. Debajo de la pantalla, la fila propia del plugin (medidores o pads). |
-| Pie | 28 px | Ayuda: al pasar por un control dice qué hace y su valor exacto. A la derecha, el tamaño de ventana. |
+| Pie | 28 px | Ayuda en Plex Mono 11 px: al pasar por un control dice qué hace y su valor exacto. A la derecha, el tamaño de ventana. |
 | Tamaño | 800 × 500 | Escala de 75 a 200 % en pasos de 25. Todo vectorial. El tamaño se recuerda por plugin. |
 | Grilla | 4 px | Espacios 4 / 8 / 12 / 16 / 24. Radios: 3 en controles, 6 en paneles, pantallas y pads. |
 
@@ -26,6 +26,16 @@ Este es el contrato visual de todos los plugins vst5. Complementa `BRAND.md`.
   - Principal (color del plugin): una sola por panel o diálogo. Secundaria: solo contorno.
 - **Selector segmentado**: para 2 a 5 opciones excluyentes; con más, usá un menú. Fondo hundido; la opción elegida es una tecla, con el ícono en el color del plugin. Segmentos de 24 px de alto y 32 de ancho como mínimo.
 - **Menú**: 24 px, Plex Mono 11 px, lista propia. Nunca la del sistema operativo.
+- **Lista de menú**: se abre debajo del menú, panel con radio 6, relleno 4 y sombra.
+  - Filas de 24 px, Plex Mono 11 px, relleno lateral 8. Si el nombre no entra, se corta con «…» y el nombre completo va en la ayuda del pie.
+  - Encabezados de grupo (banco de presets) en Plex Mono 10 px, mayúsculas, no clickeables.
+  - Encima o con flechas: fondo hundido. Elegida: filete izquierdo de 2 px del color del plugin.
+  - Enter elige, Esc cierra y devuelve el foco al menú; clic afuera cierra.
+- **Hoja de ajustes**: se abre con el botón de ajustes de la cabecera. Cubre el cuerpo (entre cabecera y pie) con el fondo al 70 % y muestra un panel de 400 px a la derecha.
+  - Título «Ajustes» en mayúsculas y botón de ícono para cerrar.
+  - Filas de dos columnas: nombre (Archivo 600, 12 px, 150 px de ancho) y control (selector, tecla con LED o menú).
+  - Siempre trae Tamaño y Tema; después, lo que el plugin usa una vez por sesión.
+  - Esc o clic afuera cierra y devuelve el foco al botón de ajustes. Tab no sale de la hoja mientras está abierta.
 - **Campo de valor**: pantalla chica de 22 px, valor alineado a la derecha y con unidad. Al editar, contorno del color del plugin. Enter confirma, Esc cancela. Acepta coma o punto.
 - **Pantalla**: siempre oscura en los tres temas, con sombra interior y grilla al 25 %. Los datos van en el tono de pantalla; las marcas (cortes, techo, pasos activos), en el color del plugin.
 - **Panel**: agrupa controles relacionados. Título en Plex Mono 10 px, en mayúsculas y con espaciado.
@@ -43,7 +53,7 @@ Cada plugin tiene exactamente tres temas: **oficial** (el de fábrica, su máqui
 
 El color del plugin solo marca lo encendido, lo activo, lo seleccionado y el valor de las perillas. Nunca se usa para texto sobre fondo claro ni para superficies grandes.
 
-**Color por familia.** El color viene de la familia del plugin. Los plugins de una misma familia comparten color y se diferencian por su tema oficial. Las familias se definen más adelante; mientras tanto, clip5, sampler5 y drum5 conservan su color. Colores libres para familias nuevas: `#2F6FD6`, `#7A4FD0` y `#1FA6A0`. Un color nuevo tiene que distinguirse a simple vista de los demás y llevar su color de texto (`accink`) con contraste de 4,5:1.
+**Color por familia.** El color viene de la familia del plugin. Los plugins de una misma familia comparten color y se diferencian por su tema oficial. Las familias se definen más adelante; mientras tanto, cada plugin conserva su color. clip5 pasó a rojo `#D93A2B`. Colores libres para familias nuevas: `#2F6FD6`, `#7A4FD0` y `#1FA6A0`. Un color nuevo tiene que distinguirse a simple vista de los demás y llevar su color de texto (`accink`) con contraste de 4,5:1.
 
 ## Interacción
 - **Perillas:**
