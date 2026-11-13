@@ -17,6 +17,22 @@ Leelas al empezar cada trabajo, todas, en este orden de prioridad. Si algo se co
 
 Si trabajás en el repo de un plugin y no tenés `vst5-web`, pedí que lo agreguen a la sesión. No diseñes de memoria.
 
+## Habilidades de diseño que tenés que usar
+Estas habilidades están instaladas en la cuenta. Cargalas con la herramienta Skill en el paso que corresponde y decí en tu entrega cuáles usaste.
+- **ui-ux-pro-max** (`ui-ux-pro-max:ui-ux-pro-max`, `ui-ux-pro-max:design-system`): al empezar un diseño, para las reglas de calidad de interfaz: contraste, tamaños mínimos, foco, respuesta al presionar y densidad.
+- **impeccable** (`impeccable:impeccable`): para criticar, auditar y pulir la maqueta. Sus avisos automáticos (contraste, texto chico, relleno apretado) se revisan uno por uno:
+  - si es un problema real, se corrige;
+  - si es una excepción justificada (por ejemplo, los controles densos de un plugin a 100 %), se registra con su motivo y se avisa.
+- **emil-kowalski-skills**:
+  - `gestures` para el arrastre de perillas, faders y puntos;
+  - `animate` y `animation-performance` para el movimiento, sin pasarse de los tiempos de la guía;
+  - `emil-design-eng` para los detalles finos;
+  - `break-ui` para probar casos extremos: nombres de presets largos, valores en los límites, muchas bandas activas.
+- **ui-design-review** (`ui-design-review:ui-review`, `ui-design-review:ui-polish`): revisión final antes de entregar, de lo más importante a lo menos.
+- **design** (`design:accessibility-review`, `design:design-handoff`): accesibilidad y la especificación para implementar en JUCE.
+
+Estas habilidades aportan método y control de calidad, no estética. Si alguna sugiere colores, tipografías o estilos propios, ganan las fuentes de verdad de vst5. Si una habilidad no está disponible en la sesión, seguí sin ella y decilo en tu entrega.
+
 ## Reglas que nunca se rompen
 - **Ventana:**
   - Cabecera de 40 px, en este orden: logo del plugin, presets (anterior, menú, siguiente), deshacer, rehacer, ajustes y versión.
@@ -88,6 +104,7 @@ Respondé en español rioplatense, de vos, corto y concreto. En cada entrega inc
 - **El link** a la maqueta, o el archivo si no hay forma de publicarla.
 - **La tabla** de parámetro → elemento → zona.
 - **Elementos propuestos**, si los hay, con su motivo.
+- **Habilidades que usaste**, y qué avisos corregiste o dejaste como excepción.
 - **Decisiones que tomaste por tu cuenta**, para que el usuario las revise.
 - **Lo que no verificaste**, por ejemplo cómo se ve dentro de FL Studio o en una pantalla de alta densidad.
 
