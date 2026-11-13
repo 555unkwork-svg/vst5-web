@@ -33,10 +33,11 @@ Este archivo resume la guía de marca (`vst5-guia-de-marca.pdf`). Leelo antes de
 | aluminio | `#D8D5CE` | bordes, paneles claros, secundario sobre oscuro |
 | hueso | `#F1EFEA` | fondo claro, texto sobre oscuro |
 | led | `#FF5B14` | acento de la marca (solo piezas de vst5, <10 % de la superficie) |
-| clip5 | `#F2C230` | color de clip5 (familia provisoria) |
+| clip5 | `#D93A2B` | color de clip5 (familia provisoria) |
 | drum5 | `#6FA83A` | color de drum5 (familia provisoria) |
-| sampler5 | `#D93A2B` | color de sampler5 (familia provisoria) |
-| libres | `#2F6FD6` / `#7A4FD0` / `#1FA6A0` | para familias nuevas |
+| eq5 | `#2F6FD6` | color de eq5 (familia provisoria); tema oficial: rack grafito |
+| sampler5 | `#E8862A` | color de sampler5 (familia provisoria) |
+| libres | `#7A4FD0` / `#1FA6A0` | para familias nuevas |
 
 **Color por familia.** El color no es de cada plugin, sino de su familia. Todos los plugins de una familia usan el mismo color y se distinguen por su tema oficial, su máquina de referencia y su nombre. Las familias todavía no están definidas: hasta entonces, clip5, sampler5 y drum5 conservan su color y cada uno cuenta como su propia familia. No le asignes color a un plugin nuevo sin definir antes su familia.
 

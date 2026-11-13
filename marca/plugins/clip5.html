@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>clip5 · maqueta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Página con los tokens de marca; dentro de .plug rigen los tokens del tema de clip5. */
+:root{--bg:#F1EFEA;--fg:#171614;--muted:#6E6A62;--line:#D8D5CE;--panel:#FAF9F6;--chip:#E7E4DE;
+  --d:"Archivo",ui-sans-serif,system-ui,sans-serif;--m:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#121110;--fg:#F1EFEA;--muted:#B5B1A9;--line:#33302C;--panel:#1B1A18;--chip:#2A2826;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121110;--fg:#F1EFEA;--muted:#B5B1A9;--line:#33302C;--panel:#1B1A18;--chip:#2A2826;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 15px/1.55 var(--d);padding-block:32px 72px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:40px}
+h1{font:800 clamp(32px,6vw,52px)/1 var(--d);font-stretch:125%;margin:8px 0 12px}
+h2{font:800 24px/1.1 var(--d);font-stretch:112%;margin:0}
+p{margin:0;max-width:68ch}
+.muted{color:var(--muted)}
+.mono{font:500 12px var(--m);letter-spacing:.06em;text-transform:uppercase}
+.sec{display:flex;flex-direction:column;gap:16px}
+.sec-h{display:flex;align-items:baseline;gap:12px;border-top:2px solid var(--fg);padding-top:10px}
+.bar{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel)}
+.seg button{border:0;background:none;padding:8px 14px;font:600 14px var(--d);color:var(--fg);cursor:pointer;min-height:36px}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.seg button:focus-visible{outline:2px solid var(--fg);outline-offset:-3px}
+.stagebox{border:1px solid var(--line);border-radius:12px;background:var(--chip);padding:16px;overflow:hidden}
+.stage{width:100%;position:relative}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:680px;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+th{font:500 11px var(--m);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+td code{font:500 12px var(--m)}
+.tag{display:inline-block;border:1px solid currentColor;border-radius:4px;padding:0 6px;font:500 10px var(--m);letter-spacing:.06em;vertical-align:2px}
+ul.list{margin:0;padding-left:20px;display:grid;gap:6px;max-width:76ch}
+</style>
+<link rel="stylesheet" href="../elementos/vst5-ui.css">
+<style>
+/* ---- Ajustes de composición de clip5 (con los tokens de la guía) ---- */
+.win{position:relative}
+.whead .ver{margin-left:4px;font-size:11px}
+.whead .menu{min-width:168px;max-width:168px}
+.whead .menu span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.wbody{min-height:0}
+.wfoot .read{font-variant-numeric:tabular-nums;color:var(--p-ink)}
+.wfoot .cap{font-size:10px}
+/* Pantalla: historia + medidores */
+.hist{display:grid;grid-template-columns:1fr 52px;gap:8px;padding:26px 8px 8px 8px;min-height:0}
+.hist canvas{width:100%;height:100%;min-height:0}
+.mtrs{display:grid;grid-template-rows:1fr 14px;gap:4px;border:0;background:transparent;padding:0;cursor:pointer;border-radius:var(--r1)}
+.mtrs:focus-visible{outline:2px solid var(--p-screenink);outline-offset:2px}
+.mtrs .meter{gap:3px;justify-content:center}
+.mtrs .meter i{background:#000;}
+.mtrs .meter i.gap{width:6px;background:transparent;box-shadow:none}
+.mtrs .ml{display:flex;justify-content:space-around;font:500 10px var(--m);letter-spacing:.1em;color:var(--p-screendim)}
+.mtrs .meter i u{background:var(--p-screenink)}
+/* Fila propia del plugin */
+.brow{display:flex;gap:8px;align-items:stretch}
+.brow .panelp{gap:8px;padding:10px 12px}
+.brow .grow{flex:1}
+.row{display:flex;gap:12px;align-items:flex-end}
+.col{display:flex;flex-direction:column;gap:8px}
+/* Columna de controles */
+.side{gap:8px;padding:12px;justify-content:space-between}
+.side .krow{display:grid;justify-items:center}
+.side .k2{grid-template-columns:1fr 1fr}
+.side .k3{grid-template-columns:1fr 1fr 1fr;align-items:end}
+.side .segp{display:flex}
+.side .segp button{flex:1}
+.keys{display:flex;gap:8px}
+.keys .key{flex:1;justify-content:center}
+.sep{height:1px;background:var(--p-line)}
+.preset{position:relative}
+@media (prefers-reduced-motion: reduce){.win *{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <span class="mono muted">vst5 · diseño 0.1 · estable</span>
+  <h1>clip5</h1>
+  <p class="muted">Clipper de mastering armado con las piezas de la guía. Los controles funcionan; la señal de la pantalla es simulada (un loop de boom bap a 90 BPM) y reacciona a Entrada, Densidad, Curva, Techo y Salida. El rojo es el color de clip5 (familia provisoria).</p>
+</header>
+
+<section class="sec" aria-label="Maqueta">
+  <div class="bar">
+    <div><span class="mono muted">Tema</span><br><div class="seg" id="selTheme" role="group" aria-label="Tema"><button type="button" data-v="oficial" aria-pressed="true">Oficial</button><button type="button" data-v="vst5" aria-pressed="false">vst5</button><button type="button" data-v="oscuro" aria-pressed="false">Oscuro</button></div></div>
+    <p class="muted" style="font-size:14px">Probá: arrastre vertical (Shift fino), rueda, flechas, doble clic para volver a fábrica, Tab para recorrer. Clic en el medidor borra el recorte.</p>
+  </div>
+  <div class="stagebox"><div class="stage" id="stage"></div></div>
+</section>
+
+<section class="sec">
+  <div class="sec-h"><span class="mono">01</span><h2>Parámetro → elemento → zona</h2></div>
+  <div class="tbl"><table>
+    <tr><th>Id (sin cambios)</th><th>Rango → fábrica</th><th>Elemento</th><th>Zona</th></tr>
+    <tr><td><code>techo</code></td><td>−36 a 0 dB → −1,0 dB</td><td>Perilla grande 72, arco desde 0</td><td>Columna</td></tr>
+    <tr><td><code>densidad</code></td><td>0 a 6 dB → 0,0 dB</td><td>Perilla grande 72, arco desde 0</td><td>Columna</td></tr>
+    <tr><td><code>modo</code></td><td>Suave · Medio · Duro · Sin recorte → Medio</td><td>Selector de 4 con la curva dibujada</td><td>Columna</td></tr>
+    <tr><td><code>suavizado</code></td><td>0 a 100 % → 0 %</td><td>Perilla media 56</td><td>Columna</td></tr>
+    <tr><td><code>entrada</code>, <code>salida</code></td><td>±12 dB → 0,0 dB</td><td>Perilla chica 40, bipolar («en 5»)</td><td>Columna</td></tr>
+    <tr><td><code>techo_estricto</code></td><td>sí / no → sí</td><td>Tecla con LED «True peak»</td><td>Columna</td></tr>
+    <tr><td><code>ganancia_unitaria</code></td><td>sí / no → no</td><td>Tecla con LED «Igualar»</td><td>Columna</td></tr>
+    <tr><td><code>tono</code></td><td>Plano · Seda · Terciopelo → Plano</td><td>Selector de 3</td><td>Columna</td></tr>
+    <tr><td><code>humedo</code>, <code>seco</code></td><td>−∞ a +6 dB → 0 dB / −∞</td><td>Perilla chica 40 (Procesada, Original)</td><td>Fila: Mezcla</td></tr>
+    <tr><td><code>enlace_mezcla</code></td><td>sí / no → sí</td><td>Tecla con LED «Enlace»</td><td>Fila: Mezcla</td></tr>
+    <tr><td>A/B (no es parámetro)</td><td>A · B, copiar</td><td>Selector de 2 + tecla «Copiar»</td><td>Fila: Comparar</td></tr>
+    <tr><td><code>calidad</code></td><td>1× · 2× · 4× · 8× → 2×</td><td>Selector de 4</td><td>Fila: Sobremuestreo</td></tr>
+    <tr><td><code>calidad_offline</code></td><td>Igual · 1× … 8× → 8×</td><td>Selector de 5</td><td>Ajustes</td></tr>
+    <tr><td><code>fase</code></td><td>Lineal · Mínima → Lineal</td><td>Selector de 2</td><td>Ajustes</td></tr>
+    <tr><td><code>suavizado_ext</code></td><td>sí / no → no</td><td>Tecla con LED «Rango −3 dB»</td><td>Ajustes</td></tr>
+    <tr><td><code>enlace_es</code></td><td>sí / no → no</td><td>Tecla con LED «Compensar entrada»</td><td>Ajustes</td></tr>
+    <tr><td>Medición</td><td>picos, TP, LUFS, historia</td><td>Pantalla + medidor E/S + lecturas</td><td>Pantalla y pie</td></tr>
+  </table></div>
+</section>
+
+<section class="sec">
+  <div class="sec-h"><span class="mono">02</span><h2>Cambios en la guía</h2></div>
+  <ul class="list">
+    <li><b>Rojo de clip5.</b> En un clipper el color del plugin se parece al rojo de recorte (<code>over</code>): el exceso se marca con el color del plugin en la pantalla y la franja de recorte queda solo en el medidor.</li>
+    <li><b>Menú de presets con lista propia</b> (<code>listMenu()</code> de la guía). La guía pide lista propia pero no la dibuja: acá usa fila de 24 px, Plex Mono 11, encabezados de banco en 10 en mayúsculas y elegido con filete de 2 px del color del plugin. Sumado a la guía.</li>
+    <li><b>Hoja de ajustes.</b> Panel de 400 px que se abre desde el engranaje sobre el cuerpo; Esc cierra y Tab no sale de la hoja. Sumado a la guía.</li>
+  </ul>
+</section>
+</div>
+
+<script src="../elementos/vst5-ui.js"></script>
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+let T='oficial';
+
+/* ---------- Estado (solo para la simulación; ids iguales a Params.h) ---------- */
+const S={entrada:0,salida:0,techo:-1,densidad:0,modo:1,suavizado:0,tono:0,techo_estricto:true,ganancia_unitaria:false,humedo:0,seco:-60,enlace_mezcla:true,calidad:1,calidad_offline:4,fase:0,suavizado_ext:false,enlace_es:false};
+const num=(x,d=1)=>(x<-.049?'−':x>.049?'+':'')+Math.abs(x).toFixed(d).replace('.',',');
+const dB=x=>num(x)+' dB';
+const SKEW=Math.log(.5)/Math.log(48/66); // NormalisableRange(−60, 6) con centro en −12
+const fader=v=>v<=0?-60:-60+66*Math.pow(v/10,1/SKEW), faderV=db=>10*Math.pow((db+60)/66,SKEW);
+const fdb=x=>x<=-59.95?'−∞ dB':dB(x);
+
+const HELP={
+ Techo:'Nivel máximo de salida',Densidad:'Suma cuerpo antes del recorte',Suavizado:'Baja agudos solo cuando recorta',
+ Entrada:'Ganancia antes del recorte',Salida:'Ganancia final',Procesada:'Nivel de la señal recortada',Original:'Nivel de la señal sin procesar'};
+
+/* ---------- Ventana ---------- */
+const PRESETS=[['Fábrica',['En 5']],['Mastering',['Boom bap al frente','Bus de mezcla suave','Mastering para vinilo con techo conservador −1,5 dB']],['Batería',['Bombo y caja','Loop sampleado sucio']]];
+let pIdx=0;const PFLAT=PRESETS.flatMap(([,l])=>l);
+const segp=(lab,opts,cur,key)=>`<div class="segp" role="radiogroup" aria-label="${lab}" data-p="${key}">${opts.map((o,i)=>`<button type="button" role="radio" aria-pressed="${i===cur}" aria-checked="${i===cur}" aria-label="${o.l||o}" title="${o.l||o}">${o.svg||o}</button>`).join('')}</div>`;
+const ledKey=(lab,key)=>`<button class="key" type="button" data-p="${key}" aria-pressed="${S[key]}"><i class="led"></i>${lab}</button>`;
+const curveIco=d=>`<svg viewBox="0 0 22 14" aria-hidden="true"><path d="M2 3 H20" stroke-dasharray="1.5 2" stroke-width="1" opacity=".55"/><path d="${d}"/></svg>`;
+
+function build(){
+ const w=document.createElement('div');w.className='plug win';w.id='win';applyTheme(w,'clip5',T);
+ w.innerHTML=`<div class="whead">${plugLogo('clip5')}
+   <div class="preset">${ibtn('prev','Preset anterior')}<button class="menu" type="button" aria-haspopup="listbox" aria-expanded="false" id="pmenu"><span></span></button>${ibtn('next','Preset siguiente')}</div>
+   ${ibtn('undo','Deshacer')}${ibtn('redo','Rehacer')}${ibtn('gear','Ajustes')}<span class="ver">v1.0.0</span></div>
+  <div class="wbody">
+   <div class="wleft">
+    <div class="screen hist"><div class="st"><span>Historia · −4 s</span><span id="stR"></span></div><canvas aria-label="Historia del recorte" role="img"></canvas>
+     <button class="mtrs" type="button" id="mtrs" aria-label="Medidor de entrada y salida. Clic borra el recorte"><span class="meter" aria-hidden="true"><i><b></b><u></u></i><i><b></b><u></u></i><i class="gap"></i><i><b></b><u></u></i><i><b></b><u></u></i></span><span class="ml" aria-hidden="true"><span>E</span><span>S</span></span></button></div>
+    <div class="brow">
+     <div class="panelp grow"><span class="cap">Mezcla</span><div class="row"><div data-k="humedo"></div><div data-k="seco"></div><div class="col" style="margin-left:auto">${ledKey('Enlace','enlace_mezcla')}</div></div></div>
+     <div class="panelp"><span class="cap">Comparar</span><div class="col">${segp('Estado A/B',['A','B'],0,'ab')}<button class="key ghost" type="button" id="abcopy">Copiar</button></div></div>
+     <div class="panelp"><span class="cap">Sobremuestreo</span><div class="col">${segp('Sobremuestreo',['1×','2×','4×','8×'],S.calidad,'calidad')}<span class="val" id="cpu">CPU 0,4 %</span></div></div>
+    </div>
+   </div>
+   <div class="panelp side">
+    <span class="cap">Curva</span>
+    ${segp('Curva de recorte',[{l:'Suave',svg:curveIco(CURVES[0])},{l:'Medio',svg:curveIco(CURVES[1])},{l:'Duro',svg:curveIco(CURVES[2])},{l:'Sin recorte',svg:curveIco(CURVES[3])}],S.modo,'modo')}
+    <div class="krow k2"><div data-k="techo"></div><div data-k="densidad"></div></div>
+    <div class="krow k3"><div data-k="suavizado"></div><div data-k="entrada"></div><div data-k="salida"></div></div>
+    <div class="sep"></div>
+    <div class="keys">${ledKey('True peak','techo_estricto')}${ledKey('Igualar','ganancia_unitaria')}</div>
+    ${segp('Tono',['Plano','Seda','Terciopelo'],S.tono,'tono')}
+   </div>
+  </div>
+  <div class="wfoot"><span class="msg" id="msg">Pasá por un control para ver qué hace.</span><span class="read" id="read"></span><span id="sz">800 × 500 · 100 %</span></div>
+  <div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-label="Ajustes"><div class="panelp">
+   <div class="sh"><span class="cap">Ajustes</span>${ibtn('x','Cerrar ajustes')}</div>
+   <div class="opt"><span class="lbl">Tamaño</span>${segp('Tamaño',['75','100','150','200'],1,'size')}</div>
+   <div class="opt"><span class="lbl">Tema</span>${segp('Tema',['Oficial','vst5','Oscuro'],['oficial','vst5','oscuro'].indexOf(T),'theme')}</div>
+   <div class="sep"></div>
+   <div class="opt"><span class="lbl">Al exportar</span>${segp('Sobremuestreo al exportar',['Igual','1×','2×','4×','8×'],S.calidad_offline,'calidad_offline')}</div>
+   <div class="opt"><span class="lbl">Fase</span>${segp('Fase del filtrado',['Lineal','Mínima'],S.fase,'fase')}</div>
+   <div class="opt"><span class="lbl">Suavizado</span><div>${ledKey('Rango −3 dB','suavizado_ext')}</div></div>
+   <div class="opt"><span class="lbl">Entrada</span><div>${ledKey('Compensar','enlace_es')}</div></div>
+  </div></div>`;
+ return w;}
+
+const SEGHELP={modo:['Curva','Forma del recorte'],calidad:['Sobremuestreo','Menos aliasing, más CPU'],tono:['Tono','Agudos fijos de la rama procesada'],ab:['Comparar','Cambia entre dos ajustes'],
+ calidad_offline:['Al exportar','Sobremuestreo al renderizar'],fase:['Fase','Lineal conserva la suma con Original']};
+const KEYHELP={techo_estricto:'Anticipa los picos entre muestras',ganancia_unitaria:'Resta Densidad para comparar a igual nivel',enlace_mezcla:'Mueve Procesada y Original juntas',
+ suavizado_ext:'Lleva Suavizado hasta −3 dB',enlace_es:'Devuelve la ganancia de Entrada al final'};
+
+function mount(){
+ const st=$('#stage');st.innerHTML='';const w=build();st.append(w);
+ const msg=$('#msg',w),help=(l,t)=>{msg.textContent=`${l} · ${t}${HELP[l]?' — '+HELP[l]:''}`};
+ const K=(key,o)=>knob($(`[data-k=${key}]`,w),{...o,onHelp:help});
+ K('techo',{size:72,label:'Techo',bip:false,def:10*35/36,v:10*(S.techo+36)/36,fmt:v=>dB(S.techo=-36+3.6*v)});
+ K('densidad',{size:72,label:'Densidad',bip:false,def:0,v:S.densidad/.6,fmt:v=>dB(S.densidad=.6*v)});
+ K('suavizado',{size:56,label:'Suavizado',bip:false,def:0,v:S.suavizado/10,fmt:v=>Math.round(S.suavizado=10*v)+' %'});
+ K('entrada',{size:40,ticks:false,label:'Entrada',def:5,v:5+S.entrada/2.4,fmt:v=>dB(S.entrada=(v-5)*2.4)});
+ K('salida',{size:40,ticks:false,label:'Salida',def:5,v:5+S.salida/2.4,fmt:v=>dB(S.salida=(v-5)*2.4)});
+ K('humedo',{size:40,ticks:false,label:'Procesada',bip:false,def:faderV(0),v:faderV(S.humedo),fmt:v=>fdb(S.humedo=fader(v))});
+ K('seco',{size:40,ticks:false,label:'Original',bip:false,def:0,v:faderV(S.seco),fmt:v=>fdb(S.seco=fader(v))});
+ msg.textContent='Pasá por un control para ver qué hace.';
+ // Selectores
+ $$('.segp',w).forEach(g=>g.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const bs=$$('button',g),i=bs.indexOf(b);
+   bs.forEach(x=>{x.setAttribute('aria-pressed',x===b);x.setAttribute('aria-checked',x===b)});const p=g.dataset.p;
+   if(p==='theme'){setTheme(['oficial','vst5','oscuro'][i]);return}
+   if(p==='size'){$('#sz',w).textContent=`${[600,800,1200,1600][i]} × ${[375,500,750,1000][i]} · ${b.textContent} %`;help('Tamaño',b.textContent+' %');return}
+   if(p in S)S[p]=i;const h=SEGHELP[p];h&&help(h[0],b.title+' — '+h[1].toLowerCase())}));
+ $$('.segp',w).forEach(g=>g.addEventListener('pointerover',e=>{const b=e.target.closest('button'),h=SEGHELP[g.dataset.p];if(b&&h)msg.textContent=`${h[0]} · ${b.title} — ${h[1]}`}));
+ // Teclas con LED
+ $$('.key[data-p]',w).forEach(k=>{const p=k.dataset.p;
+   k.addEventListener('click',()=>{S[p]=!S[p];k.setAttribute('aria-pressed',S[p]);msg.textContent=`${k.textContent.trim()} · ${S[p]?'activado':'apagado'} — ${KEYHELP[p]}`});
+   k.addEventListener('pointerenter',()=>msg.textContent=`${k.textContent.trim()} · ${S[p]?'activado':'apagado'} — ${KEYHELP[p]}`)});
+ $('#abcopy',w).addEventListener('click',()=>msg.textContent='Comparar · copiaste el estado actual en el otro');
+ $('#abcopy',w).addEventListener('pointerenter',()=>msg.textContent='Copiar — pasa el estado actual al otro (A → B o B → A)');
+ // Presets
+ const pm=$('#pmenu',w),pl=$('.preset',w);
+ const showP=listMenu(pm,{items:()=>PRESETS.flatMap(([b,l])=>[{h:b},...l.map(t=>({t}))]),cur:()=>PFLAT[pIdx],pick:t=>pIdx=PFLAT.indexOf(t),onPick:(n,t)=>help('Preset',t)});
+ const stepP=d=>{pIdx=(pIdx+d+PFLAT.length)%PFLAT.length;showP();help('Preset',PFLAT[pIdx])};
+ $('[aria-label="Preset anterior"]',w).onclick=()=>stepP(-1);$('[aria-label="Preset siguiente"]',w).onclick=()=>stepP(1);
+ // Deshacer/rehacer: en la maqueta solo avisan
+ $('[aria-label="Deshacer"]',w).onclick=()=>msg.textContent='Deshacer · Ctrl+Z';$('[aria-label="Rehacer"]',w).onclick=()=>msg.textContent='Rehacer · Ctrl+Shift+Z';
+ // Ajustes
+ const sh=$('#sheet',w),gear=$('[aria-label="Ajustes"]',w);
+ const openS=o=>{sh.hidden=!o;if(o)$('button',sh).focus();else gear.focus()};
+ gear.onclick=()=>openS(sh.hidden);$('[aria-label="Cerrar ajustes"]',w).onclick=()=>openS(false);
+ sh.addEventListener('pointerdown',e=>{if(e.target===sh)openS(false)});
+ w.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!sh.hidden)openS(false)}});
+ // Tab no sale de la hoja mientras está abierta
+ sh.addEventListener('keydown',e=>{if(e.key!=='Tab')return;const f=$$('button',sh),a=f[0],z=f[f.length-1];if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus()}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus()}});
+ $$('.ibtn',w).forEach(b=>b.addEventListener('pointerenter',()=>msg.textContent=b.getAttribute('aria-label')));
+ // Medidor
+ $('#mtrs',w).onclick=()=>{M.over=false;msg.textContent='Medidor · recorte borrado'};
+ fit();}
+
+function fit(){const st=$('#stage'),w=$('#win');const s=Math.min(1,st.clientWidth/800);w.style.transform=`scale(${s})`;w.style.transformOrigin='0 0';st.style.height=500*s+'px';sizeCanvas()}
+function setTheme(t){T=t;$$('#selTheme button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===t));applyTheme($('#win'),'clip5',t);
+ const sg=$('[data-p=theme]');sg&&$$('button',sg).forEach((b,i)=>{const on=['oficial','vst5','oscuro'][i]===t;b.setAttribute('aria-pressed',on);b.setAttribute('aria-checked',on)})}
+$('#selTheme').addEventListener('click',e=>{const b=e.target.closest('button');if(b)setTheme(b.dataset.v)});
+
+/* ---------- Simulación de señal (10 ms por columna) ---------- */
+const HN=480,H=[];let tSim=0;
+const M={in:[-120,-120],out:[-120,-120],hin:[-120,-120],hout:[-120,-120],th:[0,0,0,0],over:false,pk:-120,tp:-120,lu:[]};
+function hit(t,at,lvl,dec){const d=t-at;return d<0?-200:lvl-dec*d}
+function sample(t){const b=60/90,bar=4*b,x=t%bar;
+ const ev=[hit(x,0,-1,45),hit(x,2*b,-1,45),hit(x,2.5*b,-5,50),hit(x,b,-2,38),hit(x,3*b,-2,38)];
+ for(let i=0;i<8;i++)ev.push(hit(x,i*b/2,-17,60));
+ let lin=Math.pow(10,-20/20)*(.8+.2*Math.sin(t*1.7));for(const e of ev)lin+=Math.pow(10,e/20);
+ return 20*Math.log10(lin)+(Math.random()-.5)*1.2;}
+function proc(lvl){const pre=lvl+S.entrada,drv=pre+S.densidad,c=S.techo,k=[6,3,.5,0][S.modo];
+ let out=drv;if(S.modo<3&&drv>c-k)out=k?c-k+k*Math.tanh((drv-(c-k))/k):c;
+ if(S.techo_estricto)out=Math.min(out,c);if(S.ganancia_unitaria)out-=S.densidad;if(S.enlace_es)out-=S.entrada;out+=S.salida;
+ return{pre,out,exc:Math.max(0,drv-c)}}
+let last=performance.now();
+function step(now){const dt=Math.min(.1,(now-last)/1000);last=now;let cols=Math.round(dt*100);
+ while(cols-->0){tSim+=.01;const p=proc(sample(tSim));H.push(p);if(H.length>HN)H.shift();
+  const sp=[p.pre,p.pre-.6],so=[p.out,p.out-.4];
+  for(let c=0;c<2;c++){M.in[c]=Math.max(sp[c],M.in[c]-.01*60/.3);M.out[c]=Math.max(so[c],M.out[c]-.01*60/.3);}
+  [...sp,...so].forEach((v,i)=>{const a=i<2?'hin':'hout',j=i%2;if(v>=M[a][j]){M[a][j]=v;M.th[i]=150}else if(--M.th[i]<=0)M[a][j]-=.01*60/.3});
+  M.pk=Math.max(M.pk-.002,p.out);M.tp=M.pk+(S.techo_estricto?0:.6);if(M.tp>0)M.over=true;
+  M.lu.push(p.out);if(M.lu.length>300)M.lu.shift();}
+ draw();requestAnimationFrame(step)}
+
+let cv,g,CW,CH;
+function sizeCanvas(){cv=$('#win canvas');if(!cv)return;const r=cv.getBoundingClientRect(),dpr=devicePixelRatio||1,s=$('#win').getBoundingClientRect().width/800;
+ CW=r.width/s;CH=r.height/s;cv.width=Math.round(CW*dpr*s);cv.height=Math.round(CH*dpr*s);g=cv.getContext('2d');g.setTransform(dpr*s,0,0,dpr*s,0,0)}
+const tok=n=>getComputedStyle($('#win')).getPropertyValue('--p-'+n).trim();
+function draw(){if(!g)return;const ink=tok('screenink'),dim=tok('screendim'),acc=tok('acc');const L=28,Wd=CW-L,lo=Math.min(-30,Math.floor((S.techo-6)/6)*6),Y=d=>Math.max(0,Math.min(CH,(d/lo)*CH)); // la escala sigue al Techo
+ g.clearRect(0,0,CW,CH);g.font='500 11px "IBM Plex Mono"';g.textBaseline='middle';
+ for(let d=0;d>=lo;d-=lo<-30?12:6){const y=Math.max(6,Math.min(CH-6,Y(d)));g.globalAlpha=.25;g.fillStyle=dim;g.fillRect(L,Math.round(Y(d)),Wd,1);g.globalAlpha=1;g.fillText(d?'−'+(-d):'0',0,y)}
+ const n=H.length,x=i=>L+Wd*(1-(n-1-i)/(HN-1));
+ g.globalAlpha=.35;g.fillStyle=dim;g.beginPath();g.moveTo(x(0),CH);H.forEach((p,i)=>g.lineTo(x(i),Y(p.pre)));g.lineTo(x(n-1),CH);g.fill();g.globalAlpha=1;
+ g.strokeStyle=ink;g.lineWidth=1.5;g.beginPath();H.forEach((p,i)=>g[i?'lineTo':'moveTo'](x(i),Y(p.out)));g.stroke();
+ g.fillStyle=acc;H.forEach((p,i)=>{if(p.exc>.05)g.fillRect(x(i)-1,0,2,Math.min(10,3+p.exc))}); // franja de exceso arriba, nunca tapa la forma de onda
+ g.strokeStyle=acc;g.setLineDash([5,4]);g.lineWidth=1.5;g.beginPath();g.moveTo(L,Y(S.techo)+.5);g.lineTo(CW,Y(S.techo)+.5);g.stroke();g.setLineDash([]);
+ // Medidores
+ const pc=d=>Math.max(0,Math.min(100,(d+48)/48*100));const bars=$$('#mtrs i:not(.gap)');
+ [M.in[0],M.in[1],M.out[0],M.out[1]].forEach((v,i)=>{bars[i].firstChild.style.height=pc(v)+'%';bars[i].lastChild.style.bottom=pc([M.hin[0],M.hin[1],M.hout[0],M.hout[1]][i])+'%';bars[i].classList.toggle('over',M.over&&i>1)});
+ const lu=M.lu.reduce((a,b)=>a+b,0)/Math.max(1,M.lu.length)-7;
+ $('#read').textContent=`Pico ${num(M.pk)} dB · TP ${num(M.tp)} dBTP · ${num(lu)} LUFS`;
+ $('#stR').textContent=`Techo ${dB(S.techo)}`;}
+
+mount();addEventListener('resize',fit);document.fonts&&document.fonts.ready.then(fit);requestAnimationFrame(step);
+</script>
+</body>
+</html>
