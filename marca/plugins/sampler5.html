@@ -41,19 +41,6 @@ ul.list{margin:0;padding-left:20px;display:grid;gap:8px;max-width:78ch}
 </style>
 <link rel="stylesheet" href="../elementos/vst5-ui.css">
 <style>
-/* ---- Elementos propuestos en el banco (guía v1.1), reusados acá ---- */
-/* Ventana grande: 960 × 600, columna de 300 */
-.win.big{width:960px;height:600px}
-.win.big .wbody{grid-template-columns:minmax(0,1fr) 300px}
-/* Pestañas */
-.tabs{display:flex;gap:2px;border-bottom:1px solid var(--p-line)}
-.tabs button{border:0;background:transparent;height:28px;padding:0 12px;cursor:pointer;font:500 11px var(--m)!important;letter-spacing:.08em;text-transform:uppercase;color:var(--p-dim);border-bottom:2px solid transparent;margin-bottom:-1px}
-.tabs button[aria-selected="true"]{color:var(--p-ink);border-bottom-color:var(--p-acc)}
-.tabs button:focus-visible{outline:2px solid var(--p-focus);outline-offset:-2px}
-/* Campo arrastrable (propuesto acá): el campo de la guía + arrastre vertical como una perilla */
-.field.drag{cursor:ns-resize;touch-action:none;user-select:none;outline-offset:2px}
-.field.drag:focus-visible{outline:2px solid var(--p-focus)}
-.field.drag[contenteditable="true"]{cursor:text;outline:1px solid var(--p-acc);user-select:text}
 
 /* ---- Composición de sampler5 ---- */
 .win{position:relative}
@@ -141,9 +128,9 @@ ul.list{margin:0;padding-left:20px;display:grid;gap:8px;max-width:78ch}
 <section class="sec">
   <div class="sec-h"><span class="mono">02</span><h2>Elementos</h2></div>
   <ul class="list">
-    <li><b>Ventana grande, pestañas y pantalla con puntos arrastrables</b> <span class="tag">PROPUESTOS EN EL BANCO</span>. sampler5 es el primer plugin real que los necesita: con esto se pueden pasar a la guía.</li>
-    <li><b>Campo arrastrable</b> <span class="tag">NUEVO</span>. El campo de 22 px de la guía, que además se arrastra en vertical (Shift fino), responde a rueda y flechas y vuelve a fábrica con doble clic. Clic o Enter lo abren para escribir. Lo pide un valor que no merece perilla pero se ajusta seguido: BPM, sensibilidad, inicio y final.</li>
-    <li><b>Mini vista</b> <span class="tag">NUEVO</span>. Franja de 28 px al pie de la pantalla: el audio entero, la zona usada con bordes del color del plugin (se arrastran) y la parte visible como recuadro. Reemplaza la vista Fuente.</li>
+    <li><b>Ventana grande, pestañas y pantalla con puntos arrastrables</b> <span class="tag">EN LA GUÍA v1.1</span>. sampler5 fue el primer plugin real que los usó; desde acá pasaron a la guía.</li>
+    <li><b>Campo arrastrable</b> <span class="tag">EN LA GUÍA v1.1</span>. El campo de 22 px de la guía, que además se arrastra en vertical (Shift fino), responde a rueda y flechas y vuelve a fábrica con doble clic. Clic o Enter lo abren para escribir. Lo pide un valor que no merece perilla pero se ajusta seguido: BPM, sensibilidad, inicio y final.</li>
+    <li><b>Mini vista</b> <span class="tag">EN LA GUÍA v1.1</span>. Franja de 28 px al pie de la pantalla: el audio entero, la zona usada con bordes del color del plugin (se arrastran) y la parte visible como recuadro. Reemplaza la vista Fuente.</li>
   </ul>
 </section>
 </div>
@@ -307,7 +294,8 @@ function mount(){const st=$('#stage');st.innerHTML='';win=build();st.append(win)
  // Pestañas (flechas izquierda/derecha entre pestañas)
  const tabs=$$('[role=tab]',win),selTab=t=>{tabs.forEach(x=>{const on=x===t;x.setAttribute('aria-selected',on);x.tabIndex=on?0:-1;$('#'+x.getAttribute('aria-controls'),win).hidden=!on});drawF()};
  tabs.forEach((t,i)=>{t.tabIndex=i?-1:0;t.onclick=()=>selTab(t);t.onkeydown=e=>{const d={ArrowRight:1,ArrowLeft:-1}[e.key];if(d){e.preventDefault();const n=tabs[(i+d+3)%3];selTab(n);n.focus()}}});
- // Campos arrastrables
+ // Campos arrastrables (field() de la guía)
+ const field=(el,o)=>window.field(el,{...o,onHelp:(l,t)=>msg.textContent=`${l} · ${t}`});
  field($('#bpm',win),{get:()=>G.bpm,set:x=>{G.bpm=x;if(G.mode===1)slice();refresh()},min:40,max:300,step:.1,def:BPM0,fmt:x=>x.toFixed(1).replace('.',',')+' BPM'});
  field($('#sens',win),{get:()=>G.sens,set:x=>{G.sens=x;slice();showOns=performance.now();refresh()},min:0,max:100,step:1,def:50,fmt:x=>Math.round(x)+' %'});
  field($('#fStart',win),{get:()=>(M[G.sel]??0)*1000,set:x=>{if(M.length){M[G.sel]=x/1000;refresh()}},min:()=>G.sel?M[G.sel-1]*1000+5:G.zone[0]*1000,max:()=>endOf(G.sel)*1000-5,step:1,def:null,fmt:ms});
@@ -341,21 +329,6 @@ function mount(){const st=$('#stage');st.innerHTML='';win=build();st.append(win)
 
 function syncSeg(id,i){$$('button',$('#'+id,win)).forEach((b,j)=>{b.setAttribute('aria-pressed',j===i);b.setAttribute('aria-checked',j===i)})}
 
-/* Campo arrastrable */
-function field(el,o){const lim=x=>{const lo=typeof o.min==='function'?o.min():o.min,hi=typeof o.max==='function'?o.max():o.max;return Math.max(lo,Math.min(hi,x))};
- const show=()=>{el.textContent=o.fmt(o.get());el.setAttribute('aria-valuetext',el.textContent)};el.__show=show;
- const put=x=>{o.set(Math.round(lim(x)/o.step)*o.step);show();msg.textContent=`${el.getAttribute('aria-label')} · ${el.textContent}`};
- let y0=null,v0,moved=false;
- el.addEventListener('pointerdown',e=>{if(el.isContentEditable)return;y0=e.clientY;v0=o.get();moved=false;el.setPointerCapture(e.pointerId)});
- el.addEventListener('pointermove',e=>{if(y0===null)return;const dy=y0-e.clientY;if(Math.abs(dy)>2)moved=true;if(moved){const r=(lim(1e9)-lim(-1e9));put(v0+dy*r/(e.shiftKey?800:200))}});
- el.addEventListener('pointerup',()=>{if(y0!==null&&!moved)edit();y0=null});
- el.addEventListener('dblclick',()=>{if(o.def!=null)put(o.def)});
- el.addEventListener('wheel',e=>{e.preventDefault();put(o.get()+(e.deltaY<0?1:-1)*o.step*(e.shiftKey?1:10))},{passive:false});
- el.addEventListener('keydown',e=>{if(el.isContentEditable){if(e.key==='Enter'){e.preventDefault();done(true)}if(e.key==='Escape'){e.preventDefault();e.stopPropagation();done(false)}return}
-  const d={ArrowUp:1,ArrowRight:1,ArrowDown:-1,ArrowLeft:-1}[e.key];if(d){e.preventDefault();put(o.get()+d*o.step*(e.shiftKey?1:10))}if(e.key==='Enter'){e.preventDefault();edit()}});
- const edit=()=>{el.contentEditable='true';el.textContent=el.textContent.replace(/[^\d,.\-−]/g,'');el.focus();getSelection().selectAllChildren(el)};
- const done=ok=>{const t=el.textContent.replace('−','-').replace(',','.');el.contentEditable='false';if(ok&&!isNaN(parseFloat(t)))put(parseFloat(t));else show()};
- el.addEventListener('blur',()=>{if(el.isContentEditable)done(true)});show()}
 
 /* Menú con lista propia */
 let openList=null,openBtn=null;const MENUS={};

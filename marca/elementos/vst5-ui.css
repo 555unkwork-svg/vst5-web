@@ -92,4 +92,16 @@
 .sheet .sh{display:flex;justify-content:space-between;align-items:center}
 .sheet .opt{display:grid;grid-template-columns:150px 1fr;align-items:center;gap:var(--sp2)}
 .sheet .opt>*:last-child{justify-self:start}
+/* Ventana grande: 960 × 600 con columna de 300 */
+.win.big{width:960px;height:600px}
+.win.big .wbody{grid-template-columns:minmax(0,1fr) 300px}
+/* Pestañas: 28 px, Plex Mono 11 en mayúsculas, la elegida con raya de 2 px del color del plugin */
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--p-line)}
+.tabs button{border:0;background:transparent;height:28px;padding:0 12px;cursor:pointer;font:500 11px var(--m)!important;letter-spacing:.08em;text-transform:uppercase;color:var(--p-dim);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button[aria-selected="true"]{color:var(--p-ink);border-bottom-color:var(--p-acc)}
+.tabs button:focus-visible{outline:2px solid var(--p-focus);outline-offset:-2px}
+/* Campo arrastrable: el campo de valor que además se arrastra como una perilla */
+.field.drag{cursor:ns-resize;touch-action:none;user-select:none}
+.field.drag:focus-visible{outline:2px solid var(--p-focus);outline-offset:2px}
+.field.drag[contenteditable="true"]{cursor:text;outline:1px solid var(--p-acc);user-select:text}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}

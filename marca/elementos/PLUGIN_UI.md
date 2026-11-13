@@ -1,10 +1,12 @@
-# vst5 · guía de elementos de interfaz (v1)
+# vst5 · guía de elementos de interfaz (v1.1)
 
 Este es el contrato visual de todos los plugins vst5. Complementa `BRAND.md`.
 - Referencia visual interactiva: `marca/elementos/index.html`. Abrila en un navegador.
 - Colores y medidas en código: `vst5_ui_tokens.h`. Copialo al plugin y no lo edites a mano: se regenera con `node marca/elementos/generar_tokens.js` (colores de `vst5-ui.js`, medidas en la plantilla del generador).
 
 **Regla general:** cada plugin tiene su máquina y su color, pero se arma con estas piezas, estas medidas y estas reglas. Si un plugin necesita un elemento que no está acá, se diseña siguiendo las mismas reglas y después se suma a esta guía.
+
+**Sumar y probar:** cada diseño nuevo puede proponer piezas. Las que funcionan pasan a la guía y quedan para los que vienen. Así cada plugin tiene algo propio y, con el tiempo, el estilo vst5 queda en las piezas compartidas.
 
 ## Ventana
 | Zona | Medida | Contenido |
@@ -13,6 +15,7 @@ Este es el contrato visual de todos los plugins vst5. Complementa `BRAND.md`.
 | Cuerpo | margen 12, separación 12 | Pantalla a la izquierda: lo que el plugin muestra. Columna de controles de 264 px a la derecha: lo que el plugin hace. Debajo de la pantalla, la fila propia del plugin (medidores o pads). |
 | Pie | 28 px | Ayuda en Plex Mono 11 px: al pasar por un control dice qué hace y su valor exacto. A la derecha, el tamaño de ventana. |
 | Tamaño | 800 × 500 | Escala de 75 a 200 % en pasos de 25. Todo vectorial. El tamaño se recuerda por plugin. |
+| Ventana grande | 960 × 600 | Para plugins densos (muestreadores, sintetizadores). Columna de controles de 300 px; el resto igual. Se usa solo si en la base no entra lo que se toca siempre. |
 | Grilla | 4 px | Espacios 4 / 8 / 12 / 16 / 24. Radios: 3 en controles, 6 en paneles, pantallas y pads. |
 
 ## Elementos
@@ -37,7 +40,22 @@ Este es el contrato visual de todos los plugins vst5. Complementa `BRAND.md`.
   - Siempre trae Tamaño y Tema; después, lo que el plugin usa una vez por sesión.
   - Esc o clic afuera cierra y devuelve el foco al botón de ajustes. Tab no sale de la hoja mientras está abierta.
 - **Campo de valor**: pantalla chica de 22 px, valor alineado a la derecha y con unidad. Al editar, contorno del color del plugin. Enter confirma, Esc cancela. Acepta coma o punto.
+- **Campo arrastrable**: el campo de valor que además se maneja como una perilla. Para valores que se ajustan seguido pero no merecen perilla (tempo, sensibilidad, inicio y final).
+  - Arrastre vertical: 200 px recorren todo el rango; con Shift, 800. Rueda y flechas; con Shift, paso fino.
+  - Doble clic vuelve al valor de fábrica. Clic sin arrastrar o Enter abre la edición.
+  - Cursor de arrastre vertical. Comportamiento compartido: `field()` en `vst5-ui.js`.
+- **Pestañas**: para repartir los controles de la columna en 2 a 4 grupos. Nunca para lo que se toca siempre.
+  - 28 px de alto, Plex Mono 11 px en mayúsculas, relleno lateral 12.
+  - Elegida: texto en tinta y raya inferior de 2 px del color del plugin. Las demás, en el texto secundario.
+  - Flechas izquierda y derecha cambian de pestaña. Tab entra solo a la elegida.
 - **Pantalla**: siempre oscura en los tres temas, con sombra interior y grilla al 25 %. Los datos van en el tono de pantalla; las marcas (cortes, techo, pasos activos), en el color del plugin.
+- **Pantalla con puntos arrastrables**: la pantalla cuando se edita lo que muestra (cortes, bandas, puntos de una envolvente).
+  - Marca: línea de 2 px del color del plugin; se toma a 6 px de distancia y al pasar se engrosa a 3.
+  - Etiqueta de la marca arriba, de 16 px: contorno del color del plugin; la elegida, rellena, con texto `accink`.
+  - Lo elegido: tinte del color del plugin al 12 % y manija de 8 × 16 px para su otro extremo.
+  - Imán opcional (golpes, grilla, cruce por cero); Shift lo suelta mientras arrastrás.
+  - Rueda: zoom alrededor del cursor. Doble clic: punto nuevo. Con teclado: flechas mueven lo elegido y Supr lo borra.
+- **Mini vista**: franja de 28 px al pie de una pantalla con zoom. Muestra todo el material en el tono de pantalla, la parte visible como recuadro de 1 px y los límites de uso con corchetes del color del plugin, que se arrastran. Arrastrar en el resto de la franja mueve la parte visible.
 - **Panel**: agrupa controles relacionados. Título en Plex Mono 10 px, en mayúsculas y con espaciado.
 - **Medidor**: barras de 6 px separadas 3 px, siempre sobre fondo de pantalla.
   - El valor va en el tono de pantalla. Nada de escalas verde-amarillo-rojo.

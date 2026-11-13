@@ -40,6 +40,23 @@ function knob(el,{size=56,ticks=true,label,fmt=v=>v.toFixed(1),def=5,bip=true,v=
 const F={db:(a,b)=>v=>((a+(b-a)*v/10)>0?'+':'')+(a+(b-a)*v/10).toFixed(1).replace('.',',')+' dB',pct:v=>Math.round(v*10)+' %',st:v=>{const s=Math.round((v-5)*2.4);return(s>0?'+':'')+s+' st'},
   hz:v=>{const h=20*Math.pow(1000,v/10);return h>=1000?(h/1000).toFixed(1).replace('.',',')+' kHz':Math.round(h)+' Hz'},ms:v=>Math.round(v*v*10)+' ms',swing:v=>Math.round(50+v*2.5)+' %'};
 
+/* ---------- Campo arrastrable ----------
+   Arrastre vertical (Shift fino), rueda, flechas, doble clic a fábrica; clic sin arrastrar o Enter abre la edición (Enter confirma, Esc cancela). */
+function field(el,o){const lim=x=>{const lo=typeof o.min==='function'?o.min():o.min,hi=typeof o.max==='function'?o.max():o.max;return Math.max(lo,Math.min(hi,x))};
+ const show=()=>{el.textContent=o.fmt(o.get());el.setAttribute('aria-valuetext',el.textContent)};el.__show=show;
+ const put=x=>{o.set(Math.round(lim(x)/o.step)*o.step);show();o.onHelp&&o.onHelp(el.getAttribute('aria-label'),el.textContent)};
+ let y0=null,v0,moved=false;
+ el.addEventListener('pointerdown',e=>{if(el.isContentEditable)return;y0=e.clientY;v0=o.get();moved=false;el.setPointerCapture(e.pointerId)});
+ el.addEventListener('pointermove',e=>{if(y0===null)return;const dy=y0-e.clientY;if(Math.abs(dy)>2)moved=true;if(moved)put(v0+dy*(lim(1e9)-lim(-1e9))/(e.shiftKey?800:200))});
+ el.addEventListener('pointerup',()=>{if(y0!==null&&!moved)edit();y0=null});
+ el.addEventListener('dblclick',()=>{if(o.def!=null)put(o.def)});
+ el.addEventListener('wheel',e=>{e.preventDefault();put(o.get()+(e.deltaY<0?1:-1)*o.step*(e.shiftKey?1:10))},{passive:false});
+ el.addEventListener('keydown',e=>{if(el.isContentEditable){if(e.key==='Enter'){e.preventDefault();done(true)}if(e.key==='Escape'){e.preventDefault();e.stopPropagation();done(false)}return}
+  const d={ArrowUp:1,ArrowRight:1,ArrowDown:-1,ArrowLeft:-1}[e.key];if(d){e.preventDefault();put(o.get()+d*o.step*(e.shiftKey?1:10))}if(e.key==='Enter'){e.preventDefault();edit()}});
+ const edit=()=>{el.contentEditable='true';el.textContent=el.textContent.replace(/[^\d,.\-−]/g,'');el.focus();getSelection().selectAllChildren(el)};
+ const done=ok=>{const t=el.textContent.replace('−','-').replace(',','.');el.contentEditable='false';if(ok&&!isNaN(parseFloat(t)))put(parseFloat(t));else show()};
+ el.addEventListener('blur',()=>{if(el.isContentEditable)done(true)});show();return{show}}
+
 /* ---------- Íconos ---------- */
 const IC={prev:'<path d="M9 3 4 7l5 4"/>',next:'<path d="m5 3 5 4-5 4"/>',undo:'<path d="M4 6h6a3 3 0 0 1 0 6H6"/><path d="M6 3 3 6l3 3"/>',redo:'<path d="M10 6H4a3 3 0 0 0 0 6h4"/><path d="m8 3 3 3-3 3"/>',x:'<path d="M3.5 3.5l7 7M10.5 3.5l-7 7"/>',gear:'<circle cx="7" cy="7" r="2"/><path d="M7 1.5v2M7 10.5v2M1.5 7h2M10.5 7h2M3.1 3.1l1.4 1.4M9.5 9.5l1.4 1.4M3.1 10.9l1.4-1.4M9.5 4.5l1.4-1.4"/>'};
 const ibtn=(n,l)=>`<button class="ibtn" type="button" aria-label="${l}" title="${l}"><svg viewBox="0 0 14 14">${IC[n]}</svg></button>`;

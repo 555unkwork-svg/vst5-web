@@ -16,6 +16,10 @@ namespace vst5::ui
     namespace size
     {
         constexpr int windowW = 800, windowH = 500, header = 40, footer = 28, margin = 12, gap = 12, sideColumn = 264;
+        constexpr int windowBigW = 960, windowBigH = 600, sideColumnBig = 300;   // ventana grande
+        constexpr int tabH = 28, tabLine = 2, tabPadX = 12;
+        constexpr int dragFullRangePx = 200, dragFineRangePx = 800;          // perillas y campos arrastrables
+        constexpr int miniView = 28, markerW = 2, markerHit = 6, markerFlagH = 16, handleW = 8, handleH = 16;
         constexpr int sp1 = 4, sp2 = 8, sp3 = 12, sp4 = 16, sp5 = 24;
         constexpr int radiusControl = 3, radiusPanel = 6;
         constexpr int knobL = 72, knobM = 56, knobS = 40, knobArc = 5;
