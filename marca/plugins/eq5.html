@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>eq5 · maqueta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Página con los tokens de marca; dentro de .plug rigen los tokens del tema de eq5. */
+:root{--bg:#F1EFEA;--fg:#171614;--muted:#6E6A62;--line:#D8D5CE;--panel:#FAF9F6;--chip:#E7E4DE;
+  --d:"Archivo",ui-sans-serif,system-ui,sans-serif;--m:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#121110;--fg:#F1EFEA;--muted:#B5B1A9;--line:#33302C;--panel:#1B1A18;--chip:#2A2826;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121110;--fg:#F1EFEA;--muted:#B5B1A9;--line:#33302C;--panel:#1B1A18;--chip:#2A2826;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 15px/1.55 var(--d);padding-block:32px 72px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:40px}
+h1{font:800 clamp(32px,6vw,52px)/1 var(--d);font-stretch:125%;margin:8px 0 12px}
+h2{font:800 24px/1.1 var(--d);font-stretch:112%;margin:0}
+p{margin:0;max-width:72ch}
+.muted{color:var(--muted)}
+.mono{font:500 12px var(--m);letter-spacing:.06em;text-transform:uppercase}
+.sec{display:flex;flex-direction:column;gap:16px}
+.sec-h{display:flex;align-items:baseline;gap:12px;border-top:2px solid var(--fg);padding-top:10px}
+.bar{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel)}
+.seg button{border:0;background:none;padding:8px 14px;font:600 14px var(--d);color:var(--fg);cursor:pointer;min-height:36px}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.seg button:focus-visible{outline:2px solid var(--fg);outline-offset:-3px}
+.stagebox{border:1px solid var(--line);border-radius:12px;background:var(--chip);padding:16px;overflow:hidden}
+.stage{width:100%;position:relative}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:720px;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+th{font:500 11px var(--m);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+td code{font:500 12px var(--m)}
+.tag{display:inline-block;border:1px solid currentColor;border-radius:4px;padding:0 6px;font:500 10px var(--m);letter-spacing:.06em;vertical-align:2px}
+ul.list{margin:0;padding-left:20px;display:grid;gap:8px;max-width:78ch}
+</style>
+<link rel="stylesheet" href="../elementos/vst5-ui.css">
+<style>
+/* ---- Propuesto en eq5: tira de bandas ---- */
+.bands{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px}
+.band{position:relative;height:44px;border-radius:var(--r2);background:var(--p-well);box-shadow:inset 0 0 0 1px var(--p-line);display:flex;align-items:center;gap:4px;padding:0 2px 0 7px;cursor:pointer;border:0;color:var(--p-ink);text-align:left}
+.band .bn{font:500 11px var(--m);min-width:10px}
+.band svg.ty{width:22px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.band .onb{margin-left:auto;flex:none;width:24px;height:24px;border:0;border-radius:var(--r1);background:transparent;display:grid;place-items:center;cursor:pointer;padding:0}
+.band .onb i{width:6px;height:6px;border-radius:50%;background:var(--p-ledoff);box-shadow:inset 0 1px 1px rgba(0,0,0,.5)}
+.band .onb[aria-pressed="true"] i{background:var(--p-accsurf);box-shadow:0 0 6px var(--p-accsurf)}
+.band .onb:focus-visible,.band:focus-visible{outline:2px solid var(--p-focus);outline-offset:1px}
+.band.off .bn,.band.off svg.ty{opacity:.6}
+.band[aria-selected="true"]{box-shadow:inset 0 0 0 2px var(--p-accsurf);background:var(--p-panel)}
+.band:hover{background:var(--p-panel)}
+
+/* ---- Composición de eq5 ---- */
+.win{position:relative}
+.whead .menu{min-width:188px;max-width:188px}
+.whead .menu span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.wleft{grid-template-rows:auto minmax(0,1fr) auto;grid-template-columns:minmax(0,1fr);gap:8px}
+.tbar{display:flex;gap:8px;align-items:center;height:24px}
+.tbar .sp{flex:1}
+.key,.menu,.segp button{white-space:nowrap}
+.menu.sm{min-width:0}
+.scr{min-height:0}
+.scr canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+.scr:focus-visible{outline:2px solid var(--p-focus);outline-offset:2px}
+.side{padding:12px;gap:8px;min-height:0}
+.side .krow{display:grid;justify-items:center;align-items:end}
+.k3{grid-template-columns:72px 72px 56px;justify-content:space-between}
+.k2{grid-template-columns:1fr 1fr}
+.row{display:flex;gap:8px;align-items:center}
+.row .grow{flex:1;min-width:0}
+.lbl2{font:600 12px var(--d);color:var(--p-ink);white-space:nowrap;min-width:52px}
+.segp.full{display:flex}.segp.full button{flex:1}
+.sep{height:1px;background:var(--p-line);margin:4px 0}
+.keys2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.keys2 .key{justify-content:center;padding:0 6px}
+.mlist.float{position:absolute;margin:0}
+.sheet .opt .lbl{font-weight:600}
+.sheet>.panelp{max-height:100%;overflow:auto}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <span class="mono muted">vst5 · diseño 0.1 · estable</span>
+  <h1>eq5</h1>
+  <p class="muted">Ecualizador paramétrico de 8 bandas. La pantalla es la protagonista: arrastrá los puntos (horizontal = frecuencia, vertical = ganancia; Alt o la rueda = Q; Shift = fino; doble clic = ganancia a 0). Hacé clic sobre un pico del espectro para crear una campana ahí. Probá Modo I/D o M/S y Editar. El espectro es una señal de ejemplo; no suena.</p>
+</header>
+
+<section class="sec" aria-label="Maqueta">
+  <div class="bar">
+    <div><span class="mono muted">Tema</span><br><div class="seg" id="selTheme" role="group" aria-label="Tema"><button type="button" data-v="oficial" aria-pressed="true">Oficial</button><button type="button" data-v="vst5" aria-pressed="false">vst5</button><button type="button" data-v="oscuro" aria-pressed="false">Oscuro</button></div></div>
+    <p class="muted" style="font-size:14px">Teclado: Tab llega a la pantalla; flechas mueven la banda elegida (arriba y abajo = ganancia, izquierda y derecha = frecuencia), 1–8 eligen banda, Supr la apaga.</p>
+  </div>
+  <div class="stagebox"><div class="stage" id="stage"></div></div>
+</section>
+
+<section class="sec">
+  <div class="sec-h"><span class="mono">01</span><h2>Función → elemento → zona</h2></div>
+  <p class="muted">Los identificadores de parámetro los está fijando el desarrollo de eq5 (etapa 3). Esta tabla usa los nombres del motor (<code>dsp/include/eq5/Engine.h</code>); se completa con los ids cuando estén.</p>
+  <div class="tbl"><table>
+    <tr><th>Función (motor)</th><th>Rango → fábrica</th><th>Elemento</th><th>Zona</th></tr>
+    <tr><td>Banda: frecuencia y ganancia</td><td>10 Hz–22 kHz · ±15 dB</td><td>Punto arrastrable numerado</td><td>Pantalla</td></tr>
+    <tr><td>Banda: encendido, tipo (8)</td><td>orden fijo del motor</td><td>Tira de bandas (LED de 24 px + ícono)</td><td>Bajo la pantalla</td></tr>
+    <tr><td>Banda elegida: tipo</td><td>8 tipos</td><td>Menú con íconos</td><td>Columna, Banda</td></tr>
+    <tr><td>Banda elegida: frecuencia, ganancia, Q</td><td>1 kHz · 0 dB · 0,71</td><td>Perillas 72, 72 (bipolar, «en 5») y 56</td><td>Columna, Banda</td></tr>
+    <tr><td>Banda elegida: encendido, escuchar</td><td>no · no</td><td>Teclas con LED</td><td>Columna, Banda</td></tr>
+    <tr><td>Modo, Editar</td><td>Estéreo · A</td><td>Selector de 3 y de 2 (Editar se apaga en Estéreo)</td><td>Columna, Global</td></tr>
+    <tr><td>Q adaptativo</td><td>no</td><td>Tecla con LED</td><td>Columna, Global</td></tr>
+    <tr><td>Escala, salida</td><td>100 % (0–200) · 0 dB (±12)</td><td>Perillas 40 (Escala y Salida «en 5»)</td><td>Columna, Global</td></tr>
+    <tr><td>Sobremuestreo</td><td>1× · 2× · 4×</td><td>Selector de 3</td><td>Columna, Global</td></tr>
+    <tr><td>Analizar, rango del visor, notas, A/B</td><td>sí · 12 dB · no · A</td><td>Tecla con LED, selector de 5, tecla con LED, selector + Copiar</td><td>Barra sobre la pantalla</td></tr>
+    <tr><td>Espectro: qué se ve, refresco, suavizado, inclinación, bloque, canal, promedio, picos</td><td>Después · 30 ms · 1/6 · 0 dB/oct · 4096 · Ambos · 4 · sí</td><td>Selectores, campos arrastrables, menú, tecla con LED</td><td>Ajustes</td></tr>
+    <tr><td>Q adaptativo en estantes</td><td>no</td><td>Tecla con LED</td><td>Ajustes</td></tr>
+  </table></div>
+</section>
+
+<section class="sec">
+  <div class="sec-h"><span class="mono">02</span><h2>Elementos</h2></div>
+  <ul class="list">
+    <li><b>Tira de bandas</b> <span class="tag">EN LA GUÍA v1.2</span>. 8 celdas de 44 px: número, ícono del tipo y botón de encendido de 24 px con LED. Clic en la celda elige la banda; clic en el LED la prende o apaga. Elegida: anillo de 2 px del color sobre superficie.</li>
+    <li><b>Puntos de banda</b> (pantalla con puntos arrastrables, guía v1.1). Círculo de 18 px con número: elegido relleno, sin elegir con contorno, apagado atenuado. Se toman a 12 px.</li>
+    <li><b>Lectura en la pantalla</b> <span class="tag">EN LA GUÍA v1.2</span>. Al pasar sobre la pantalla, una línea vertical y un rótulo con frecuencia, nota y ganancia de la curva en ese punto.</li>
+    <li><b>Tema oficial: rack grafito</b> <span class="tag">EN LA GUÍA</span>. Chasis gris grafito frío con serigrafía clara: el único oficial oscuro. El azul <code>#2F6FD6</code> es de familia provisoria, como los demás.</li>
+  </ul>
+</section>
+</div>
+
+<script src="../elementos/vst5-ui.js"></script>
+<script>
+
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+let T='oficial';
+const num=(x,d=1)=>(x<-Math.pow(10,-d)/2?'−':x>Math.pow(10,-d)/2?'+':'')+Math.abs(x).toFixed(d).replace('.',',');
+const dB=x=>num(x)+' dB';
+const hz=f=>f>=10000?(f/1000).toFixed(1).replace('.',',')+' kHz':f>=1000?(f/1000).toFixed(2).replace('.',',')+' kHz':Math.round(f)+' Hz';
+const NN=['Do','Do♯','Re','Re♯','Mi','Fa','Fa♯','Sol','Sol♯','La','La♯','Si'];
+const noteOf=f=>{const m=69+12*Math.log2(f/440),r=Math.round(m),c=Math.round((m-r)*100);return NN[(r%12+12)%12]+Math.floor(r/12)+(c?` ${c>0?'+':'−'}${Math.abs(c)} ct`:'')}; // FL Studio: 60 = Do5
+const FMIN=10,FMAX=22000,LF=v=>FMIN*Math.pow(FMAX/FMIN,v),VL=f=>Math.log(f/FMIN)/Math.log(FMAX/FMIN);
+
+/* ---------- Tipos (orden del motor, no reordenar) ---------- */
+const TYPES=['Corte de graves 48','Corte de graves 12','Estante de graves','Campana','Notch','Estante de agudos','Corte de agudos 12','Corte de agudos 48'];
+const ICON=['M2 13 C 6 13, 7 3, 11 3 L 20 3','M2 11 C 5 10, 7 3, 11 3 L 20 3','M2 11 L 7 11 C 10 11, 10 4, 13 4 L 20 4','M2 10 L 7 10 C 9 10, 9 3, 11 3 C 13 3, 13 10, 15 10 L 20 10','M2 4 L 8 4 C 10 4, 10 13, 11 13 C 12 13, 12 4, 14 4 L 20 4','M2 4 L 9 4 C 12 4, 12 11, 15 11 L 20 11','M2 3 L 11 3 C 15 3, 17 10, 20 11','M2 3 L 11 3 C 15 3, 16 13, 20 13'];
+const ico=t=>`<svg viewBox="0 0 22 14" aria-hidden="true"><path d="${ICON[t]}"/></svg>`;
+const hasGain=t=>t===2||t===3||t===5;
+
+/* ---------- Estado ---------- */
+const bd=(on,type,freq,gain=0,q=.71)=>({on,type,freq,gain,q});
+const voz=()=>[bd(true,1,80),bd(true,2,120,-2),bd(true,3,320,-3,1.2),bd(true,3,1000),bd(true,3,3000,2.5,.9),bd(false,3,5500),bd(true,5,10000,2),bd(false,7,18000)];
+const G={mode:0,edit:0,adaptive:false,adaptShelf:false,scale:1,out:0,os:1,analyze:true,range:2,notes:false,ab:0,listen:false,spec:1,refresh:30,smooth:2,tilt:0,block:4096,chan:0,avg:4,peaks:true,sel:4,curves:[voz(),[bd(true,0,150),bd(false,2,120),bd(true,3,400,-2,1),bd(false,3,1000),bd(true,3,2500,1.5,.8),bd(false,3,5500),bd(true,5,9000,3.5),bd(false,7,18000)]]};
+const RANGES=[3,6,12,18,30];
+const C=()=>G.curves[G.mode===0?0:G.edit],cur=()=>C()[G.sel];
+
+/* ---------- Respuesta analógica de cada banda (para dibujar) ---------- */
+// Prototipos analógicos (R. Bristow-Johnson, «Cookbook formulae for audio EQ biquad filter coefficients»); cortes de 48 = Butterworth de orden 8.
+const BW8=[.5098,.6013,.9000,2.5629];
+function magDb(b,f){if(!b.on)return 0;const g=hasGain(b.type)?b.gain*G.scale:0,A=Math.pow(10,g/40);
+ let q=b.q;if(G.adaptive&&(b.type===3||(G.adaptShelf&&(b.type===2||b.type===5))))q*=1+.12*Math.abs(g);
+ const w=f/b.freq;const m2=(n0,n1,n2,d0,d1,d2)=>{const nr=n0-n2*w*w,ni=n1*w,dr=d0-d2*w*w,di=d1*w;return(nr*nr+ni*ni)/(dr*dr+di*di)};
+ switch(b.type){
+  case 3:return 10*Math.log10(m2(1,A/q,1,1,1/(A*q),1));
+  case 2:{const s=Math.sqrt(A)/q;return 20*Math.log10(A)+10*Math.log10(m2(A,s,1,1,s,A))}
+  case 5:{const s=Math.sqrt(A)/q;return 20*Math.log10(A)+10*Math.log10(m2(1,s,A,A,s,1))}
+  case 4:return 10*Math.log10(m2(1,0,1,1,1/q,1)+1e-12);
+  case 1:return 10*Math.log10(m2(0,0,1,1,1/q,1)+1e-12);
+  case 6:return 10*Math.log10(m2(1,0,0,1,1/q,1)+1e-12);
+  case 0:case 7:{let s=0;BW8.forEach((qq,i)=>{const qi=i===3?qq*q/.7071:qq;s+=b.type===0?10*Math.log10(m2(0,0,1,1,1/qi,1)+1e-12):10*Math.log10(m2(1,0,0,1,1/qi,1)+1e-12)});return s}}}
+const sumDb=(curve,f)=>curve.reduce((a,b)=>a+magDb(b,f),0)+G.out;
+
+/* ---------- Ventana ---------- */
+const ledKey=(lab,id,on,help)=>`<button class="key" type="button" id="${id}" aria-pressed="${on}" data-help="${help}"><i class="led"></i>${lab}</button>`;
+const segp=(lab,opts,cur,id,help,cls='')=>`<div class="segp ${cls}" role="radiogroup" aria-label="${lab}" id="${id}" data-help="${help}">${opts.map((o,i)=>`<button type="button" role="radio" aria-pressed="${i===cur}" aria-checked="${i===cur}">${o}</button>`).join('')}</div>`;
+const menuB=(id,help,cls='')=>`<button class="menu ${cls}" type="button" id="${id}" aria-haspopup="listbox" aria-expanded="false" data-help="${help}"><span></span></button>`;
+const fieldD=(id,lab,help,w=72)=>`<span class="field drag" id="${id}" tabindex="0" role="slider" aria-label="${lab}" data-help="${help}" style="min-width:${w}px"></span>`;
+const PRESETS=[['Fábrica',['En 5']],['Voces',['Voz al frente','Voz de radio','Sacar nasal']],['Mezcla',['Limpiar graves','Bombo con punch','Bus de batería con aire']],['Master',['Aire de master','Master cálido con graves controlados y brillo suave arriba']]];
+const PFLAT=PRESETS.flatMap(([,l])=>l);let pIdx=1;
+
+function build(){const w=document.createElement('div');w.className='plug win big';w.id='win';applyTheme(w,'eq5',T);
+ w.innerHTML=`<div class="whead">${plugLogo('eq5')}
+  <div class="preset">${ibtn('prev','Preset anterior')}${menuB('pmenu','Preset')}${ibtn('next','Preset siguiente')}</div>
+  ${ibtn('undo','Deshacer')}${ibtn('redo','Rehacer')}${ibtn('gear','Ajustes')}<span class="ver">v1.0.0</span></div>
+ <div class="wbody">
+  <div class="wleft">
+   <div class="tbar">${ledKey('Analizar','analyze',G.analyze,'Analizar · muestra el espectro en la pantalla')}
+    <span class="cap">Rango</span>${segp('Rango del visor',['3','6','12','18','30'],G.range,'range','Rango del visor en dB · fino para mastering, amplio para cirugía')}
+    ${ledKey('Notas','notes',G.notes,'Notas · muestra un teclado bajo la pantalla y la nota de cada banda')}
+    <span class="sp"></span>${segp('Comparar',['A','B'],0,'ab','Comparar · cambia entre dos ajustes')}<button class="key ghost" type="button" id="abcopy" data-help="Copiar · pasa el ajuste actual al otro">Copiar</button></div>
+   <div class="screen scr" id="scr" tabindex="0" aria-label="Curva de ecualización. Flechas mueven la banda elegida"><canvas></canvas><div class="st"><span id="stL"></span><span id="stR"></span></div></div>
+   <div class="bands" id="bands" role="listbox" aria-label="Bandas"></div>
+  </div>
+  <div class="panelp side">
+   <div class="row"><span class="cap" id="bandN"></span>${menuB('typeM','Tipo de filtro de la banda','grow')}</div>
+   <div class="krow k3"><div data-k="freq"></div><div data-k="gain"></div><div data-k="q"></div></div>
+   <div class="keys2">${ledKey('Encendida','bon',true,'Encendida · prende o apaga la banda')}${ledKey('Escuchar','listen',false,'Escuchar · mientras arrastrás un punto se oye solo esa banda')}</div>
+   <div class="sep"></div>
+   <span class="cap">Global</span>
+   <div class="row"><span class="lbl2">Modo</span>${segp('Modo',['Estéreo','I/D','M/S'],0,'mode','Modo · Estéreo, izquierda y derecha aparte, o medio y lados','grow full')}</div>
+   <div class="row"><span class="lbl2">Editar</span>${segp('Editar',['I','D'],0,'edit','Editar · qué curva tocás; las dos se ven en la pantalla','grow full')}</div>
+   <div class="row" style="align-items:flex-end;justify-content:space-between"><div data-k="scale"></div><div data-k="out"></div>
+    <div style="display:flex;flex-direction:column;gap:8px;align-items:stretch">${ledKey('Q adaptativo','adaptive',false,'Q adaptativo · el Q sube a medida que crece la ganancia, en realce y en corte')}${segp('Sobremuestreo',['1×','2×','4×'],G.os,'os','Sobremuestreo · agudos más fieles; 4× para mastering','full')}</div></div>
+  </div>
+ </div>
+ <div class="wfoot"><span class="msg" id="msg">Pasá por un control para ver qué hace.</span><span id="sz">960 × 600 · 100 %</span></div>
+ <div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-label="Ajustes"><div class="panelp">
+  <div class="sh"><span class="cap">Ajustes</span>${ibtn('x','Cerrar ajustes')}</div>
+  <div class="opt"><span class="lbl">Tamaño</span>${segp('Tamaño',['75','100','150','200'],1,'size','Tamaño de la ventana')}</div>
+  <div class="opt"><span class="lbl">Tema</span>${segp('Tema',['Oficial','vst5','Oscuro'],0,'theme','Tema')}</div>
+  <div class="opt"><span class="lbl">Q en estantes</span><div>${ledKey('Adaptativo','adaptShelf',false,'Q adaptativo también en los estantes')}</div></div>
+  <div class="sep"></div><span class="cap">Espectro</span>
+  <div class="opt"><span class="lbl">Mostrar</span>${segp('Espectro a mostrar',['Antes','Después','Los dos'],G.spec,'spec','Espectro antes del EQ, después o los dos')}</div>
+  <div class="opt"><span class="lbl">Suavizado</span>${segp('Suavizado',['No','1/3','1/6','1/12'],G.smooth,'smooth','Suavizado por fracción de octava')}</div>
+  <div class="opt"><span class="lbl">Inclinación</span>${fieldD('tilt','Inclinación','Inclinación · para leer el espectro como una mezcla (por ejemplo 4,5 dB/oct)',96)}</div>
+  <div class="opt"><span class="lbl">Refresco</span>${fieldD('refresh','Refresco','Refresco · cada cuánto se redibuja',96)}</div>
+  <div class="opt"><span class="lbl">Promedio</span>${fieldD('avg','Promedio','Promedio · bloques que se promedian; más, más calmo',96)}</div>
+  <div class="opt"><span class="lbl">Bloque</span>${menuB('blockM','Bloque · más grande, más detalle en graves y más lento','sm')}</div>
+  <div class="opt"><span class="lbl">Canal</span>${segp('Canal del espectro',['Ambos','I','D','Lados'],0,'chan','Canal del espectro')}</div>
+  <div class="opt"><span class="lbl">Picos</span><div>${ledKey('Retener','peaks',true,'Retener picos · 1,5 s y caen 12 dB/s')}</div></div>
+ </div></div>`;
+ return w;}
+
+/* ---------- Montaje ---------- */
+let K={},msg,silent=false,win;
+const DESC={Frecuencia:'Centro o corte de la banda',Ganancia:'Realce o corte',Q:'Ancho: más alto, más angosto',Escala:'Escala la ganancia de todas las bandas',Salida:'Ganancia final'};
+const help=(l,t)=>{if(!silent)msg.textContent=`${l} · ${t}${DESC[l]?' — '+DESC[l]:''}`};
+const QR={to:v=>.1*Math.pow(180,v/10),from:q=>10*Math.log(q/.1)/Math.log(180)};
+function mount(){const s=$('#stage');s.innerHTML='';win=build();s.append(win);msg=$('#msg',win);silent=true;
+ const kn=(k,o)=>K[k]=knob($(`[data-k=${k}]`,win),{...o,onHelp:help});
+ kn('freq',{size:72,label:'Frecuencia',bip:false,def:VL(1000)*10,v:VL(cur().freq)*10,fmt:v=>{cur().freq=Math.round(LF(v/10)*10)/10;redraw();return hz(cur().freq)}});
+ kn('gain',{size:72,label:'Ganancia',def:5,v:5+cur().gain/3,fmt:v=>{cur().gain=Math.round((v-5)*30)/10;redraw();return dB(cur().gain)}});
+ kn('q',{size:56,label:'Q',bip:false,def:QR.from(.71),v:QR.from(cur().q),fmt:v=>{cur().q=Math.round(QR.to(v)*100)/100;redraw();return cur().q.toFixed(2).replace('.',',')}});
+ kn('scale',{size:40,ticks:false,label:'Escala',def:5,v:5,fmt:v=>{G.scale=Math.round(v*20)/100;redraw();return Math.round(G.scale*100)+' %'}});
+ kn('out',{size:40,ticks:false,label:'Salida',def:5,v:5,fmt:v=>{G.out=Math.round((v-5)*24)/10;redraw();return dB(G.out)}});
+ silent=false;
+ win.addEventListener('pointerover',e=>{const h=e.target.closest('[data-help]');if(!h)return;const b=e.target.closest('.segp button');msg.textContent=h.dataset.help+(b?' · '+b.textContent:'')});
+ win.addEventListener('focusin',e=>{const h=e.target.closest('[data-help]');if(h)msg.textContent=h.dataset.help});
+ $$('.ibtn',win).forEach(b=>b.addEventListener('pointerenter',()=>msg.textContent=b.getAttribute('aria-label')));
+ // Teclas con LED
+ $$('.key[aria-pressed]',win).forEach(k=>k.addEventListener('click',()=>{const id=k.id;let on;if(id==='bon'){on=cur().on=!cur().on}else{on=G[id]=!G[id]}
+   k.setAttribute('aria-pressed',on);msg.textContent=`${k.textContent.trim()} · ${on?'encendido':'apagado'}`;drawBands();redraw()}));
+ // Selectores
+ const SEG={mode:v=>{G.mode=v;const lab=v===2?['M','S']:['I','D'];$$('#edit button',win).forEach((b,i)=>{b.textContent=lab[i];b.disabled=v===0});$('#edit',win).style.opacity=v?1:.4;if(!v)G.edit=0;syncSeg('edit',G.edit);loadBand()},
+  edit:v=>{G.edit=v;loadBand()},os:v=>G.os=v,range:v=>G.range=v,ab:v=>G.ab=v,spec:v=>G.spec=v,smooth:v=>G.smooth=v,chan:v=>G.chan=v,
+  theme:v=>setTheme(['oficial','vst5','oscuro'][v]),size:v=>$('#sz',win).textContent=`${[720,960,1440,1920][v]} × ${[450,600,900,1200][v]} · ${[75,100,150,200][v]} %`};
+ $$('.segp',win).forEach(g=>g.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;const i=$$('button',g).indexOf(b);syncSeg(g.id,i);SEG[g.id]&&SEG[g.id](i);redraw()}));
+ SEG.mode(0);
+ $('#abcopy',win).onclick=()=>msg.textContent=`Comparar · copiaste ${'AB'[G.ab]} en ${'BA'[G.ab]}`;
+ // Campos arrastrables (field() de la guía)
+ const fl=(el,o)=>field(el,{...o,onHelp:(l,t)=>msg.textContent=`${l} · ${t}`});
+ fl($('#tilt',win),{get:()=>G.tilt,set:x=>{G.tilt=x;redraw()},min:-6,max:6,step:.1,def:0,fmt:x=>num(x,1)+' dB/oct'});
+ fl($('#refresh',win),{get:()=>G.refresh,set:x=>G.refresh=x,min:10,max:500,step:1,def:30,fmt:x=>Math.round(x)+' ms'});
+ fl($('#avg',win),{get:()=>G.avg,set:x=>G.avg=x,min:1,max:32,step:1,def:4,fmt:x=>Math.round(x)+' bloques'});
+ // Menús
+ menu('pmenu',()=>PRESETS.flatMap(([b,l])=>[{h:b},...l.map(x=>({t:x}))]),()=>PFLAT[pIdx],t=>pIdx=PFLAT.indexOf(t));
+ $('[aria-label="Preset anterior"]',win).onclick=()=>{pIdx=(pIdx+PFLAT.length-1)%PFLAT.length;updMenus();msg.textContent='Preset · '+PFLAT[pIdx]};
+ $('[aria-label="Preset siguiente"]',win).onclick=()=>{pIdx=(pIdx+1)%PFLAT.length;updMenus();msg.textContent='Preset · '+PFLAT[pIdx]};
+ menu('typeM',()=>TYPES.map((t,i)=>({t,ico:ico(i)})),()=>TYPES[cur().type],t=>{cur().type=TYPES.indexOf(t);loadBand();drawBands()},t=>t,()=>ico(cur().type));
+ menu('blockM',()=>[1024,2048,4096,8192,16384,32768].map(n=>({t:n+' muestras'})),()=>G.block+' muestras',t=>G.block=parseInt(t));
+ // Ajustes
+ const sh=$('#sheet',win),gear=$('[aria-label="Ajustes"]',win),openS=o=>{sh.hidden=!o;if(o)$('button',sh).focus();else gear.focus()};
+ gear.onclick=()=>openS(sh.hidden);$('[aria-label="Cerrar ajustes"]',win).onclick=()=>openS(false);sh.addEventListener('pointerdown',e=>{if(e.target===sh)openS(false)});
+ sh.addEventListener('keydown',e=>{if(e.key!=='Tab')return;const f=$$('button,[tabindex="0"]',sh).filter(x=>x.offsetParent),a=f[0],z=f[f.length-1];if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus()}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus()}});
+ win.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!sh.hidden)openS(false)}});
+ $('[aria-label="Deshacer"]',win).onclick=()=>msg.textContent='Deshacer · Ctrl+Z';$('[aria-label="Rehacer"]',win).onclick=()=>msg.textContent='Rehacer · Ctrl+Shift+Z';
+ screenInput();drawBands();loadBand();msg.textContent='Pasá por un control para ver qué hace.';fit()}
+
+function syncSeg(id,i){$$('button',$('#'+id,win)).forEach((b,j)=>{b.setAttribute('aria-pressed',j===i);b.setAttribute('aria-checked',j===i)})}
+
+/* Menú con lista propia: listMenu() de la guía */
+const MENUS={};
+function menu(id,items,cur,pick,label,icon){MENUS[id]=listMenu($('#'+id,win),{items,cur,pick,label,icon,onPick:(n,t)=>{if(!/^(Exportar|Crear)/.test(t))msg.textContent=`${n} · ${t}`}})}
+const updMenus=()=>Object.values(MENUS).forEach(f=>f());
+
+/* ---------- Tira de bandas ---------- */
+function drawBands(){const h=$('#bands',win);if(!h.children.length){h.innerHTML=[...Array(8)].map((_,i)=>`<div class="band" role="option" tabindex="${i===G.sel?0:-1}" data-i="${i}"><span class="bn">${i+1}</span><span class="tyw"></span><button class="onb" type="button" aria-label="Encender banda ${i+1}"><i></i></button></div>`).join('');
+  $$('.band',h).forEach(c=>{const i=+c.dataset.i;c.addEventListener('click',e=>{if(e.target.closest('.onb')){const b=C()[i];b.on=!b.on;msg.textContent=`Banda ${i+1} · ${b.on?'encendida':'apagada'}`;if(i===G.sel)loadBand();drawBands();redraw();return}selBand(i)});
+   c.addEventListener('keydown',e=>{const d={ArrowRight:1,ArrowLeft:-1}[e.key];if(d){e.preventDefault();selBand((i+d+8)%8);$$('.band',h)[G.sel].focus()}if(e.key===' '){e.preventDefault();c.querySelector('.onb').click()}});
+   c.addEventListener('pointerenter',()=>{const b=C()[i];msg.textContent=`Banda ${i+1} · ${TYPES[b.type]} · ${hz(b.freq)}${hasGain(b.type)?' · '+dB(b.gain):''} · ${b.on?'encendida':'apagada'}`})})}
+ $$('.band',h).forEach(c=>{const i=+c.dataset.i,b=C()[i];c.setAttribute('aria-selected',i===G.sel);c.tabIndex=i===G.sel?0:-1;c.classList.toggle('off',!b.on);c.querySelector('.tyw').innerHTML=`<svg class="ty" viewBox="0 0 22 14" aria-hidden="true"><path d="${ICON[b.type]}"/></svg>`;
+  const o=c.querySelector('.onb');o.setAttribute('aria-pressed',b.on);c.setAttribute('aria-label',`Banda ${i+1}: ${TYPES[b.type]}, ${b.on?'encendida':'apagada'}`)})}
+function selBand(i){G.sel=i;drawBands();loadBand()}
+function loadBand(){const b=cur();silent=true;K.freq.set(VL(b.freq)*10);K.gain.set(5+b.gain/3);K.q.set(QR.from(b.q));silent=false;
+ $('[data-k=gain]',win).classList.toggle('dis',!hasGain(b.type));$('#bon',win).setAttribute('aria-pressed',b.on);
+ $('#bandN',win).textContent='Banda '+(G.sel+1)+(G.mode?' · '+(G.mode===1?'ID':'MS')[G.edit]:'');updMenus();drawBands();redraw()}
+
+/* ---------- Pantalla ---------- */
+let cv,g,CW,CH,drag=null,hov=null,raf=0;
+const PAD={l:34,r:10,t:22,b:22};
+function sizeCanvas(){cv=$('#scr canvas',win);const s=win.getBoundingClientRect().width/960,r=cv.getBoundingClientRect(),dpr=devicePixelRatio||1;CW=r.width/s;CH=r.height/s;
+ cv.width=Math.round(CW*s*dpr);cv.height=Math.round(CH*s*dpr);g=cv.getContext('2d');g.setTransform(s*dpr,0,0,s*dpr,0,0);redraw()}
+const tok=n=>getComputedStyle(win).getPropertyValue('--p-'+n).trim();
+const plotB=()=>CH-PAD.b-(G.notes?18:0);
+const fx=f=>PAD.l+(CW-PAD.l-PAD.r)*VL(f),xf=x=>LF((x-PAD.l)/(CW-PAD.l-PAD.r));
+const gy=d=>{const R=RANGES[G.range],t=PAD.t,b=plotB();return t+(b-t)*(.5-d/(2*R))},yg=y=>{const R=RANGES[G.range],t=PAD.t,b=plotB();return(.5-(y-t)/(b-t))*2*R};
+// espectro de ejemplo: rosa con picos de una mezcla que se mueven despacio
+const PEAKS=[[55,9],[110,6],[220,4],[2800,5],[7000,3]];let tAnim=0,peakHold=null;
+function specDb(f,t){let d=-24-3*Math.log2(f/1000)*1.0;PEAKS.forEach(([pf,a],i)=>{const w=Math.log2(f/pf);d+=a*Math.exp(-w*w*8)*(0.8+0.2*Math.sin(t*1.3+i*2))});if(f>14000)d-=(f-14000)/600;return d+1.5*Math.sin(f*.013+t*4)*Math.exp(-f/3000)}
+const specY=d=>{const t=PAD.t,b=plotB();return t+(b-t)*(-(d)/60)}; // espectro: 0 a −60 dBFS
+function redraw(){if(!raf)raf=requestAnimationFrame(()=>{raf=0;draw()})}
+function draw(){if(!g)return;const ink=tok('screenink'),dim=tok('screendim'),acc=tok('acc'),accink=tok('accink'),scr=tok('screen');const L=PAD.l,R=CW-PAD.r,t=PAD.t,b=plotB();g.clearRect(0,0,CW,CH);
+ g.font='500 11px "IBM Plex Mono"';g.textBaseline='middle';
+ // grilla al 25 %
+ g.fillStyle=dim;[20,50,100,200,500,1000,2000,5000,10000,20000].forEach(f=>{const x=Math.round(fx(f));g.globalAlpha=.25;g.fillRect(x,t,1,b-t);g.globalAlpha=1;g.textAlign='center';g.fillText(f>=1000?f/1000+'k':String(f),x,b+11)});
+ const Rg=RANGES[G.range],st=Rg<=6?Rg/3:Rg<=18?6:10;g.textAlign='right';for(let d=-Rg;d<=Rg+.01;d+=st){const y=Math.round(gy(d));g.globalAlpha=d===0?.45:.2;g.fillRect(L,y,R-L,1);g.globalAlpha=1;if(Math.abs(d)<Rg-.01||Rg<=6)g.fillText((d>0?'+':d<0?'−':'')+Math.abs(Math.round(d*10)/10).toString().replace('.',','),L-6,y)}
+ g.textAlign='left';
+ // espectro
+ if(G.analyze){const pts=[];for(let x=L;x<=R;x+=2){const f=xf(x),pre=specDb(f,tAnim)+G.tilt*Math.log2(f/1000),post=pre+sumDb(C(),f);pts.push([x,pre,post])}
+  if(G.spec!==1){g.fillStyle=dim;g.globalAlpha=.22;g.beginPath();g.moveTo(L,b);pts.forEach(([x,p])=>g.lineTo(x,Math.max(t,Math.min(b,specY(p)))));g.lineTo(R,b);g.fill();g.globalAlpha=1}
+  if(G.spec!==0){g.fillStyle=dim;g.globalAlpha=G.spec===2?.5:.35;g.beginPath();g.moveTo(L,b);pts.forEach(([x,,p])=>g.lineTo(x,Math.max(t,Math.min(b,specY(p)))));g.lineTo(R,b);g.fill();g.globalAlpha=1}
+  if(G.peaks){if(!peakHold||peakHold.length!==pts.length)peakHold=pts.map(p=>p[2]);g.strokeStyle=dim;g.lineWidth=1;g.beginPath();pts.forEach(([x,,p],i)=>{peakHold[i]=Math.max(p,peakHold[i]-.2);g[i?'lineTo':'moveTo'](x,Math.max(t,Math.min(b,specY(peakHold[i]))))});g.stroke()}}
+ // curvas: cada banda rellena y translúcida en el color del plugin
+ const edit=C(),other=G.mode?G.curves[1-G.edit]:null;
+ edit.forEach((bd,i)=>{if(!bd.on)return;g.fillStyle=acc;g.globalAlpha=i===G.sel?.28:.12;g.beginPath();g.moveTo(L,gy(0));for(let x=L;x<=R;x+=2)g.lineTo(x,Math.max(t,Math.min(b,gy(magDb(bd,xf(x))))));g.lineTo(R,gy(0));g.fill()});g.globalAlpha=1;
+ if(other){g.strokeStyle=dim;g.setLineDash([4,4]);g.lineWidth=1.5;g.beginPath();for(let x=L;x<=R;x+=2)g[x===L?'moveTo':'lineTo'](x,Math.max(t,Math.min(b,gy(sumDb(other,xf(x))))));g.stroke();g.setLineDash([])}
+ g.strokeStyle=ink;g.lineWidth=2;g.beginPath();for(let x=L;x<=R;x+=1)g[x===L?'moveTo':'lineTo'](x,Math.max(t,Math.min(b,gy(sumDb(edit,xf(x))))));g.stroke();
+ // puntos
+ edit.forEach((bd,i)=>{const p=ptOf(bd),sel=i===G.sel;g.globalAlpha=bd.on?1:.45;g.beginPath();g.arc(p.x,p.y,9,0,7);if(sel&&bd.on){g.fillStyle=acc;g.fill()}else{g.fillStyle=scr;g.fill();g.strokeStyle=bd.on?acc:dim;g.lineWidth=2;g.stroke()}
+  g.fillStyle=sel&&bd.on?accink:bd.on?ink:dim;g.textAlign='center';g.fillText(String(i+1),p.x,p.y+.5);g.globalAlpha=1});g.textAlign='left';
+ // teclado de notas
+ if(G.notes){const y0=b+22;for(let m=12;m<=127;m++){const f0=440*Math.pow(2,(m-69-.5)/12),f1=440*Math.pow(2,(m-69+.5)/12);if(f1<FMIN||f0>FMAX)continue;const x0=fx(Math.max(FMIN,f0)),x1=fx(Math.min(FMAX,f1));const blk=[1,3,6,8,10].includes(m%12);
+   g.fillStyle=blk?scr:dim;g.globalAlpha=blk?1:.35;g.fillRect(x0,y0,Math.max(1,x1-x0-.5),12);g.globalAlpha=1;if(m%12===0&&x1-x0>2){g.fillStyle=dim;g.fillText('Do'+Math.floor(m/12),x0+3,b-9)}}}
+ // lectura
+ if(hov&&!drag){const f=xf(hov.x),d=sumDb(edit,f);g.fillStyle=ink;g.globalAlpha=.6;g.fillRect(Math.round(hov.x),t,1,b-t);g.globalAlpha=1;const s=`${hz(f)} · ${noteOf(f)} · ${dB(d)}`;const w=g.measureText(s).width+12;const bx=Math.min(R-w,hov.x+8);
+  g.fillStyle=scr;g.fillRect(bx,t+2,w,18);g.strokeStyle=dim;g.lineWidth=1;g.strokeRect(bx+.5,t+2.5,w-1,17);g.fillStyle=ink;g.fillText(s,bx+6,t+11)}
+ $('#stL',win).textContent=G.mode?`${['','I/D','M/S'][G.mode]} · editás ${(G.mode===1?'ID':'MS')[G.edit]} · la otra, punteada`:'Estéreo';
+ $('#stR',win).textContent=G.analyze?['Espectro antes','Espectro después','Antes y después'][G.spec]:'Sin espectro'}
+function ptOf(bd){const x=fx(bd.freq);let y;if(hasGain(bd.type))y=gy(bd.gain*G.scale);else if(bd.type===4)y=gy(0);else y=gy(0)-0;return{x,y:Math.max(PAD.t+9,Math.min(plotB()-9,y))}}
+function tick(ts){tAnim=ts/1000;if(G.analyze)draw();requestAnimationFrame(tick)}
+function screenInput(){const c=$('#scr canvas',win),scr=$('#scr',win);const pos=e=>{const r=c.getBoundingClientRect(),s=r.width/CW;return{x:(e.clientX-r.left)/s,y:(e.clientY-r.top)/s}};
+ const near=(x,y)=>{let best=-1,d=12;C().forEach((bd,i)=>{const p=ptOf(bd),dd=Math.hypot(p.x-x,p.y-y);if(dd<d){d=dd;best=i}});return best};
+ const say=bd=>`Banda ${C().indexOf(bd)+1} · ${hz(bd.freq)} · ${noteOf(bd.freq)}${hasGain(bd.type)?' · '+dB(bd.gain):''} · Q ${bd.q.toFixed(2).replace('.',',')}${G.listen?' · escuchando':''}`;
+ c.addEventListener('pointerdown',e=>{const{x,y}=pos(e);if(y>plotB())return;scr.focus({preventScroll:true});c.setPointerCapture(e.pointerId);let i=near(x,y);
+  if(i<0){// agarrar un pico: la primera banda apagada pasa a ser una campana en esa frecuencia
+   const j=C().findIndex(bd=>!bd.on);if(j<0){msg.textContent='Las 8 bandas están en uso · apagá una para crear otra';return}const f=Math.round(xf(x));Object.assign(C()[j],{on:true,type:3,freq:f,gain:0,q:2});i=j;msg.textContent=`Banda ${j+1} nueva · campana en ${hz(f)} · arrastrá hacia abajo para cortar`}
+  selBand(i);const bd=C()[i];drag={i,x0:x,y0:y,f0:bd.freq,g0:bd.gain,q0:bd.q,alt:e.altKey}});
+ c.addEventListener('pointermove',e=>{const{x,y}=pos(e);if(!drag){hov=y<plotB()?{x,y}:null;c.style.cursor=near(x,y)>=0?'grab':'crosshair';redraw();return}
+  const bd=C()[drag.i],k=e.shiftKey?.2:1;
+  if(e.altKey){bd.q=Math.max(.1,Math.min(18,drag.q0*Math.pow(2,(drag.y0-y)/40*k)))}
+  else{bd.freq=Math.max(FMIN,Math.min(FMAX,Math.round(LF(VL(drag.f0)+(x-drag.x0)/(CW-PAD.l-PAD.r)*k)*10)/10));
+   if(hasGain(bd.type))bd.gain=Math.max(-15,Math.min(15,Math.round((drag.g0+(yg(y)-yg(drag.y0))*k/G.scale)*10)/10));else bd.q=Math.max(.1,Math.min(18,drag.q0*Math.pow(2,(drag.y0-y)/40*k)))}
+  loadBand();msg.textContent=say(bd)});
+ const up=()=>{drag=null};c.addEventListener('pointerup',up);c.addEventListener('pointercancel',up);
+ c.addEventListener('pointerleave',()=>{hov=null;redraw()});
+ c.addEventListener('dblclick',e=>{const{x,y}=pos(e);const i=near(x,y);if(i<0)return;const bd=C()[i];bd.gain=0;if(!hasGain(bd.type))bd.q=.71;loadBand();msg.textContent=`Banda ${i+1} · a fábrica`});
+ c.addEventListener('wheel',e=>{const{x,y}=pos(e);const i=near(x,y);if(i<0)return;e.preventDefault();const bd=C()[i];bd.q=Math.max(.1,Math.min(18,Math.round(bd.q*Math.pow(1.06,e.deltaY<0?1:-1)*100)/100));selBand(i);msg.textContent=say(bd)},{passive:false});
+ scr.addEventListener('keydown',e=>{const bd=cur(),k=e.shiftKey?.1:1;
+  if(e.key>='1'&&e.key<='8'){selBand(+e.key-1);return}
+  if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();bd.freq=Math.max(FMIN,Math.min(FMAX,Math.round(LF(VL(bd.freq)+(e.key==='ArrowRight'?1:-1)*.01*k)*10)/10))}
+  else if(e.key==='ArrowUp'||e.key==='ArrowDown'){e.preventDefault();const d=(e.key==='ArrowUp'?1:-1)*.5*k;if(hasGain(bd.type))bd.gain=Math.max(-15,Math.min(15,Math.round((bd.gain+d)*10)/10));else bd.q=Math.max(.1,Math.min(18,Math.round(bd.q*Math.pow(1.1,d*2)*100)/100))}
+  else if(e.key==='Delete'||e.key==='Backspace'){e.preventDefault();bd.on=false}else return;loadBand();msg.textContent=say(bd)})}
+
+function fit(){const s=$('#stage');const k=Math.min(1,s.clientWidth/960);win.style.transform=`scale(${k})`;win.style.transformOrigin='0 0';s.style.height=600*k+'px';sizeCanvas()}
+function setTheme(t){T=t;$$('#selTheme button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===t));applyTheme(win,'eq5',t);syncSeg('theme',['oficial','vst5','oscuro'].indexOf(t));redraw()}
+$('#selTheme').addEventListener('click',e=>{const b=e.target.closest('button');if(b)setTheme(b.dataset.v)});
+mount();addEventListener('resize',fit);document.fonts&&document.fonts.ready.then(fit);requestAnimationFrame(tick);
+</script>
+</body>
+</html>

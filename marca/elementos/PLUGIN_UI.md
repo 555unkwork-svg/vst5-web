@@ -1,4 +1,4 @@
-# vst5 · guía de elementos de interfaz (v1.1)
+# vst5 · guía de elementos de interfaz (v1.2 · diseño 0.1 estable)
 
 Este es el contrato visual de todos los plugins vst5. Complementa `BRAND.md`.
 - Referencia visual interactiva: `marca/elementos/index.html`. Abrila en un navegador.
@@ -28,7 +28,7 @@ Este es el contrato visual de todos los plugins vst5. Complementa `BRAND.md`.
   - Encendida o apagada: se indica con el LED de 6 px. La tecla no cambia de color.
   - Principal (color del plugin): una sola por panel o diálogo. Secundaria: solo contorno.
 - **Selector segmentado**: para 2 a 5 opciones excluyentes; con más, usá un menú. Fondo hundido; la opción elegida es una tecla, con el ícono en el color del plugin. Segmentos de 24 px de alto y 32 de ancho como mínimo.
-- **Menú**: 24 px, Plex Mono 11 px, lista propia. Nunca la del sistema operativo.
+- **Menú**: 24 px, Plex Mono 11 px, lista propia. Nunca la del sistema operativo. Puede llevar el ícono de la opción elegida (22 × 12, trazo 1,8) a la izquierda del texto. Comportamiento compartido: `listMenu()` en `vst5-ui.js`.
 - **Lista de menú**: se abre debajo del menú, panel con radio 6, relleno 4 y sombra.
   - Filas de 24 px, Plex Mono 11 px, relleno lateral 8. Si el nombre no entra, se corta con «…» y el nombre completo va en la ayuda del pie.
   - Encabezados de grupo (banco de presets) en Plex Mono 10 px, mayúsculas, no clickeables.
@@ -55,6 +55,10 @@ Este es el contrato visual de todos los plugins vst5. Complementa `BRAND.md`.
   - Lo elegido: tinte del color del plugin al 12 % y manija de 8 × 16 px para su otro extremo.
   - Imán opcional (golpes, grilla, cruce por cero); Shift lo suelta mientras arrastrás.
   - Rueda: zoom alrededor del cursor. Doble clic: punto nuevo. Con teclado: flechas mueven lo elegido y Supr lo borra.
+- **Campo de búsqueda**: 24 px, fondo de panel con filete de 1 px, lupa de 14 px, Plex Mono 11 px. Filtra mientras escribís; Esc lo vacía. Si no hay resultados, la lista dice qué buscaste y cómo seguir.
+- **Lista de pantalla**: filas de 24 px sobre la pantalla oscura, para bibliotecas y archivos. Nombre en el tono de pantalla, dato secundario en 10 px mayúsculas a la derecha. Elegida: tinte del 22 % y filete de 2 px del color del plugin. Flechas recorren, Enter usa, las filas se arrastran a pads.
+- **Lectura de pantalla**: al pasar el mouse por una pantalla con curva, línea vertical de 1 px y rótulo (Plex Mono 11, fondo de pantalla con filete) con los valores en ese punto: frecuencia, nota y ganancia, por ejemplo.
+- **Tira de bandas**: celdas de 44 px de alto, una por banda, bajo la pantalla. Número, ícono del tipo y botón de encendido de 24 × 24 con LED. Clic en la celda elige; clic en el LED prende o apaga. Elegida: anillo de 2 px `accsurf`. Apagada: número e ícono al 60 %. Flechas recorren, espacio prende o apaga.
 - **Mini vista**: franja de 28 px al pie de una pantalla con zoom. Muestra todo el material en el tono de pantalla, la parte visible como recuadro de 1 px y los límites de uso con corchetes del color del plugin, que se arrastran. Arrastrar en el resto de la franja mueve la parte visible.
 - **Panel**: agrupa controles relacionados. Título en Plex Mono 10 px, en mayúsculas y con espaciado.
 - **Medidor**: barras de 6 px separadas 3 px, siempre sobre fondo de pantalla.
@@ -73,7 +77,7 @@ El color del plugin solo marca lo encendido, lo activo, lo seleccionado y el val
 
 **Tres tonos del color del plugin.** `acc` es el color tal cual: va en la pantalla (marcas, cortes, techo) y como relleno con su texto `accink` (golpe del pad, tecla principal). `acckey` es el mismo tono ajustado a 3:1 contra la tecla y el pad: va en el LED encendido, el anillo del pad elegido y el ícono del segmento elegido. `accsurf` es el mismo tono oscurecido o aclarado lo justo para llegar a 3:1 (WCAG 1.4.11) contra el cuerpo y el panel del tema: va en el arco y la marca del 5 de las perillas, la raya de la pestaña elegida, la fila elegida de una lista y el contorno al editar. Los dos se calculan solos (`toneFor()` en `vst5-ui.js`): se oscurece o aclara el color lo justo hasta 3:1; si ya llega, quedan iguales a `acc`.
 
-**Color por familia.** El color viene de la familia del plugin. Los plugins de una misma familia comparten color y se diferencian por su tema oficial. Las familias se definen más adelante; mientras tanto, cada plugin conserva su color. clip5 pasó a rojo `#D93A2B` y sampler5 a naranja `#E8862A`. Colores libres para familias nuevas: `#2F6FD6`, `#7A4FD0` y `#1FA6A0`. Un color nuevo tiene que distinguirse a simple vista de los demás y llevar su color de texto (`accink`) con contraste de 4,5:1.
+**Color por familia.** El color viene de la familia del plugin. Los plugins de una misma familia comparten color y se diferencian por su tema oficial. Las familias se definen más adelante; mientras tanto, cada plugin conserva su color. clip5 pasó a rojo `#D93A2B` y sampler5 a naranja `#E8862A`. Colores libres para familias nuevas: `#7A4FD0` y `#1FA6A0`. eq5 usa `#2F6FD6`. Un color nuevo tiene que distinguirse a simple vista de los demás y llevar su color de texto (`accink`) con contraste de 4,5:1.
 
 ## Interacción
 - **Perillas:**
@@ -81,7 +85,7 @@ El color del plugin solo marca lo encendido, lo activo, lo seleccionado y el val
   - Rueda del mouse.
   - Flechas del teclado; con Shift, más fino.
   - Doble clic vuelve al valor de fábrica.
-  - Clic en el valor abre la edición numérica.
+  - Clic en el valor (o Enter) abre la edición numérica: acepta coma o punto y unidades (k, s, ms). `knob()` lo resuelve para cualquier escala.
 - **Teclado:** Tab recorre los controles con un anillo de foco de 2 px. Enter edita y Esc cancela o cierra.
 - **Movimiento:** presionar dura 80 ms y pasar el mouse por encima, 150 ms. Los valores y los medidores muestran el dato real, sin animaciones de adorno.
 - **Mínimos:** 24 × 24 px para todo lo clickeable. Textos de 10 px solo en etiquetas en mayúsculas; el resto, 11–12 px. Contraste 4,5:1 en los tres temas.

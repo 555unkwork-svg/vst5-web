@@ -76,14 +76,13 @@ ul.list{margin:0;padding-left:20px;display:grid;gap:6px;max-width:76ch}
 .keys .key{flex:1;justify-content:center}
 .sep{height:1px;background:var(--p-line)}
 .preset{position:relative}
-.preset .mlist{top:24px;left:28px;width:260px}
 @media (prefers-reduced-motion: reduce){.win *{transition:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <span class="mono muted">vst5 · maqueta de interfaz · propuesta 2</span>
+  <span class="mono muted">vst5 · diseño 0.1 · estable</span>
   <h1>clip5</h1>
   <p class="muted">Clipper de mastering armado con las piezas de la guía. Los controles funcionan; la señal de la pantalla es simulada (un loop de boom bap a 90 BPM) y reacciona a Entrada, Densidad, Curva, Techo y Salida. El rojo es el color de clip5 (familia provisoria).</p>
 </header>
@@ -111,7 +110,7 @@ ul.list{margin:0;padding-left:20px;display:grid;gap:6px;max-width:76ch}
     <tr><td><code>humedo</code>, <code>seco</code></td><td>−∞ a +6 dB → 0 dB / −∞</td><td>Perilla chica 40 (Procesada, Original)</td><td>Fila: Mezcla</td></tr>
     <tr><td><code>enlace_mezcla</code></td><td>sí / no → sí</td><td>Tecla con LED «Enlace»</td><td>Fila: Mezcla</td></tr>
     <tr><td>A/B (no es parámetro)</td><td>A · B, copiar</td><td>Selector de 2 + tecla «Copiar»</td><td>Fila: Comparar</td></tr>
-    <tr><td><code>calidad</code></td><td>1× · 2× · 4× · 8× → 2×</td><td>Selector de 4</td><td>Fila: Oversampling</td></tr>
+    <tr><td><code>calidad</code></td><td>1× · 2× · 4× · 8× → 2×</td><td>Selector de 4</td><td>Fila: Sobremuestreo</td></tr>
     <tr><td><code>calidad_offline</code></td><td>Igual · 1× … 8× → 8×</td><td>Selector de 5</td><td>Ajustes</td></tr>
     <tr><td><code>fase</code></td><td>Lineal · Mínima → Lineal</td><td>Selector de 2</td><td>Ajustes</td></tr>
     <tr><td><code>suavizado_ext</code></td><td>sí / no → no</td><td>Tecla con LED «Rango −3 dB»</td><td>Ajustes</td></tr>
@@ -124,7 +123,7 @@ ul.list{margin:0;padding-left:20px;display:grid;gap:6px;max-width:76ch}
   <div class="sec-h"><span class="mono">02</span><h2>Cambios en la guía</h2></div>
   <ul class="list">
     <li><b>Rojo de clip5.</b> En un clipper el color del plugin se parece al rojo de recorte (<code>over</code>): el exceso se marca con el color del plugin en la pantalla y la franja de recorte queda solo en el medidor.</li>
-    <li><b>Menú de presets con lista propia.</b> La guía pide lista propia pero no la dibuja: acá usa fila de 24 px, Plex Mono 11, encabezados de banco en 10 en mayúsculas y elegido con filete de 2 px del color del plugin. Sumado a la guía.</li>
+    <li><b>Menú de presets con lista propia</b> (<code>listMenu()</code> de la guía). La guía pide lista propia pero no la dibuja: acá usa fila de 24 px, Plex Mono 11, encabezados de banco en 10 en mayúsculas y elegido con filete de 2 px del color del plugin. Sumado a la guía.</li>
     <li><b>Hoja de ajustes.</b> Panel de 400 px que se abre desde el engranaje sobre el cuerpo; Esc cierra y Tab no sale de la hoja. Sumado a la guía.</li>
   </ul>
 </section>
@@ -166,7 +165,7 @@ function build(){
     <div class="brow">
      <div class="panelp grow"><span class="cap">Mezcla</span><div class="row"><div data-k="humedo"></div><div data-k="seco"></div><div class="col" style="margin-left:auto">${ledKey('Enlace','enlace_mezcla')}</div></div></div>
      <div class="panelp"><span class="cap">Comparar</span><div class="col">${segp('Estado A/B',['A','B'],0,'ab')}<button class="key ghost" type="button" id="abcopy">Copiar</button></div></div>
-     <div class="panelp"><span class="cap">Oversampling</span><div class="col">${segp('Oversampling',['1×','2×','4×','8×'],S.calidad,'calidad')}<span class="val" id="cpu">CPU 0,4 %</span></div></div>
+     <div class="panelp"><span class="cap">Sobremuestreo</span><div class="col">${segp('Sobremuestreo',['1×','2×','4×','8×'],S.calidad,'calidad')}<span class="val" id="cpu">CPU 0,4 %</span></div></div>
     </div>
    </div>
    <div class="panelp side">
@@ -185,15 +184,15 @@ function build(){
    <div class="opt"><span class="lbl">Tamaño</span>${segp('Tamaño',['75','100','150','200'],1,'size')}</div>
    <div class="opt"><span class="lbl">Tema</span>${segp('Tema',['Oficial','vst5','Oscuro'],['oficial','vst5','oscuro'].indexOf(T),'theme')}</div>
    <div class="sep"></div>
-   <div class="opt"><span class="lbl">Al exportar</span>${segp('Oversampling al exportar',['Igual','1×','2×','4×','8×'],S.calidad_offline,'calidad_offline')}</div>
+   <div class="opt"><span class="lbl">Al exportar</span>${segp('Sobremuestreo al exportar',['Igual','1×','2×','4×','8×'],S.calidad_offline,'calidad_offline')}</div>
    <div class="opt"><span class="lbl">Fase</span>${segp('Fase del filtrado',['Lineal','Mínima'],S.fase,'fase')}</div>
    <div class="opt"><span class="lbl">Suavizado</span><div>${ledKey('Rango −3 dB','suavizado_ext')}</div></div>
    <div class="opt"><span class="lbl">Entrada</span><div>${ledKey('Compensar','enlace_es')}</div></div>
   </div></div>`;
  return w;}
 
-const SEGHELP={modo:['Curva','Forma del recorte'],calidad:['Oversampling','Menos aliasing, más CPU'],tono:['Tono','Agudos fijos de la rama procesada'],ab:['Comparar','Cambia entre dos ajustes'],
- calidad_offline:['Al exportar','Oversampling al renderizar'],fase:['Fase','Lineal conserva la suma con Original']};
+const SEGHELP={modo:['Curva','Forma del recorte'],calidad:['Sobremuestreo','Menos aliasing, más CPU'],tono:['Tono','Agudos fijos de la rama procesada'],ab:['Comparar','Cambia entre dos ajustes'],
+ calidad_offline:['Al exportar','Sobremuestreo al renderizar'],fase:['Fase','Lineal conserva la suma con Original']};
 const KEYHELP={techo_estricto:'Anticipa los picos entre muestras',ganancia_unitaria:'Resta Densidad para comparar a igual nivel',enlace_mezcla:'Mueve Procesada y Original juntas',
  suavizado_ext:'Lleva Suavizado hasta −3 dB',enlace_es:'Devuelve la ganancia de Entrada al final'};
 
@@ -224,14 +223,9 @@ function mount(){
  $('#abcopy',w).addEventListener('pointerenter',()=>msg.textContent='Copiar — pasa el estado actual al otro (A → B o B → A)');
  // Presets
  const pm=$('#pmenu',w),pl=$('.preset',w);
- const showP=()=>{pm.firstChild.textContent=PFLAT[pIdx];pm.title=PFLAT[pIdx]};showP();
+ const showP=listMenu(pm,{items:()=>PRESETS.flatMap(([b,l])=>[{h:b},...l.map(t=>({t}))]),cur:()=>PFLAT[pIdx],pick:t=>pIdx=PFLAT.indexOf(t),onPick:(n,t)=>help('Preset',t)});
  const stepP=d=>{pIdx=(pIdx+d+PFLAT.length)%PFLAT.length;showP();help('Preset',PFLAT[pIdx])};
  $('[aria-label="Preset anterior"]',w).onclick=()=>stepP(-1);$('[aria-label="Preset siguiente"]',w).onclick=()=>stepP(1);
- let list=null;const closeL=()=>{list&&list.remove();list=null;pm.setAttribute('aria-expanded','false')};
- pm.onclick=()=>{if(list)return closeL();list=document.createElement('ul');list.className='mlist';list.setAttribute('role','listbox');list.setAttribute('aria-label','Presets');
-   let n=0;list.innerHTML=PRESETS.map(([b,l])=>`<li class="hd" role="presentation">${b}</li>`+l.map(x=>`<li role="option" data-i="${n}" aria-selected="${n++===pIdx}" title="${x}">${x}</li>`).join('')).join('');
-   pl.append(list);pm.setAttribute('aria-expanded','true');list.onclick=e=>{const li=e.target.closest('[data-i]');if(li){pIdx=+li.dataset.i;showP();closeL();pm.focus()}}};
- document.addEventListener('pointerdown',e=>{if(list&&!pl.contains(e.target))closeL()});
  // Deshacer/rehacer: en la maqueta solo avisan
  $('[aria-label="Deshacer"]',w).onclick=()=>msg.textContent='Deshacer · Ctrl+Z';$('[aria-label="Rehacer"]',w).onclick=()=>msg.textContent='Rehacer · Ctrl+Shift+Z';
  // Ajustes
@@ -239,7 +233,7 @@ function mount(){
  const openS=o=>{sh.hidden=!o;if(o)$('button',sh).focus();else gear.focus()};
  gear.onclick=()=>openS(sh.hidden);$('[aria-label="Cerrar ajustes"]',w).onclick=()=>openS(false);
  sh.addEventListener('pointerdown',e=>{if(e.target===sh)openS(false)});
- w.addEventListener('keydown',e=>{if(e.key==='Escape'){if(list){closeL();pm.focus()}else if(!sh.hidden)openS(false)}});
+ w.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!sh.hidden)openS(false)}});
  // Tab no sale de la hoja mientras está abierta
  sh.addEventListener('keydown',e=>{if(e.key!=='Tab')return;const f=$$('button',sh),a=f[0],z=f[f.length-1];if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus()}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus()}});
  $$('.ibtn',w).forEach(b=>b.addEventListener('pointerenter',()=>msg.textContent=b.getAttribute('aria-label')));

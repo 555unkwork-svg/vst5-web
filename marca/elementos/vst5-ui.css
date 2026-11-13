@@ -104,4 +104,26 @@
 .field.drag{cursor:ns-resize;touch-action:none;user-select:none}
 .field.drag:focus-visible{outline:2px solid var(--p-focus);outline-offset:2px}
 .field.drag[contenteditable="true"]{cursor:text;outline:1px solid var(--p-accsurf);user-select:text}
+/* Edición numérica del valor de una perilla */
+.knob .val[contenteditable="true"]{outline:1px solid var(--p-accsurf);outline-offset:2px;border-radius:2px;color:var(--p-ink)}
+/* Menú con íconos */
+.mlist li .ico,.menu .ico{display:inline-block;width:22px;height:12px;vertical-align:-2px;margin-right:8px}
+.mlist li .ico svg,.menu .ico svg{width:22px;height:12px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;display:block}
+/* Campo de búsqueda: 24 px, fondo de panel con filete (el texto de ayuda pasa 4,5:1), lupa de 14 */
+.search{height:24px;display:flex;align-items:center;gap:6px;padding:0 8px;border-radius:var(--r1);background:var(--p-panel);border:1px solid var(--p-line);color:var(--p-dim)}
+.search svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;flex:none}
+.search input{flex:1;min-width:0;align-self:stretch;border:0;background:transparent;outline:0;font:500 11px var(--m);color:var(--p-ink)}
+.search input::placeholder{color:var(--p-dim)}
+.search input::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none}
+.search:focus-within{outline:2px solid var(--p-focus);outline-offset:1px}
+/* Lista de pantalla: filas de 24 sobre la pantalla oscura */
+.slist{list-style:none;margin:0;padding:4px;overflow:auto;position:absolute;inset:22px 0 0 0}
+.slist li{height:24px;display:flex;align-items:center;gap:8px;padding:0 8px;border-radius:var(--r1);font:500 11px var(--m);color:var(--p-screenink);cursor:pointer;user-select:none}
+.slist li .nm{flex:1;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.slist li .ct{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--p-screendim)}
+.slist li:hover{background:color-mix(in srgb,var(--p-screenink) 8%,transparent)}
+.slist li[aria-selected="true"]{background:color-mix(in srgb,var(--p-acc) 22%,transparent);box-shadow:inset 2px 0 0 var(--p-acc)}
+.slist li:focus-visible{outline:2px solid var(--p-screenink);outline-offset:-2px}
+.slist .empty{color:var(--p-screendim);cursor:default}
+[hidden]{display:none!important}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}

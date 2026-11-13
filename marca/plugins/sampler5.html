@@ -92,7 +92,7 @@ ul.list{margin:0;padding-left:20px;display:grid;gap:8px;max-width:78ch}
 <body>
 <div class="wrap">
 <header>
-  <span class="mono muted">vst5 · maqueta de interfaz · propuesta 1</span>
+  <span class="mono muted">vst5 · diseño 0.1 · estable</span>
   <h1>sampler5</h1>
   <p class="muted">Un audio cortado en 16 pads, armado con las piezas de la guía en la ventana grande. Funciona: tocá los pads (más arriba, más fuerte), arrastrá los cortes, la manija naranja y los bordes de la mini vista, cambiá el modo de corte y la sensibilidad. El audio es un loop de boom bap simulado de 4 compases a 92 BPM; no suena.</p>
 </header>
@@ -323,26 +323,16 @@ function mount(){const st=$('#stage');st.innerHTML='';win=build();st.append(win)
  const sh=$('#sheet',win),gear=$('[aria-label="Ajustes"]',win),openS=o=>{sh.hidden=!o;if(o)$('button',sh).focus();else gear.focus()};
  gear.onclick=()=>openS(sh.hidden);$('[aria-label="Cerrar ajustes"]',win).onclick=()=>openS(false);sh.addEventListener('pointerdown',e=>{if(e.target===sh)openS(false)});
  sh.addEventListener('keydown',e=>{if(e.key!=='Tab')return;const f=$$('button,[tabindex="0"]',sh).filter(x=>x.offsetParent),a=f[0],z=f[f.length-1];if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus()}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus()}});
- win.addEventListener('keydown',e=>{if(e.key==='Escape'){if(openList)closeList(true);else if(!sh.hidden)openS(false)}});
+ win.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!sh.hidden)openS(false)}});
  $('[aria-label="Deshacer"]',win).onclick=()=>msg.textContent='Deshacer · Ctrl+Z';$('[aria-label="Rehacer"]',win).onclick=()=>msg.textContent='Rehacer · Ctrl+Shift+Z';
  screenInput();slice();refresh();msg.textContent='Pasá por un control para ver qué hace.';fit()}
 
 function syncSeg(id,i){$$('button',$('#'+id,win)).forEach((b,j)=>{b.setAttribute('aria-pressed',j===i);b.setAttribute('aria-checked',j===i)})}
 
 
-/* Menú con lista propia */
-let openList=null,openBtn=null;const MENUS={};
-function closeList(focus){if(!openList)return;openList.remove();openList=null;openBtn.setAttribute('aria-expanded','false');if(focus)openBtn.focus()}
-function menu(id,items,cur,pick,label=t=>t){const b=$('#'+id,win);MENUS[id]=()=>{b.firstChild.textContent=label(cur());b.title=cur()};MENUS[id]();
- b.onclick=()=>{if(openList){const same=openBtn===b;closeList();if(same)return}const l=document.createElement('ul');l.className='mlist float';l.setAttribute('role','listbox');l.setAttribute('aria-label',b.dataset.help.split(' ·')[0]);
-  l.innerHTML=items().map(x=>x.h?`<li class="hd" role="presentation">${x.h}</li>`:`<li role="option" tabindex="-1" aria-selected="${x.t===cur()}" title="${x.t}">${x.t}</li>`).join('');
-  win.append(l);const s=win.getBoundingClientRect().width/960,r=b.getBoundingClientRect(),q=win.getBoundingClientRect();
-  let top=(r.bottom-q.top)/s+4,left=(r.left-q.left)/s;l.style.minWidth=Math.max(160,r.width/s)+'px';l.style.left=Math.min(left,960-l.offsetWidth-8)+'px';
-  if(top+l.offsetHeight>572)top=(r.top-q.top)/s-l.offsetHeight-4;l.style.top=top+'px';openList=l;openBtn=b;b.setAttribute('aria-expanded','true');
-  const opts=$$('[role=option]',l),c=opts.find(o=>o.getAttribute('aria-selected')==='true')||opts[0];c.focus();c.scrollIntoView({block:'nearest'});
-  l.onclick=e=>{const o=e.target.closest('[role=option]');if(o){pick(o.textContent);closeList(true);updMenus();msg.textContent=`${b.dataset.help.split(' ·')[0]} · ${o.textContent}`}};
-  l.onkeydown=e=>{const i=opts.indexOf(document.activeElement);if(e.key==='ArrowDown'){e.preventDefault();opts[Math.min(opts.length-1,i+1)].focus()}if(e.key==='ArrowUp'){e.preventDefault();opts[Math.max(0,i-1)].focus()}if(e.key==='Enter'){e.preventDefault();document.activeElement.click()}if(e.key==='Tab')closeList()}}}
-document.addEventListener('pointerdown',e=>{if(openList&&!openList.contains(e.target)&&e.target.closest('.menu')!==openBtn)closeList()});
+/* Menú con lista propia: listMenu() de la guía */
+const MENUS={};
+function menu(id,items,cur,pick,label,icon){MENUS[id]=listMenu($('#'+id,win),{items,cur,pick,label,icon,onPick:(n,t)=>{if(!/^(Exportar|Crear)/.test(t))msg.textContent=`${n} · ${t}`}})}
 const updMenus=()=>Object.values(MENUS).forEach(f=>f());
 
 /* ---------- Pads ---------- */
