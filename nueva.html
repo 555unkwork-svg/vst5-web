@@ -84,9 +84,11 @@ button{font:inherit;color:inherit}
 .slide .row{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
 .slide .art{min-width:0;transform:translateX(24px);transition:transform .7s var(--out)}
 .slide.on .art{transform:none}
-.slide .art svg{display:block;width:118%;height:auto;filter:drop-shadow(0 24px 40px rgba(0,0,0,.45))}
+#app img{display:block;width:100%;height:auto;border-radius:6px}
+.slide .art img{width:116%;border-radius:10px;box-shadow:0 24px 50px rgba(0,0,0,.5)}
 .slide .trio{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding-right:56px}
-.slide .trio svg{width:100%}
+.slide .trio img{width:100%}
+.mini{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:start}
 .hero-ctl{position:absolute;left:56px;bottom:26px;display:flex;align-items:center;gap:10px}
 .hero-ctl .dot{width:34px;height:20px;border:0;padding:0;background:none;cursor:pointer;display:grid;align-items:center}
 .hero-ctl .dot::before{content:"";height:3px;border-radius:2px;background:#57544E}
@@ -96,7 +98,7 @@ button{font:inherit;color:inherit}
 @media (max-width:820px){
   .slide{grid-template-columns:1fr;padding:32px 20px 72px;gap:24px}
   .slide .art{order:-1}
-  .slide .art svg{width:100%}
+  .slide .art img{width:100%}
   .slide .trio{padding-right:0}
   .hero-ctl{left:20px}
 }
@@ -111,11 +113,12 @@ button{font:inherit;color:inherit}
 /* Grilla de tienda */
 .grid{display:grid;gap:18px}
 @media (min-width:640px){.grid{grid-template-columns:repeat(2,1fr)}}
-@media (min-width:1000px){.grid{grid-template-columns:repeat(4,1fr)}}
+@media (min-width:1000px){.grid{grid-template-columns:repeat(3,1fr)}}
 .card{display:flex;flex-direction:column;border:1px solid var(--line);background:var(--card);border-radius:10px;overflow:hidden;min-width:0}
 .card .pic{display:block;position:relative;background:var(--shade);padding:26px 18px;text-decoration:none}
-.card .pic svg{display:block;width:100%;height:auto;transition:transform .4s var(--out)}
-.card .pic:hover svg{transform:scale(1.03)}
+#app .card .pic img{box-shadow:0 8px 20px rgba(23,22,20,.18);transition:transform .4s var(--out)}
+.card .pic:hover img{transform:scale(1.03)}
+.card .pic{display:grid;place-items:center;aspect-ratio:16/11}
 .badge{position:absolute;top:10px;right:10px;background:var(--card);color:var(--fg);border-radius:4px;padding:3px 8px;font:500 11px var(--m);letter-spacing:.06em;text-transform:uppercase}
 .card .body{display:flex;flex-direction:column;gap:4px;padding:16px 18px 18px;flex:1}
 .card h3{font-size:22px;font-stretch:108%}
@@ -144,19 +147,17 @@ button{font:inherit;color:inherit}
 .ficha{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:40px;align-items:start}
 @media (max-width:900px){.ficha{grid-template-columns:1fr;gap:24px}}
 @media (min-width:901px){.buy{position:sticky;top:92px}}
-.gal-main{background:var(--shade);border-radius:12px;padding:40px 28px;display:grid}
-.gal-main svg{width:100%;height:auto}
-#galMain svg{grid-area:1/1}
+.gal-main{background:var(--shade);border-radius:12px;padding:24px;display:grid}
 .gal-cap{margin-top:10px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
 .thumbs{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
-.thumbs button{width:110px;border:1px solid var(--line);background:var(--shade);border-radius:8px;padding:10px 8px 6px;cursor:pointer;display:grid;gap:4px;font-size:12px;font-weight:600}
+.thumbs button{width:112px;border:1px solid var(--line);background:var(--shade);border-radius:8px;padding:6px;cursor:pointer}
 .thumbs button[aria-pressed="true"]{border-color:var(--fg);box-shadow:inset 0 0 0 1px var(--fg)}
-.thumbs svg{width:100%;height:auto}
 .buy{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:28px;display:flex;flex-direction:column;gap:14px}
 .buy .plogo{color:var(--fg)}
 .buy .plogo svg{height:44px;width:auto;display:block}
 .buy .tag{font-size:18px;color:var(--muted);margin-top:-6px}
 .buy .ars{font:500 34px/1 var(--m);font-variant-numeric:tabular-nums}
+.buy .ars.tbd{font:600 20px var(--d)}
 .buy .was{font:500 15px var(--m);color:var(--muted);text-decoration:line-through}
 .buy .usd{font:500 13px var(--m);color:var(--muted)}
 .buy ul{list-style:none;margin:6px 0 0;padding:14px 0 0;border-top:1px solid var(--line);display:grid;gap:8px;font-size:14px}
@@ -233,7 +234,9 @@ footer .logo svg{height:26px}
     <ul>
       <li><a href="#clip5">clip5</a></li>
       <li><a href="#sampler5">sampler5</a></li>
+      <li><a href="#eq5">eq5</a></li>
       <li><a href="#drum5">drum5</a></li>
+      <li><a href="#kit5">kit5</a></li>
       <li><a href="#pack">Pack</a></li>
       <li><a href="#soporte">Soporte</a></li>
     </ul>
@@ -270,46 +273,24 @@ const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [..
 // Respaldo por si productos.json no carga: mismos valores que el archivo.
 let CFG = {dolarMep:1580,factorArgentina:0.6,redondeoArs:500,productos:{clip5:{nombre:"clip5",usd:19,disponible:true},sampler5:{nombre:"sampler5",usd:24,disponible:true},drum5:{nombre:"drum5",usd:24,disponible:false},pack:{nombre:"Pack vst5",usd:49,disponible:true,incluye:["clip5","sampler5","drum5"]}}};
 try { const r = await fetch('productos.json'); if (r.ok) CFG = await r.json(); } catch (e) {}
-const P = CFG.productos, ars = id => Precios.ars(P[id].usd, CFG);
+const P = CFG.productos, ars = id => Precios.ars(ALL[id].usd, CFG);
 const pesos = n => new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0}).format(n);
 const COLOR = {clip5:'#F2C230', sampler5:'#D93A2B', drum5:'#6FA83A'};
+// eq5 y kit5 todavía no tienen precio: se muestran, pero no se pueden comprar.
+const ALL = {...P, eq5:{nombre:'eq5', usd:null, disponible:false}, kit5:{nombre:'kit5', usd:null, disponible:false}};
 
-/* ---------- Interfaces dibujadas (placeholder hasta tener capturas reales con los temas nuevos) ---------- */
-const TEMAS = { // tres temas por plugin (BRAND.md): oficial, oscuro, vst5
-  oficial: {bg:'#D8D5CE', panel:'#C9C5BC', scr:'#171614', ink:'#3A3834'},
-  oscuro:  {bg:'#2A2826', panel:'#3A3834', scr:'#121110', ink:'#171614'},
-  vst5:    {bg:'#6E6A62', panel:'#7E7A72', scr:'#3A3834', ink:'#2A2826'},
+/* ---------- Capturas reales (img/plugins), sacadas de cada plugin con audio pasando ---------- */
+const SHOTS = {
+  clip5: [['sonic','Tema sonic, el de fábrica hoy'],['marfil','Tema marfil'],['serum','Tema serum'],['medidores','Panel de medidores']],
+  sampler5: [['sample','Cortes por golpes · tema Sample'],['twin','Fuente y pestaña global · tema Twin'],['lab','Análisis y filtro · tema Lab'],['16bit','Pestaña avanzado · tema 16 Bit']],
+  drum5: [['twin','Pads, sonido y roll · tema Twin'],['sample','Tema Sample'],['lab','Tema Lab'],['16bit','Tema 16 Bit']],
+  eq5: [['oficial','Tema oficial'],['oscuro','Tema oscuro'],['vst5','Tema vst5'],['oficial-ms-notas','Modo M/S y notas'],['oficial-ajustes','Ajustes']],
+  kit5: [['oficial','Tema oficial'],['oscuro','Tema oscuro'],['vst5','Tema vst5']],
 };
-const beat = x => `M${x} 0v-34l3 52 4-30 5 18 6-8 8 4h14`;
-const beats = (x0, n, step = 40) => Array.from({length:n}, (_, i) => beat(x0 + i*step)).join('');
-const knob = (x, y, s, c, t) => `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-19.1 19.1A27 27 0 1 1 19.1 19.1" fill="none" stroke="${t.panel==='#C9C5BC'?'#A8A399':'#6E6A62'}" stroke-width="3" stroke-linecap="round"/><path d="M-19.1 19.1A27 27 0 0 1 0-27" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round"/><circle r="21" fill="${t.ink}"/><path d="M0-6v-12" stroke="#F1EFEA" stroke-width="3" stroke-linecap="round"/></g>`;
-function ui(id, tema = 'oscuro'){
-  const t = TEMAS[tema], c = COLOR[id], wave = tema === 'oficial' ? '#F1EFEA' : '#F1EFEA';
-  if (id === 'clip5') return `<svg viewBox="0 0 320 200" role="img" aria-label="Interfaz de clip5, tema ${tema}">
-    <rect width="320" height="200" rx="10" fill="${t.bg}"/>
-    <rect x="10" y="10" width="78" height="180" rx="6" fill="${t.panel}"/>
-    ${knob(49,72,1,c,t)}${knob(32,156,.42,c,t)}${knob(66,156,.42,c,t)}
-    <rect x="96" y="10" width="214" height="22" rx="6" fill="${t.panel}"/><rect x="150" y="16" width="100" height="10" rx="3" fill="${t.bg}"/>
-    <rect x="96" y="38" width="214" height="112" rx="6" fill="${t.scr}"/>
-    <path d="M104 66v-14M144 66v-14M184 66v-14M224 66v-14M264 66v-14" stroke="${c}" stroke-width="1.6"/>
-    <path d="${beats(104,5)}" transform="translate(0 100)" fill="none" stroke="${wave}" stroke-width="1.6" stroke-linejoin="round"/>
-    <path d="M96 66h214" stroke="${c}" stroke-width="1.4" stroke-dasharray="5 4"/>
-    <rect x="96" y="156" width="104" height="34" rx="6" fill="${t.panel}"/><rect x="206" y="156" width="50" height="34" rx="6" fill="${t.panel}"/><rect x="262" y="156" width="48" height="34" rx="6" fill="${t.panel}"/>
-    <rect x="104" y="171" width="88" height="4" rx="2" fill="${t.ink}"/><circle cx="160" cy="173" r="6" fill="${c}"/>
-    <rect x="270" y="165" width="14" height="16" rx="3" fill="${t.ink}"/><rect x="288" y="165" width="14" height="16" rx="3" fill="${c}"/></svg>`;
-  const on = id === 'drum5' ? [12,5,6,1,10] : [0,6,13,9];
-  let pads = '';
-  for (let i = 0; i < 16; i++) pads += `<rect x="${10 + (i%4)*47}" y="${76 + Math.floor(i/4)*29}" width="44" height="26" rx="3" fill="${on.includes(i) ? c : (tema==='oficial' ? '#B5B1A9' : '#57544E')}"/>`;
-  const marks = id === 'drum5' ? 'M58 14v50M78 14v50M98 14v50M118 14v50M138 14v50' : 'M58 14v50M138 14v50M218 14v50';
-  return `<svg viewBox="0 0 320 200" role="img" aria-label="Interfaz de ${id}, tema ${tema}">
-    <rect width="320" height="200" rx="10" fill="${t.bg}"/>
-    <rect x="10" y="10" width="300" height="58" rx="6" fill="${t.scr}"/>
-    <path d="${beats(18,7)}" transform="translate(0 44)" fill="none" stroke="${wave}" stroke-width="1.6" stroke-linejoin="round"/>
-    <path d="${marks}" stroke="${c}" stroke-width="1.4"/>
-    ${pads}
-    <rect x="204" y="76" width="106" height="114" rx="6" fill="${t.panel}"/>
-    ${knob(233,106,.5,c,t)}${knob(281,106,.5,c,t)}${knob(233,160,.5,c,t)}${knob(281,160,.5,c,t)}</svg>`;
-}
+const SIZE = {clip5:[1600,985], sampler5:[1600,1232], drum5:[1600,860], eq5:[1600,1000], kit5:[1600,1025]};
+const shot = (id, i = 0, lazy = true) => { const [k, cap] = SHOTS[id][i], [w, hh] = SIZE[id];
+  return `<img src="img/plugins/${id}-${k}.webp" width="${w}" height="${hh}" alt="${id}: ${cap}"${lazy ? ' loading="lazy"' : ''} decoding="async">`; };
+const trio = () => `${shot('clip5')}${shot('sampler5')}${shot('drum5')}`;
 
 /* ---------- Contenido ---------- */
 const DAWS = 'FL Studio, Ableton Live, Reaper, Studio One, Cubase y Bitwig';
@@ -329,6 +310,16 @@ const INFO = {
     feats:[['Roll por pad','Mantenés el pad y repite el golpe en la grilla: 1/8, 1/16, 1/32 y tresillos.'],['Browser con categorías','Reconoce kick, snare, hi-hat y más por el nombre del archivo.'],['Choke y 16 salidas','Grupos de corte para los hi-hats y cada pad a su canal del mixer.'],['Cada pad, a mano','Volumen, paneo, pitch de ±24 st, decay, reverse y mono.']],
     formatos:'VST3', sistemas:'Windows y Linux', daws:DAWS + '.',
     demos:['Roll de hi-hat en 1/32','Kit armado desde el browser']},
+  eq5: {tag:'Ecualizador de 8 bandas', titular:'Lo ponés en cada canal y te olvidás.', badge:'Beta', version:'1.0.0-beta.1',
+    lead:'Un ecualizador paramétrico para el día a día de la mezcla y el mastering, con latencia cero y la curva fiel hasta los agudos.',
+    feats:[['8 bandas, 8 filtros','Cortes de 12 y 48 dB/oct, estantes, campana y notch.'],['Estéreo, I/D o M/S','Una curva para los dos canales, una por lado, o una para el medio y otra para los lados.'],['Pantalla grande','Espectro antes y después, retención de picos, notas y lectura exacta de cada punto.'],['Fiel en los agudos','La curva no se aplasta cerca del límite de la frecuencia de muestreo.'],['Latencia cero','Y sobremuestreo 2x o 4x cuando querés agudos todavía más fieles.'],['36 presets','Más A/B, deshacer y rehacer.']],
+    formatos:'VST3; AU en macOS', sistemas:'Windows 10 u 11, macOS 10.13 o más nuevo y Linux', daws:DAWS + '. En Logic Pro, como AU.',
+    demos:['Voz al frente','Bus de batería']},
+  kit5: {tag:'Biblioteca de sonidos', titular:'Tus sonidos. Tu próximo kit.', badge:'Beta', version:'1.0.0-beta.1',
+    lead:'Una app de escritorio para ordenar tus MIDI y samples, escucharlos al toque y armar tu próximo kit. No es un plugin: exportás o arrastrás los archivos a tu DAW.',
+    feats:[['Todo en una biblioteca','MIDI, WAV, MP3 y proyectos de FL Studio, con categorías, etiquetas y favoritos.'],['Escuchás antes de cargar','Preescucha del audio y del MIDI, con miniatura de piano roll y forma de onda.'],['Búsqueda y filtros','Por nombre, etiqueta, formato y BPM, combinables.'],['Stacks','Apilás capas, las transponés juntas y exportás las notas como un solo MIDI.'],['Lee proyectos de FL Studio','Saca las notas del piano roll de cada patrón y canal.'],['Todo queda en tu compu','La biblioteca se guarda en tu equipo y funciona sin conexión.']],
+    formatos:'App de escritorio (no es un plugin)', sistemas:'Windows 10 u 11 de 64 bits (beta)', daws:'Cualquiera: exportás el archivo o lo arrastrás al DAW.',
+    demos:[]},
 };
 const PACK = {tag:'Los tres, un solo pago', titular:'Los tres plugins. Un solo pago.', lead:'clip5 y sampler5 hoy, y drum5 cuando salga, sin pagar de nuevo. Cada plugin nuevo que entre al pack también lo recibís.'};
 const FAQ = [
@@ -338,53 +329,55 @@ const FAQ = [
   ['¿Las actualizaciones se pagan?','No. Las actualizaciones de la misma versión principal (de 1.0 a 1.9, por ejemplo) están incluidas.'],
 ];
 const faqHtml = list => `<div class="faq">${list.map(([q,a],i) => `<details${i?'':' open'}><summary>${q}</summary><p>${a}</p></details>`).join('')}</div>`;
-const plogo = id => `<svg viewBox="${id==='clip5'?'0 0 246.7 64':id==='sampler5'?'0 0 410.6 64':'0 0 304.7 64'}" aria-label="${id}"><use href="#logo-${id}"/></svg>`;
+const LOGOS = {clip5:'0 0 246.7 64', sampler5:'0 0 410.6 64', drum5:'0 0 304.7 64'}; // eq5 y kit5 todavía no tienen logo en marca/logo
+const plogo = id => `<svg viewBox="${LOGOS[id]}" aria-label="${id}"><use href="#logo-${id}"/></svg>`;
 
 /* ---------- Vistas ---------- */
-const btnAdd = (id, cls = 'btn-main') => P[id].disponible
+const btnAdd = (id, cls = 'btn-main') => ALL[id].disponible
   ? `<button class="btn ${cls} add" type="button" data-id="${id}">Agregar al carrito</button>`
   : `<button class="btn ${cls}" type="button" disabled>Disponible pronto</button>`;
-const priceTxt = id => `${pesos(ars(id))}`;
+const priceTxt = id => ALL[id].usd == null ? 'Precio a confirmar' : pesos(ars(id));
 
 function home(){
   const slide = (id, i) => {
     if (id === 'pack') return `<div class="slide" data-i="${i}" role="group" aria-roledescription="diapositiva" aria-label="Pack vst5">
       <div class="tx"><span class="mono">Pack vst5 · pago único</span><h2>Los tres.</h2><p>clip5, sampler5 y drum5 por ${priceTxt('pack')}.</p>
       <div class="row"><button class="btn btn-light add" type="button" data-id="pack">Agregar al carrito</button><a class="btn btn-ghost" href="#pack">Ver el pack</a></div></div>
-      <div class="art trio">${ui('clip5')}${ui('sampler5')}${ui('drum5')}</div></div>`;
-    const f = INFO[id], av = P[id].disponible;
+      <div class="art trio">${trio()}</div></div>`;
+    const f = INFO[id], av = ALL[id].disponible;
     return `<div class="slide" data-i="${i}" role="group" aria-roledescription="diapositiva" aria-label="${id}">
-      <div class="tx"><span class="mono">${id} · ${av ? '1.0.0' : 'próximamente'}</span><h2>${id}</h2><p>${f.titular}</p>
+      <div class="tx"><span class="mono">${id} · ${av ? '1.0.0' : f.version || 'próximamente'}</span><h2>${id}</h2><p>${f.titular}</p>
       <div class="row">${av ? `<button class="btn btn-light add" type="button" data-id="${id}">Comprar · ${priceTxt(id)}</button>` : ''}<a class="btn btn-ghost" href="#${id}">${av ? 'Ver más' : 'Conocelo'}</a></div></div>
-      <div class="art">${ui(id)}</div></div>`;
+      <div class="art">${shot(id, 0, i > 0)}</div></div>`;
   };
-  const order = ['clip5','sampler5','pack','drum5'];
+  const order = ['clip5','sampler5','pack','eq5','drum5'];
   const card = id => {
     const f = INFO[id] || PACK, isPack = id === 'pack';
     return `<article class="card">
-      <a class="pic" href="#${id}" tabindex="-1" aria-hidden="true">${isPack ? `<span class="badge">Ahorrás ${pesos(ars('clip5')+ars('sampler5')+ars('drum5')-ars('pack'))}</span><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${ui('clip5')}${ui('sampler5')}${ui('drum5')}</div>` : `<span class="badge">${f.badge}</span>${ui(id)}`}</a>
-      <div class="body"><h3><a href="#${id}">${P[id].nombre}</a></h3><span class="muted">${f.tag}</span>
-        <div class="price"><b>${priceTxt(id)}</b><small>USD ${P[id].usd}</small></div>${btnAdd(id)}</div></article>`;
+      <a class="pic" href="#${id}" tabindex="-1" aria-hidden="true">${isPack ? `<span class="badge">Ahorrás ${pesos(ars('clip5')+ars('sampler5')+ars('drum5')-ars('pack'))}</span><div class="mini">${trio()}</div>` : `<span class="badge">${f.badge}</span>${shot(id)}`}</a>
+      <div class="body"><h3><a href="#${id}">${ALL[id].nombre}</a></h3><span class="muted">${f.tag}</span>
+        <div class="price"><b>${priceTxt(id)}</b>${ALL[id].usd ? `<small>USD ${ALL[id].usd}</small>` : ''}</div>${btnAdd(id)}</div></article>`;
   };
   return `<div class="wrap">
     <div class="chips" role="list">
       <a class="chip" role="listitem" href="#clip5" style="--c:var(--clip5)"><i>GRATIS</i><span><b>clip5 lite</b><span class="muted">Probalo sin pagar</span></span></a>
       <a class="chip" role="listitem" href="#pack"><i class="inv">PACK</i><span><b>Los tres plugins</b><span class="muted">USD ${P.pack.usd}, un solo pago</span></span></a>
       <a class="chip" role="listitem" href="#sampler5" style="--c:var(--sampler5)"><i>NUEVO</i><span><b>sampler5 1.0.0</b><span class="muted">Un loop, 16 pads</span></span></a>
+      <a class="chip" role="listitem" href="#eq5"><i class="inv">BETA</i><span><b>eq5</b><span class="muted">Ecualizador de 8 bandas</span></span></a>
       <a class="chip" role="listitem" href="#drum5" style="--c:var(--drum5)"><i>PRONTO</i><span><b>drum5</b><span class="muted">Batería de 16 pads</span></span></a>
     </div>
     <section class="hero" aria-roledescription="carrusel" aria-label="Destacados">
       <div class="slides" id="slides" aria-live="off">${order.map(slide).join('')}</div>
       <div class="hero-ctl">
         <button class="arr" type="button" id="prev" aria-label="Anterior">‹</button>
-        ${order.map((id,i) => `<button class="dot" type="button" data-go="${i}" aria-label="Ver ${P[id].nombre}"></button>`).join('')}
+        ${order.map((id,i) => `<button class="dot" type="button" data-go="${i}" aria-label="Ver ${ALL[id].nombre}"></button>`).join('')}
         <button class="arr" type="button" id="next" aria-label="Siguiente">›</button>
         <button class="arr" type="button" id="pause" aria-label="Pausar">❚❚</button>
       </div>
     </section>
     <section class="sec" aria-labelledby="h-plugins">
-      <div class="sec-h"><h2 id="h-plugins">Plugins <span>· máquinas clásicas, workflow de hoy</span></h2></div>
-      <div class="grid">${['clip5','sampler5','drum5','pack'].map(card).join('')}</div>
+      <div class="sec-h"><h2 id="h-plugins">Productos <span>· máquinas clásicas, workflow de hoy</span></h2></div>
+      <div class="grid">${['clip5','sampler5','pack','eq5','drum5','kit5'].map(card).join('')}</div>
     </section>
     <section class="sec">
       <div class="band"><svg viewBox="0 0 64 64" aria-hidden="true"><use href="#logo-k"/></svg>
@@ -402,33 +395,33 @@ function home(){
 }
 
 function ficha(id){
-  const isPack = id === 'pack', f = isPack ? PACK : INFO[id], av = P[id].disponible;
+  const isPack = id === 'pack', f = isPack ? PACK : INFO[id], av = ALL[id].disponible;
   const suma = ars('clip5') + ars('sampler5') + ars('drum5');
   const gal = isPack
-    ? `<div class="gal-main" style="grid-template-columns:1fr 1fr;gap:14px">${ui('clip5')}${ui('sampler5')}<div style="grid-column:span 2;max-width:50%;justify-self:center">${ui('drum5')}</div></div>
-       <div class="gal-cap"><span>clip5, sampler5 y drum5</span><span>Imágenes de referencia</span></div>`
-    : `<div class="gal-main" id="galMain">${ui(id,'oficial')}</div>
-       <div class="gal-cap"><span id="galCap">Tema oficial</span><span>Tres temas: oficial, oscuro y vst5</span></div>
-       <div class="thumbs" role="group" aria-label="Temas">${Object.keys(TEMAS).map((t,i) => `<button type="button" data-tema="${t}" aria-pressed="${!i}">${ui(id,t)}<span>${t[0].toUpperCase()+t.slice(1)}</span></button>`).join('')}</div>`;
+    ? `<div class="gal-main mini">${trio()}</div>
+       <div class="gal-cap"><span>clip5, sampler5 y drum5</span><span>Capturas reales</span></div>`
+    : `<div class="gal-main" id="galMain">${shot(id, 0, false)}</div>
+       <div class="gal-cap"><span id="galCap">${SHOTS[id][0][1]}</span><span>Captura real</span></div>
+       <div class="thumbs" role="group" aria-label="Capturas">${SHOTS[id].map(([, cap], i) => `<button type="button" data-shot="${i}" aria-pressed="${!i}" aria-label="${cap}">${shot(id, i)}</button>`).join('')}</div>`;
   const tabs = isPack
-    ? [['incluye','Qué incluye', `<div class="more">${['clip5','sampler5','drum5'].map(p => `<article class="card"><a class="pic" href="#${p}" tabindex="-1" aria-hidden="true">${ui(p)}</a><div class="body"><h3><a href="#${p}">${p}</a></h3><span class="muted">${INFO[p].tag}</span><div class="price"><b>${priceTxt(p)}</b><small>suelto</small></div></div></article>`).join('')}</div>`],
+    ? [['incluye','Qué incluye', `<div class="more">${['clip5','sampler5','drum5'].map(p => `<article class="card"><a class="pic" href="#${p}" tabindex="-1" aria-hidden="true">${shot(p)}</a><div class="body"><h3><a href="#${p}">${p}</a></h3><span class="muted">${INFO[p].tag}</span><div class="price"><b>${priceTxt(p)}</b><small>suelto</small></div></div></article>`).join('')}</div>`],
        ['preguntas','Preguntas', faqHtml(FAQ)]]
     : [['que','Qué hace', `<p class="lead">${f.lead}</p><div class="feats">${f.feats.map(([h,p]) => `<div><h3>${h}</h3><p>${p}</p></div>`).join('')}</div>`],
-       ['demos','Demos', `<div class="demos">${f.demos.map(d => `<div class="demo"><button class="play" type="button" disabled aria-label="Escuchar ${d}">▶</button><div><b>${d}</b><span class="muted">Antes y después</span></div><span class="mono muted">Pendiente</span></div>`).join('')}</div><p class="note" style="margin-top:14px">Las demos de audio todavía no están grabadas.</p>`],
-       ['requisitos','Requisitos', `<dl class="specs"><dt>Formatos</dt><dd>${f.formatos}</dd><dt>Sistemas</dt><dd>${f.sistemas}</dd><dt>DAW</dt><dd>${f.daws}</dd><dt>Licencia</dt><dd>Pago único. Actualizaciones de la versión 1 incluidas.</dd><dt>Idioma</dt><dd>Español</dd></dl>`],
+       ...(f.demos.length ? [['demos','Demos', `<div class="demos">${f.demos.map(d => `<div class="demo"><button class="play" type="button" disabled aria-label="Escuchar ${d}">▶</button><div><b>${d}</b><span class="muted">Antes y después</span></div><span class="mono muted">Pendiente</span></div>`).join('')}</div><p class="note" style="margin-top:14px">Las demos de audio todavía no están grabadas.</p>`]] : []),
+       ['requisitos','Requisitos', `<dl class="specs"><dt>Formatos</dt><dd>${f.formatos}</dd><dt>Sistemas</dt><dd>${f.sistemas}</dd><dt>DAW</dt><dd>${f.daws}</dd><dt>Licencia</dt><dd>${ALL[id].usd ? 'Pago único. Actualizaciones de la versión 1 incluidas.' : 'Precio y licencia a confirmar.'}</dd><dt>Idioma</dt><dd>Español</dd></dl>`],
        ['preguntas','Preguntas', faqHtml(FAQ)]];
   return `<div class="wrap">
-    <nav class="crumbs" aria-label="Ubicación"><a href="#">Inicio</a><span>›</span><span>${P[id].nombre}</span></nav>
+    <nav class="crumbs" aria-label="Ubicación"><a href="#">Inicio</a><span>›</span><span>${ALL[id].nombre}</span></nav>
     <div class="ficha">
       <div>${gal}</div>
-      <aside class="buy" aria-label="Comprar ${P[id].nombre}">
-        <div class="plogo">${isPack ? `<h1 style="font-size:40px;font-stretch:118%">Pack vst5</h1>` : `<h1 class="sr">${id}</h1>${plogo(id)}`}</div>
+      <aside class="buy" aria-label="Comprar ${ALL[id].nombre}">
+        <div class="plogo">${isPack ? `<h1 style="font-size:40px;font-stretch:118%">Pack vst5</h1>` : `${LOGOS[id] ? `<h1 class="sr">${id}</h1>${plogo(id)}` : `<h1 style="font-size:44px;font-stretch:118%">${id}</h1>`}`}</div>
         <p class="tag">${f.tag}</p>
         <p style="font-size:17px">${f.titular}</p>
-        <div>${isPack ? `<div class="was">${pesos(suma)}</div>` : ''}<div class="ars">${priceTxt(id)}</div><div class="usd">USD ${P[id].usd} · pago único</div></div>
-        ${av ? btnAdd(id) : `<button class="btn btn-main" type="button" disabled>Disponible pronto</button><p class="note">Si comprás el pack hoy, drum5 te llega cuando salga.</p>`}
+        <div>${isPack ? `<div class="was">${pesos(suma)}</div>` : ''}<div class="ars${ALL[id].usd ? '' : ' tbd'}">${priceTxt(id)}</div>${ALL[id].usd ? `<div class="usd">USD ${ALL[id].usd} · pago único</div>` : ''}</div>
+        ${av ? btnAdd(id) : `<button class="btn btn-main" type="button" disabled>Disponible pronto</button><p class="note">${id === 'drum5' ? 'Si comprás el pack hoy, drum5 te llega cuando salga.' : `Está en beta (${f.version}).`}</p>`}
         ${f.lite ? `<button class="btn btn-line" type="button" data-soon="La descarga de clip5 lite todavía no está activa.">Descargar clip5 lite gratis</button>` : ''}
-        ${isPack ? '' : `<ul><li><span class="muted">Formatos</span><span>${f.formatos}</span></li><li><span class="muted">Sistemas</span><span>${f.sistemas}</span></li><li><span class="muted">Versión</span><span>${av ? '1.0.0' : '—'}</span></li></ul>`}
+        ${isPack ? '' : `<ul><li><span class="muted">Formatos</span><span>${f.formatos}</span></li><li><span class="muted">Sistemas</span><span>${f.sistemas}</span></li><li><span class="muted">Versión</span><span>${av ? '1.0.0' : f.version || '—'}</span></li></ul>`}
       </aside>
     </div>
     <div class="tabs" role="tablist" aria-label="Detalle">${tabs.map(([k,t],i) => `<button type="button" role="tab" id="tab-${k}" aria-controls="pn-${k}" aria-selected="${!i}" tabindex="${i?-1:0}">${t}</button>`).join('')}</div>
@@ -441,21 +434,22 @@ function soporte(){
     <div class="sec-h"><h1 style="font-size:clamp(34px,5vw,56px);font-stretch:112%">Soporte</h1></div>${faqHtml(FAQ)}</div>`;
 }
 
-/* ---------- Ruteo por hash (#clip5, #sampler5, #drum5, #pack, #soporte) ---------- */
+/* ---------- Ruteo por hash (#clip5, #sampler5, #drum5, #eq5, #kit5, #pack, #soporte) ---------- */
 let timer = null;
 function route(){
   clearInterval(timer);
   const h = location.hash.slice(1), app = $('#app');
-  app.innerHTML = P[h] ? ficha(h) : h === 'soporte' ? soporte() : home();
+  app.innerHTML = ALL[h] ? ficha(h) : h === 'soporte' ? soporte() : home();
   $$('.nav ul a').forEach(a => a.toggleAttribute('aria-current', a.getAttribute('href') === '#' + h));
-  if (P[h]) document.title = `${P[h].nombre} · vst5`; else document.title = 'vst5';
+  if (ALL[h]) document.title = `${ALL[h].nombre} · vst5`; else document.title = 'vst5';
   scrollTo(0, 0);
   if ($('#slides')) carrusel();
   if ($('[role=tablist]')) pestanias();
-  $$('[data-tema]').forEach(b => b.addEventListener('click', () => {
-    $('#galMain').innerHTML = ui(h, b.dataset.tema);
-    $('#galCap').textContent = 'Tema ' + b.dataset.tema;
-    $$('[data-tema]').forEach(x => x.setAttribute('aria-pressed', x === b));
+  $$('[data-shot]').forEach(b => b.addEventListener('click', () => {
+    const i = +b.dataset.shot;
+    $('#galMain').innerHTML = shot(h, i, false);
+    $('#galCap').textContent = SHOTS[h][i][1];
+    $$('[data-shot]').forEach(x => x.setAttribute('aria-pressed', x === b));
   }));
   render();
 }
