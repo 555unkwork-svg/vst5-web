@@ -1,0 +1,376 @@
+<title>Opciones web vst5</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: tablero de decisiones. Cada pregunta es una fila de maquetas en miniatura (todo en em sobre cqw, escalan como una imagen);
+   se elige una por fila y la barra de abajo junta la elección para pegarla en el chat. Tokens = BRAND.md. */
+:root{
+  /* marca: fijos, las maquetas los usan tal cual */
+  --tinta:#171614; --chasis:#3A3834; --gris:#6E6A62; --alu:#D8D5CE; --hueso:#F1EFEA; --papel:#FAF9F6; --led:#FF5B14;
+  --clip5:#F2C230; --sampler5:#D93A2B; --drum5:#6FA83A;
+  /* tablero: cambian con el tema */
+  --bg:#F1EFEA; --fg:#171614; --muted:#6E6A62; --line:#D8D5CE; --panel:#FAF9F6;
+  --d:"Archivo",ui-sans-serif,system-ui,sans-serif; --m:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#121110;--fg:#F1EFEA;--muted:#B5B1A9;--line:#33302C;--panel:#1B1A18;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121110;--fg:#F1EFEA;--muted:#B5B1A9;--line:#33302C;--panel:#1B1A18;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:400 16px/1.55 var(--d);-webkit-font-smoothing:antialiased}
+h1,h2,h3,p{margin:0}
+h1,h2,h3{font-weight:800;line-height:1.05;text-wrap:balance}
+.wrap{max-width:1360px;margin-inline:auto;padding-block:40px 0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.mono{font:500 12px var(--m);letter-spacing:.08em;text-transform:uppercase}
+.top{display:grid;gap:14px;max-width:46em}
+.top h1{font-size:clamp(34px,5vw,60px);font-stretch:120%;letter-spacing:-.015em}
+.top p{color:var(--muted);font-size:17px}
+.q{margin-top:44px;padding-top:14px;border-top:2px solid var(--fg);display:grid;gap:22px}
+.q-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px}
+.q-h h2{font-size:clamp(24px,3vw,34px);font-stretch:112%}
+.q-h p{color:var(--muted);max-width:44em}
+.opts{display:grid;gap:18px}
+@media (min-width:700px){.n2,.n4{grid-template-columns:repeat(2,1fr)}}
+@media (min-width:960px){.n3{grid-template-columns:repeat(3,1fr)}}
+.opt{position:relative;display:flex;flex-direction:column;gap:12px;min-width:0;padding:10px;border:1px solid var(--line);border-radius:16px;background:var(--panel);cursor:pointer}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt:has(:checked){outline:3px solid var(--led);outline-offset:-1px}
+.opt:has(:focus-visible){outline:3px solid var(--fg);outline-offset:2px}
+.cap{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;padding:2px 6px 8px}
+.code{font:500 13px var(--m);border:1px solid var(--line);border-radius:6px;padding:2px 8px;align-self:start}
+.opt:has(:checked) .code{background:var(--led);border-color:var(--led);color:var(--tinta)}
+.cap h3{font-size:19px;font-stretch:108%;align-self:center}
+.cap h3 small{font:500 11px var(--m);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-left:8px;white-space:nowrap}
+.cap p{grid-column:2;color:var(--muted);font-size:15px;max-width:58ch}
+.bar{position:sticky;bottom:0;z-index:5;margin-top:44px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;background:var(--fg);color:var(--bg);border-radius:14px 14px 0 0;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px))}
+.bar output{font:500 16px var(--m);font-variant-numeric:tabular-nums}
+.bar button{margin-left:auto;border:0;border-radius:8px;padding:10px 16px;background:var(--bg);color:var(--fg);font:600 15px var(--d);cursor:pointer}
+.bar button:focus-visible{outline:2px solid var(--led);outline-offset:2px}
+
+/* ── Maquetas ── */
+.m{container-type:inline-size;aspect-ratio:var(--ar,16/10);max-width:100%;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.q1 .m,.q4 .m{--ar:3/4}
+.q3 .m{--ar:4/3}
+.v{position:relative;height:100%;overflow:hidden;display:flex;flex-direction:column;font:400 2.4cqw/1.4 var(--d);background:var(--hueso);color:var(--tinta)}
+.q1 .v{font-size:2cqw}
+.v .h1{font-weight:800;font-stretch:120%;line-height:1;letter-spacing:-.01em;text-wrap:balance}
+.v .mono{font-size:.8em}
+.v .mut{opacity:.62}
+.v .row{display:flex;flex-wrap:wrap;gap:.8em}
+.v .b{display:inline-block;background:var(--tinta);color:var(--hueso);border-radius:.6em;padding:.65em 1.2em;font-weight:600;white-space:nowrap;align-self:flex-start}
+.v .b.o{background:transparent;color:inherit;box-shadow:inset 0 0 0 1px currentColor}
+.v .ui{display:block;width:100%;height:auto;flex:none}
+.v .lg{width:8em;height:2.2em;flex:none}
+.v .nav{display:flex;align-items:center;gap:2em;padding:1.2em 2.5em;font-weight:500;flex:none}
+.v .sp{margin-left:auto}
+.v .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2em;padding:0 2.5em}
+.v .card{display:flex;flex-direction:column;gap:.3em;min-width:0}
+.v .card .ph{background:color-mix(in srgb,currentColor 9%,transparent);padding:1.3em;border-radius:.5em;margin-bottom:.5em}
+.v .card b{font-size:1.3em}
+.v .dots{position:absolute;left:2.5em;bottom:1.6em;display:flex;gap:.5em;z-index:1}
+.v .dots i{width:1.8em;height:.25em;background:var(--gris)}
+.v .dots .on{background:var(--hueso)}
+.v .play{display:grid;place-items:center;width:3em;height:3em;border-radius:50%;background:var(--tinta);color:var(--hueso);flex:none;font-size:1em}
+.v .wave{flex:1;min-width:0;height:4em;stroke:currentColor;stroke-width:1.6}
+.v.dk{background:var(--tinta);color:var(--hueso)}
+.dk .b{background:var(--hueso);color:var(--tinta)}
+
+/* 1A Pizarra (Miro): lienzo con puntos, menú flotante, titular que mezcla pesos, etiquetas sueltas */
+.v.a{background-image:radial-gradient(var(--alu) .09em,transparent .1em);background-size:1.6em 1.6em}
+.a .strip{background:var(--tinta);color:var(--hueso);display:flex;justify-content:center;align-items:center;gap:1em;padding:.6em;flex:none}
+.a .strip b{background:var(--led);color:var(--tinta);border-radius:.4em;padding:.15em .8em;font-weight:600}
+.a .nav{margin:.8em 1em 0;background:var(--papel);border-radius:.9em;padding:.8em 1.4em;box-shadow:0 .1em .6em rgba(23,22,20,.1)}
+.a .ctr{display:flex;flex-direction:column;align-items:center;text-align:center;gap:1.2em;padding:2.4em 3em 0}
+.a .ctr .b{align-self:auto}
+.a .h1{font-size:3.4em;font-weight:500;font-stretch:112%}
+.a .h1 b{font-weight:800}
+.a .tag{position:absolute;border-radius:9em;padding:.15em .9em;font-weight:500;background:color-mix(in srgb,var(--c) 40%,var(--papel));box-shadow:inset 0 0 0 1px var(--c)}
+.a .stage{margin:2.2em 3em 0;padding:1.6em 6em;border-radius:1.2em;background:var(--papel);box-shadow:0 .1em .6em rgba(23,22,20,.1)}
+.a .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:1em;margin:1em 3em 0}
+.a .tiles div{border-radius:1em;padding:1.1em 1.3em;background:color-mix(in srgb,var(--c) 30%,var(--papel));display:grid}
+.a .tiles b{font-size:1.4em;font-weight:800}
+/* 1B Vitrina (Universal Audio): página clara, franja de oferta, fila de promos, banner oscuro, tarjetas con precio */
+.b1 .strip{background:var(--led);text-align:center;padding:.6em;flex:none}
+.b1 .nav{border-bottom:1px solid var(--alu)}
+.b1 .chips{display:flex;gap:.8em;padding:1em 0 1em 2.5em;flex:none}
+.b1 .chips div{flex:none;width:17em;display:flex;align-items:center;gap:.9em;border:1px solid var(--alu);background:var(--papel);border-radius:.4em;padding:.6em}
+.b1 .chips i{display:grid;place-items:center;width:5em;height:5em;border-radius:50%;background:var(--tinta);color:var(--hueso);font:500 .62em var(--m);flex:none}
+.b1 .chips span{display:grid;line-height:1.25}
+.b1 .ban{position:relative;margin:0 2.5em;height:25em;border-radius:.8em;background:var(--tinta);color:var(--hueso);overflow:hidden;flex:none}
+.b1 .ban .ui{position:absolute;left:18em;top:2.2em;width:36em}
+.b1 .ban .tx{position:absolute;left:2em;top:4.5em;width:15em;display:flex;flex-direction:column;gap:.9em}
+.b1 .ban .h1{font-size:4.6em}
+.b1 .ban .b{background:var(--hueso);color:var(--tinta);border-radius:9em;padding-inline:2em}
+.b1 .feat{display:grid;grid-template-columns:14em 1fr;gap:1.5em;padding:2em 0 0 2.5em}
+.b1 .feat .h1{font-size:2.2em;font-stretch:112%;margin-top:.3em}
+.b1 .feat .h1 span{color:var(--gris)}
+.b1 .cards{display:flex;gap:1em;min-width:0}
+.b1 .cards .card{flex:none;width:13.5em;background:var(--papel);border:1px solid var(--alu);border-radius:.5em;padding:.9em}
+.b1 .tag{align-self:flex-end;background:var(--alu);border-radius:.3em;padding:.1em .5em;margin-bottom:.3em}
+/* 1C Editorial (oeksound): todo en minúscula, imagen a todo el ancho con la frase encima, título a la derecha y párrafo al lado */
+.v.c1{background:var(--papel)}
+.c1 .nav{font-weight:400;font-size:1.2em;padding:1.5em 2em;gap:2.6em}
+.c1 .cart{width:2.2em;height:2.2em;border-radius:50%;background:var(--alu)}
+.c1 .band{background:var(--alu);text-align:center;padding:.9em;flex:none}
+.c1 .hero{position:relative;height:23em;background:var(--tinta);color:var(--hueso);overflow:hidden;flex:none}
+.c1 .band+.hero{margin-top:1.5em}
+.c1 .hero .ui{position:absolute;width:54em;left:9em;top:-5em;opacity:.5}
+.c1 .hero .tx{position:absolute;left:2.5em;bottom:2.2em;display:grid;gap:.8em}
+.c1 .h1{font-size:3.3em;font-weight:600;font-stretch:100%}
+.c1 .two{display:grid;grid-template-columns:16em 1fr;gap:2.5em;padding:2.6em 2.5em;line-height:1.55}
+.c1 .two b{font-size:1.9em;font-weight:600;line-height:1.1;text-align:right}
+.c1 .qt{flex:1;display:grid;grid-template-columns:16em 1fr;gap:2.5em;align-items:center;padding:0 2.5em;background:var(--hueso)}
+.c1 .qt i{width:10em;height:10em;border-radius:50%;justify-self:center;background:color-mix(in srgb,var(--sampler5) 32%,var(--hueso))}
+.c1 .qt div{display:grid;gap:.7em}
+.c1 .qt b{font-size:1.15em;line-height:1.4}
+.c1 .qt .qm{font-size:5em;font-weight:800;line-height:.7;height:.45em}
+
+/* 2 Primera pantalla */
+.s2a{flex-direction:row;align-items:center;gap:2em;padding-left:3em}
+.s2a .tx,.s2d .tx{width:16em;flex:none;display:flex;flex-direction:column;gap:1em}
+.s2a .h1,.s2d .h1{font-size:2.5em}
+.s2a .ui{width:27em}
+.s2b .ui{position:absolute;width:34em;right:-7em;top:2.2em}
+.s2b::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--tinta) 28%,transparent 72%)}
+.s2b .tx{position:absolute;left:2.5em;bottom:4.6em;width:19em;display:flex;flex-direction:column;gap:1em;z-index:1}
+.s2b .h1{font-size:3em}
+.s2c{align-items:center;justify-content:center;gap:1.8em;padding:0 4em;text-align:center}
+.s2c .h1{font-size:3em}
+.s2c .player{display:flex;align-items:center;gap:1.2em;width:100%;border:1px solid var(--alu);background:var(--papel);border-radius:1em;padding:1em 1.4em}
+.s2c .tog{display:flex;border:1px solid var(--tinta);border-radius:.6em;overflow:hidden;font-weight:600}
+.s2c .tog span{padding:.5em 1.2em}
+.s2c .tog .on{background:var(--tinta);color:var(--hueso)}
+.s2d{flex-direction:row;align-items:center;justify-content:space-between;padding:0 4em 0 3em}
+.s2d .kn{display:grid;justify-items:center;gap:.6em}
+.s2d .kn svg{width:15em;height:15em}
+.s2d .kn .mono{font-size:1.8em;letter-spacing:0}
+
+/* 3 Catálogo */
+.s3a{display:grid;grid-template-columns:1.35fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:.9em;padding:1.6em}
+.s3a .t{border-radius:1.1em;padding:1.2em 1.3em;background:color-mix(in srgb,var(--c) 27%,var(--hueso));display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.s3a .t b{font-size:1.5em;font-weight:800}
+.s3a .big{grid-row:span 2}
+.s3a .big .ui{width:150%;margin-top:auto}
+.s3a .pk{grid-column:span 2;background:var(--tinta);color:var(--hueso)}
+.s3a .pk .mono{margin-top:auto}
+.s3b{justify-content:center;gap:1.4em}
+.s3b .hd,.s3c .hd{padding:0 2.5em;font-size:1.8em;font-weight:800;font-stretch:112%}
+.s3b .card .b{margin-top:.6em;font-size:.9em}
+.s3c{justify-content:center;gap:1em}
+.s3c .li{display:grid;grid-template-columns:7em 9em 1fr auto auto;align-items:center;gap:1.6em;margin:0 2.5em;padding:1.1em 0;border-top:1px solid var(--alu)}
+.s3c .li b{font-size:1.5em}
+
+/* 4 Página de plugin */
+.s4a .hero{height:19em}
+.s4a .hero .ui{width:44em;left:8em;top:-4em}
+.s4a .two{padding-block:2em}
+.s4a .au{display:flex;align-items:center;gap:1.2em;margin:0 2.5em;border-block:1px solid var(--alu);padding:1em 0}
+.s4a .buy{margin-top:auto;display:flex;align-items:center;gap:1.5em;padding:1.4em 2.5em;background:var(--hueso)}
+.s4a .buy b{font-size:1.6em;font-weight:600}
+.s4a .buy .b{margin-left:auto;align-self:auto}
+.s4b{gap:2em;padding:2.5em}
+.s4b .two{display:grid;grid-template-columns:1.25fr 1fr;gap:2em}
+.s4b .th{display:flex;gap:.6em;margin-top:.8em}
+.s4b .th i{width:5em;height:3.2em;border-radius:.4em;background:var(--alu)}
+.s4b .th i:first-child{box-shadow:inset 0 0 0 .15em var(--tinta)}
+.s4b .buy{display:flex;flex-direction:column;gap:.9em;border:1px solid var(--alu);background:var(--papel);border-radius:1em;padding:1.6em}
+.s4b .buy .b{align-self:stretch;text-align:center}
+.s4b .h1{font-size:2.8em}
+.s4b .pr{font:500 1.7em var(--m)}
+.s4b .tabs{display:flex;gap:2em;border-bottom:1px solid var(--alu);font-weight:600}
+.s4b .tabs span{padding-bottom:.7em}
+.s4b .tabs .on{box-shadow:inset 0 -.2em 0 var(--tinta)}
+.s4b .tx{display:grid;gap:.5em;max-width:30em;font-size:1.1em}
+.s4c .nav{border-bottom:1px solid var(--alu);background:var(--papel);gap:1.6em}
+.s4c .on{box-shadow:0 .25em 0 var(--led)}
+.s4c .sec{flex:1;display:grid;grid-template-columns:1fr 1.15fr;gap:2em;align-items:center;padding:0 2.5em;border-bottom:1px solid var(--alu)}
+.s4c .sec div{display:flex;flex-direction:column;gap:.7em}
+.s4c .sec b{font-size:2.2em;font-weight:800;font-stretch:120%;line-height:1}
+
+/* 5 Compra */
+.s5a .pg{opacity:.35;padding-top:5em}
+.s5a .dr{position:absolute;inset:0 0 0 auto;width:17em;background:var(--papel);border-left:1px solid var(--alu);padding:1.8em 1.6em;display:flex;flex-direction:column;gap:.9em}
+.s5a .dr>b{font-size:1.6em;font-weight:800;margin-bottom:.4em}
+.s5a .it{display:flex;justify-content:space-between;padding-bottom:.8em;border-bottom:1px solid var(--alu)}
+.s5a .tot{border:0;font-weight:700;margin-top:auto}
+.s5a .dr .b{align-self:stretch;text-align:center}
+.s5b{flex-direction:row;align-items:center;justify-content:center;gap:1.2em;padding:0 2em}
+.s5b .st{width:11.5em;display:flex;flex-direction:column;gap:.8em;border:1px solid var(--alu);background:var(--papel);border-radius:1em;padding:1.2em}
+.s5b .st b{font-size:1.3em;line-height:1.15}
+.s5b .ar{font-size:1.8em}
+.s5b .b{align-self:stretch;text-align:center;padding-inline:.4em}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="logo" viewBox="0 0 232.3 64.0"><g transform="translate(0 0) scale(1)"><line x1="15.74" y1="48.26" x2="12.20" y2="51.80" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="10.13" y1="39.11" x2="5.37" y2="40.65" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="9.28" y1="28.40" x2="4.34" y2="27.62" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="13.39" y1="18.48" x2="9.35" y2="15.54" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="21.56" y1="11.51" x2="19.29" y2="7.05" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="32.00" y1="10.00" x2="32.00" y2="2.00" stroke="#FF5B14" stroke-width="4" stroke-linecap="round"/><line x1="42.44" y1="11.51" x2="44.71" y2="7.05" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="50.61" y1="18.48" x2="54.65" y2="15.54" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="54.72" y1="28.40" x2="59.66" y2="27.62" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="53.87" y1="39.11" x2="58.63" y2="40.65" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="48.26" y1="48.26" x2="51.80" y2="51.80" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><circle cx="32" cy="32" r="19" fill="currentColor"/><line x1="32" y1="27" x2="32" y2="17" stroke-width="5" stroke-linecap="round" stroke="#FF5B14"/></g><path d="M104.16 51.95L92.73 51.95L78.12 21.33L89.77 21.33L95.63 35.19Q96.04 36.06 96.53 37.36Q97.02 38.67 97.55 40.03Q98.07 41.40 98.47 42.44L98.47 42.44L99.00 42.44Q99.40 41.40 99.89 40.00Q100.39 38.61 100.91 37.28Q101.43 35.94 101.78 35.07L101.78 35.07L107.58 21.33L118.77 21.33L104.16 51.95ZM139.42 52.65L139.42 52.65Q136 52.65 132.72 52.10Q129.45 51.55 126.81 50.41Q124.17 49.28 122.60 47.49Q121.04 45.69 121.04 43.19L121.04 43.19Q121.04 42.96 121.07 42.73Q121.09 42.50 121.15 42.27L121.15 42.27L132.17 42.27Q132.11 42.44 132.11 42.58Q132.11 42.73 132.11 42.85L132.11 42.85Q132.11 44.06 133.16 44.82Q134.20 45.57 135.86 45.92Q137.51 46.27 139.48 46.27L139.48 46.27Q141.10 46.27 142.93 46.06Q144.76 45.86 146.00 45.28Q147.25 44.70 147.25 43.48L147.25 43.48Q147.25 42.15 145.60 41.63Q143.95 41.11 141.19 40.79Q138.44 40.47 134.96 40.00L134.96 40.00Q132.35 39.66 130.03 39.05Q127.71 38.44 125.91 37.36Q124.11 36.29 123.10 34.64Q122.08 32.99 122.08 30.61L122.08 30.61Q122.08 27.82 123.44 25.91Q124.81 24.00 127.24 22.84Q129.68 21.68 132.93 21.15Q136.17 20.63 139.94 20.63L139.94 20.63Q143.25 20.63 146.30 21.15Q149.34 21.68 151.75 22.75Q154.15 23.82 155.55 25.47Q156.94 27.13 156.94 29.39L156.94 29.39Q156.94 29.62 156.94 29.85Q156.94 30.09 156.88 30.26L156.88 30.26L145.92 30.26L145.92 29.85Q145.92 28.87 145.02 28.26Q144.12 27.65 142.76 27.36Q141.39 27.07 139.83 27.07L139.83 27.07Q139.19 27.07 138.03 27.10Q136.87 27.13 135.65 27.36Q134.43 27.59 133.59 28.06Q132.75 28.52 132.75 29.39L132.75 29.39Q132.75 30.49 134.17 30.98Q135.59 31.48 137.94 31.71Q140.29 31.94 143.02 32.29L143.02 32.29Q145.80 32.58 148.50 33.10Q151.20 33.62 153.31 34.64Q155.43 35.65 156.68 37.45Q157.92 39.25 157.92 42.09L157.92 42.09Q157.92 45.11 156.56 47.14Q155.20 49.17 152.70 50.39Q150.21 51.60 146.82 52.13Q143.42 52.65 139.42 52.65ZM179.21 52.65L179.21 52.65Q175.38 52.65 172.80 51.78Q170.22 50.91 168.89 48.76Q167.55 46.62 167.55 42.79L167.55 42.79L167.55 28.64L161.58 28.64L161.58 21.33L167.96 21.33L170.10 12.22L178.28 12.22L178.28 21.33L186.81 21.33L186.81 28.64L178.28 28.64L178.28 40.82Q178.28 43.02 179.21 44.21Q180.14 45.40 183.04 45.40L183.04 45.40L186.81 45.40L186.81 51.60Q186.00 51.89 184.58 52.13Q183.15 52.36 181.70 52.50Q180.25 52.65 179.21 52.65ZM212.68 52.65L212.68 52.65Q205.89 52.65 201.22 50.94Q196.55 49.23 194.15 46.18Q191.74 43.14 191.74 39.19L191.74 39.19L202.18 39.19Q202.24 41.11 203.45 42.50Q204.67 43.89 206.79 44.64Q208.91 45.40 211.63 45.40L211.63 45.40Q214.18 45.40 216.33 44.64Q218.48 43.89 219.78 42.41Q221.09 40.93 221.09 38.67L221.09 38.67Q221.09 36.47 219.96 35.02Q218.82 33.57 216.77 32.84Q214.71 32.12 211.86 32.12L211.86 32.12Q209.83 32.12 208.12 32.49Q206.41 32.87 205.14 33.62Q203.86 34.38 203.05 35.54L203.05 35.54L193.83 34.38L195.91 12.05L228.80 12.05L228.80 20.86L204.27 20.86L203.51 28.35Q204.44 27.71 206.15 27.04Q207.86 26.37 210.18 25.85Q212.50 25.33 215.29 25.33L215.29 25.33Q220.39 25.33 224.19 26.87Q227.99 28.40 230.13 31.39Q232.28 34.38 232.28 38.84L232.28 38.84Q232.28 42.85 229.90 45.98Q227.52 49.11 223.12 50.88Q218.71 52.65 212.68 52.65Z" fill="currentColor"/></symbol>
+  <symbol id="k" viewBox="0 0 64.0 64.0"><g transform="translate(0 0) scale(1)"><line x1="15.74" y1="48.26" x2="12.20" y2="51.80" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="10.13" y1="39.11" x2="5.37" y2="40.65" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="9.28" y1="28.40" x2="4.34" y2="27.62" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="13.39" y1="18.48" x2="9.35" y2="15.54" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="21.56" y1="11.51" x2="19.29" y2="7.05" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="32.00" y1="10.00" x2="32.00" y2="2.00" stroke="#FF5B14" stroke-width="4" stroke-linecap="round"/><line x1="42.44" y1="11.51" x2="44.71" y2="7.05" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="50.61" y1="18.48" x2="54.65" y2="15.54" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="54.72" y1="28.40" x2="59.66" y2="27.62" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="53.87" y1="39.11" x2="58.63" y2="40.65" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="48.26" y1="48.26" x2="51.80" y2="51.80" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><circle cx="32" cy="32" r="19" fill="currentColor"/><line x1="32" y1="27" x2="32" y2="17" stroke-width="5" stroke-linecap="round" stroke="#FF5B14"/></g></symbol>
+  <path id="beat" d="M0 0v-34l3 52 4-30 5 18 6-8 8 4h14" fill="none" stroke-linejoin="round"/>
+  <g id="beats"><use href="#beat"/><use href="#beat" x="40"/><use href="#beat" x="80"/><use href="#beat" x="120"/><use href="#beat" x="160"/></g>
+  <pattern id="pad" width="47" height="29" patternUnits="userSpaceOnUse"><rect width="44" height="26" rx="3" fill="#57544E"/></pattern>
+  <g id="knob"><path d="M-19.1 19.1A27 27 0 1 1 19.1 19.1" fill="none" stroke="#6E6A62" stroke-width="3" stroke-linecap="round"/><path d="M-19.1 19.1A27 27 0 0 1 0-27" fill="none" style="stroke:var(--c,#FF5B14)" stroke-width="3" stroke-linecap="round"/><circle r="21" fill="#171614"/><path d="M0-6v-12" stroke="#F1EFEA" stroke-width="3" stroke-linecap="round"/></g>
+  <symbol id="ui-clip" viewBox="0 0 320 200">
+    <rect width="320" height="200" rx="10" fill="#3A3834"/>
+    <rect x="10" y="10" width="78" height="180" rx="6" fill="#4A4843"/>
+    <use href="#knob" x="49" y="72"/><use href="#knob" transform="translate(32 156) scale(.42)"/><use href="#knob" transform="translate(66 156) scale(.42)"/>
+    <rect x="96" y="10" width="214" height="22" rx="6" fill="#4A4843"/><rect x="150" y="16" width="100" height="10" rx="3" fill="#3A3834"/>
+    <rect x="96" y="38" width="214" height="112" rx="6" fill="#171614"/>
+    <path d="M104 66v-14M144 66v-14M184 66v-14M224 66v-14M264 66v-14" style="stroke:var(--c,#FF5B14)" stroke-width="1.6"/>
+    <use href="#beats" x="104" y="100" stroke="#F1EFEA" stroke-width="1.6"/>
+    <path d="M96 66h214" style="stroke:var(--c,#FF5B14)" stroke-width="1.4" stroke-dasharray="5 4"/>
+    <rect x="96" y="156" width="104" height="34" rx="6" fill="#4A4843"/><rect x="206" y="156" width="50" height="34" rx="6" fill="#4A4843"/><rect x="262" y="156" width="48" height="34" rx="6" fill="#4A4843"/>
+    <rect x="104" y="171" width="88" height="4" rx="2" fill="#171614"/><circle cx="160" cy="173" r="6" style="fill:var(--c,#FF5B14)"/>
+  </symbol>
+  <symbol id="ui-pads" viewBox="0 0 320 200">
+    <rect width="320" height="200" rx="10" fill="#3A3834"/>
+    <rect x="10" y="10" width="300" height="58" rx="6" fill="#171614"/>
+    <use href="#beats" x="18" y="44" stroke="#F1EFEA" stroke-width="1.6"/><use href="#beat" x="218" y="44" stroke="#F1EFEA" stroke-width="1.6"/><use href="#beat" x="258" y="44" stroke="#F1EFEA" stroke-width="1.6"/>
+    <path d="M58 14v50M138 14v50M218 14v50" style="stroke:var(--c,#FF5B14)" stroke-width="1.4"/>
+    <g transform="translate(10 76)"><rect width="188" height="116" fill="url(#pad)"/><rect width="44" height="26" rx="3" style="fill:var(--c,#FF5B14)"/><rect x="94" y="29" width="44" height="26" rx="3" style="fill:var(--c,#FF5B14)"/><rect x="47" y="87" width="44" height="26" rx="3" style="fill:var(--c,#FF5B14)"/></g>
+    <rect x="204" y="76" width="106" height="114" rx="6" fill="#4A4843"/>
+    <use href="#knob" transform="translate(233 106) scale(.5)"/><use href="#knob" transform="translate(281 106) scale(.5)"/><use href="#knob" transform="translate(233 160) scale(.5)"/><use href="#knob" transform="translate(281 160) scale(.5)"/>
+  </symbol>
+</defs></svg>
+
+<main class="wrap">
+  <header class="top">
+    <span class="mono">vst5 · web nueva · ronda 1</span>
+    <h1>Elegí por dónde arrancamos</h1>
+    <p>Cinco decisiones. Tocá una opción en cada una y, al final, copiá tu elección para pegarla en el chat. Se pueden mezclar: la dirección de una referencia con el catálogo de otra.</p>
+    <p>Todas respetan la marca: los colores, Archivo, IBM Plex Mono y la perilla en 5. Los plugins dibujados y los textos son de ejemplo.</p>
+  </header>
+
+  <form id="f">
+  <section class="q q1">
+    <div class="q-h"><h2>1. Dirección general</h2><p>El tono de toda la web. Cada una sale de una de tus tres referencias.</p></div>
+    <div class="opts n3">
+      <label class="opt"><input type="radio" name="q1" id="q1a" value="A">
+        <div class="m" aria-hidden="true"><div class="v a">
+          <div class="strip"><span>clip5 lite es gratis</span><b>Descargalo →</b></div>
+          <div class="nav"><svg class="lg"><use href="#logo"/></svg><span>Plugins</span><span>Pack</span><span>Soporte</span><span class="sp">Mi cuenta</span><span class="b">Probar gratis</span></div>
+          <div class="ctr"><div class="h1"><b>Máquinas clásicas,</b> workflow de hoy.</div><div class="mut" style="font-size:1.25em">Plugins que suenan bien en 5. Después ajustás.</div><div class="row"><span class="b">Ver plugins</span><span class="b o">Escuchar demos</span></div></div>
+          <span class="tag" style="--c:var(--sampler5);left:3.5em;top:21em">➤ sampler5</span><span class="tag" style="--c:var(--drum5);right:3em;top:25.5em">drum5 ➤</span>
+          <div class="stage" style="--c:var(--clip5)"><svg class="ui" viewBox="0 0 320 200"><use href="#ui-clip"/></svg></div>
+          <div class="tiles"><div style="--c:var(--clip5)"><b>clip5</b>Clipper de mastering</div><div style="--c:var(--sampler5)"><b>sampler5</b>Un loop, 16 pads</div><div style="--c:var(--drum5)"><b>drum5</b>Batería de 16 pads</div></div>
+        </div></div>
+        <div class="cap"><span class="code">1A</span><h3>Pizarra <small>de Miro</small></h3><p>Clara y amable. Fondo de lienzo con puntos, menú flotante, titular al centro que mezcla negrita y fina, y etiquetas de color sueltas. Cuenta primero la idea de vst5 y después cada plugin.</p></div>
+      </label>
+      <label class="opt"><input type="radio" name="q1" id="q1b" value="B">
+        <div class="m" aria-hidden="true"><div class="v b1">
+          <div class="strip mono">Pack vst5 · los tres plugins por USD 49 ›</div>
+          <div class="nav"><svg class="lg"><use href="#logo"/></svg><span>Plugins</span><span>Pack</span><span>Soporte</span><span class="sp">Mi cuenta</span><span>Carrito 0</span></div>
+          <div class="chips"><div><i>GRATIS</i><span><b>clip5 lite</b><span class="mut">Descargalo sin pagar</span></span></div><div><i>PACK</i><span><b>Los tres plugins</b><span class="mut">USD 49, un solo pago</span></span></div><div><i>NUEVO</i><span><b>sampler5 1.0.0</b><span class="mut">Un loop, 16 pads</span></span></div></div>
+          <div class="ban" style="--c:var(--clip5)"><svg class="ui" viewBox="0 0 320 200"><use href="#ui-clip"/></svg><div class="tx"><span>Clipper de mastering</span><div class="h1">clip5</div><span class="b">Comprar · USD 19</span></div></div>
+          <div class="feat"><div><span>Plugins</span><div class="h1">Máquinas clásicas, <span>workflow de hoy</span></div></div><div class="cards"><div class="card" style="--c:var(--sampler5)"><span class="mono tag">Nuevo</span><div class="ph"><svg class="ui" viewBox="0 0 320 200"><use href="#ui-pads"/></svg></div><b>sampler5</b><span class="mut">Un loop, 16 pads</span><span class="mono">USD 24</span></div><div class="card" style="--c:var(--drum5)"><span class="mono tag">Pronto</span><div class="ph"><svg class="ui" viewBox="0 0 320 200"><use href="#ui-pads"/></svg></div><b>drum5</b><span class="mut">Batería de 16 pads</span><span class="mono">USD 24</span></div><div class="card" style="--c:var(--clip5)"><span class="mono tag">Gratis</span><div class="ph"><svg class="ui" viewBox="0 0 320 200"><use href="#ui-clip"/></svg></div><b>clip5 lite</b></div></div></div>
+        </div></div>
+        <div class="cap"><span class="code">1B</span><h3>Vitrina <small>de Universal Audio</small></h3><p>Una tienda. Página clara con banners oscuros: franja de oferta arriba, fila de promos, un banner grande con el plugin y su botón, y tarjetas con precio que se deslizan. Todo empuja a comprar.</p></div>
+      </label>
+      <label class="opt"><input type="radio" name="q1" id="q1c" value="C">
+        <div class="m" aria-hidden="true"><div class="v c1">
+          <div class="nav"><svg class="lg"><use href="#logo"/></svg><span>plugins</span><span>descargas</span><span>soporte</span><span class="cart sp"></span></div>
+          <div class="band">clip5 lite es gratis</div>
+          <div class="hero" style="--c:var(--clip5)"><svg class="ui" viewBox="0 0 320 200"><use href="#ui-clip"/></svg><div class="tx"><div class="h1">más volumen,<br>el golpe entero</div><span>clip5 · clipper de mastering</span></div></div>
+          <div class="two"><b>cuatro curvas de recorte</b><span>De la más blanda a la más dura. Elegís la que le va al material y el techo queda donde lo pusiste, sin sorpresas en el limitador.</span></div>
+          <div class="qt"><i></i><div><span class="qm">“</span><b>Acá va lo que dice un productor que ya lo usa en sus mezclas.</b><span class="mono">Nombre · con quién trabaja</span></div></div>
+        </div></div>
+        <div class="cap"><span class="code">1C</span><h3>Editorial <small>de oeksound</small></h3><p>Tranquila y en minúscula. Una imagen a todo el ancho con la frase encima; abajo, título a un lado y párrafo al otro, y citas de quienes lo usan. Pide buenas imágenes y buen texto.</p></div>
+      </label>
+    </div>
+  </section>
+
+  <section class="q q2">
+    <div class="q-h"><h2>2. Primera pantalla</h2><p>Lo que se ve al entrar, antes de bajar.</p></div>
+    <div class="opts n4">
+      <label class="opt"><input type="radio" name="q2" id="q2a" value="A">
+        <div class="m" aria-hidden="true"><div class="v s2a" style="--c:var(--clip5)"><div class="tx"><div class="h1">Máquinas clásicas, workflow de hoy.</div><div class="mut">Plugins que suenan bien en 5.</div><span class="b">Ver plugins</span></div><svg class="ui" viewBox="0 0 320 200"><use href="#ui-clip"/></svg></div></div>
+        <div class="cap"><span class="code">2A</span><h3>Frase y captura</h3><p>La frase de la marca a un lado y un plugin real al otro. Se entiende qué vendés en dos segundos.</p></div>
+      </label>
+      <label class="opt"><input type="radio" name="q2" id="q2b" value="B">
+        <div class="m" aria-hidden="true"><div class="v dk s2b" style="--c:var(--sampler5)"><svg class="ui" viewBox="0 0 320 200"><use href="#ui-pads"/></svg><div class="tx"><span class="mono mut">sampler5 · 1.0.0</span><div class="h1">Un loop, 16 pads.</div><span class="b">Comprar · USD 24</span></div><div class="dots"><i></i><i class="on"></i><i></i></div></div></div>
+        <div class="cap"><span class="code">2B</span><h3>Plugin protagonista</h3><p>Un plugin a pantalla completa con precio y compra. Va rotando entre los tres y el pack; sirve para lanzamientos y ofertas.</p></div>
+      </label>
+      <label class="opt"><input type="radio" name="q2" id="q2c" value="C">
+        <div class="m" aria-hidden="true"><div class="v s2c"><div class="h1">Escuchá el golpe.</div><div class="player"><span class="play">▶</span><svg class="wave" viewBox="0 -36 200 56" preserveAspectRatio="none"><use href="#beats"/></svg><span class="mono">0:12</span></div><div class="tog"><span>Sin clip5</span><span class="on">Con clip5</span></div></div></div>
+        <div class="cap"><span class="code">2C</span><h3>Escuchá primero</h3><p>Un reproductor con el antes y el después. Vende por el sonido; necesita demos de audio grabadas para cada plugin.</p></div>
+      </label>
+      <label class="opt"><input type="radio" name="q2" id="q2d" value="D">
+        <div class="m" aria-hidden="true"><div class="v dk s2d"><div class="tx"><div class="h1">Todo arranca en 5.</div><div class="mut">Girá la perilla y mirá qué cambia.</div></div><div class="kn"><svg viewBox="0 0 64 64"><use href="#k"/></svg><span class="mono">5,0</span></div></div></div>
+        <div class="cap"><span class="code">2D</span><h3>La perilla en 5</h3><p>La idea de la marca hecha juguete: una perilla que se gira. Es lo más propio de vst5, pero no muestra ningún plugin hasta bajar.</p></div>
+      </label>
+    </div>
+  </section>
+
+  <section class="q q3">
+    <div class="q-h"><h2>3. Catálogo</h2><p>Cómo se presentan los tres plugins y el pack en la portada.</p></div>
+    <div class="opts n3">
+      <label class="opt"><input type="radio" name="q3" id="q3a" value="A">
+        <div class="m" aria-hidden="true"><div class="v s3a"><div class="t big" style="--c:var(--clip5)"><b>clip5</b><span class="mut">Clipper de mastering</span><svg class="ui" viewBox="0 0 320 200"><use href="#ui-clip"/></svg></div><div class="t" style="--c:var(--sampler5)"><b>sampler5</b><span class="mut">Un loop, 16 pads</span></div><div class="t" style="--c:var(--drum5)"><b>drum5</b><span class="mut">Batería de 16 pads</span></div><div class="t pk"><b>Pack vst5</b><span class="mut">Los tres, un solo pago</span><span class="mono">USD 49</span></div></div></div>
+        <div class="cap"><span class="code">3A</span><h3>Mosaico</h3><p>Bloques de distinto tamaño, cada uno con el color de su plugin. Uno puede ir destacado. Muy visual, menos datos a la vista.</p></div>
+      </label>
+      <label class="opt"><input type="radio" name="q3" id="q3b" value="B">
+        <div class="m" aria-hidden="true"><div class="v s3b"><div class="hd">Plugins</div><div class="g3"><div class="card" style="--c:var(--clip5)"><div class="ph"><svg class="ui" viewBox="0 0 320 200"><use href="#ui-clip"/></svg></div><b>clip5</b><span class="mut">Clipper de mastering</span><span class="mono">USD 19</span><span class="b">Comprar</span></div><div class="card" style="--c:var(--sampler5)"><div class="ph"><svg class="ui" viewBox="0 0 320 200"><use href="#ui-pads"/></svg></div><b>sampler5</b><span class="mut">Un loop, 16 pads</span><span class="mono">USD 24</span><span class="b">Comprar</span></div><div class="card" style="--c:var(--drum5)"><div class="ph"><svg class="ui" viewBox="0 0 320 200"><use href="#ui-pads"/></svg></div><b>drum5</b><span class="mut">Batería de 16 pads</span><span class="mono">Pronto</span><span class="b o">Avisarme</span></div></div></div></div>
+        <div class="cap"><span class="code">3B</span><h3>Grilla de tienda</h3><p>Tarjetas iguales: captura, nombre, precio y botón. Se compara fácil y crece sin problema cuando sumes plugins.</p></div>
+      </label>
+      <label class="opt"><input type="radio" name="q3" id="q3c" value="C">
+        <div class="m" aria-hidden="true"><div class="v s3c"><div class="hd">Plugins</div><div><div class="li" style="--c:var(--clip5)"><svg class="ui" viewBox="0 0 320 200"><use href="#ui-clip"/></svg><b>clip5</b><span class="mut">Clipper de mastering</span><span class="mono">USD 19</span><span>→</span></div><div class="li" style="--c:var(--sampler5)"><svg class="ui" viewBox="0 0 320 200"><use href="#ui-pads"/></svg><b>sampler5</b><span class="mut">Un loop, 16 pads</span><span class="mono">USD 24</span><span>→</span></div><div class="li" style="--c:var(--drum5)"><svg class="ui" viewBox="0 0 320 200"><use href="#ui-pads"/></svg><b>drum5</b><span class="mut">Batería de 16 pads</span><span class="mono">Pronto</span><span>→</span></div></div></div></div>
+        <div class="cap"><span class="code">3C</span><h3>Lista</h3><p>Una fila por plugin: nombre, qué es y precio. Sobria y rápida de leer; la captura grande queda para la página de cada uno.</p></div>
+      </label>
+    </div>
+  </section>
+
+  <section class="q q4">
+    <div class="q-h"><h2>4. Página de cada plugin</h2><p>Qué pasa cuando alguien toca clip5.</p></div>
+    <div class="opts n3">
+      <label class="opt"><input type="radio" name="q4" id="q4a" value="A">
+        <div class="m" aria-hidden="true"><div class="v c1 s4a" style="--c:var(--clip5)">
+          <div class="hero"><svg class="ui" viewBox="0 0 320 200"><use href="#ui-clip"/></svg><div class="tx"><div class="h1">más volumen,<br>el golpe entero</div><span>clip5 · clipper de mastering</span></div></div>
+          <div class="two"><b>cuatro curvas de recorte</b><span>De la más blanda a la más dura, para cada material.</span></div>
+          <div class="au"><span class="play">▶</span><svg class="wave" viewBox="0 -36 200 56" preserveAspectRatio="none"><use href="#beats"/></svg><span class="mono">Antes / Después</span></div>
+          <div class="two"><b>mezcla paralela</b><span>Sumás la señal original para recuperar el ataque.</span></div>
+          <div class="buy"><b>clip5</b><span class="mono">USD 19</span><span class="b">Comprar</span></div>
+        </div></div>
+        <div class="cap"><span class="code">4A</span><h3>Relato largo</h3><p>Como soothe live: imagen grande con la frase y, bajando, una función por tramo, demos de audio, citas, requisitos y preguntas. La compra aparece arriba y al final.</p></div>
+      </label>
+      <label class="opt"><input type="radio" name="q4" id="q4b" value="B">
+        <div class="m" aria-hidden="true"><div class="v s4b" style="--c:var(--clip5)"><div class="two"><div><svg class="ui" viewBox="0 0 320 200"><use href="#ui-clip"/></svg><div class="th"><i></i><i></i><i></i></div></div><div class="buy"><div class="h1">clip5</div><span class="mut">Clipper de mastering</span><span class="pr">USD 19</span><span class="mono mut">$ 18.000 en Argentina</span><span class="b">Agregar al carrito</span><span class="b o">Probar gratis</span></div></div><div class="tabs"><span class="on">Qué hace</span><span>Demos</span><span>Requisitos</span><span>Preguntas</span></div><div class="tx"><b>Más volumen sin romper el golpe</b><span class="mut">Recorta los picos antes del limitador. Cuatro curvas, mezcla paralela y oversampling hasta 8x.</span></div></div></div>
+        <div class="cap"><span class="code">4B</span><h3>Ficha de compra</h3><p>Como una tienda: capturas a la izquierda, caja con precio y botón a la derecha, y el detalle en pestañas. Corta y directa a la compra.</p></div>
+      </label>
+      <label class="opt"><input type="radio" name="q4" id="q4c" value="C">
+        <div class="m" aria-hidden="true"><div class="v s4c"><div class="nav"><svg class="lg"><use href="#logo"/></svg><span class="sp on">clip5</span><span>sampler5</span><span>drum5</span><span>Pack</span></div><div class="sec" style="--c:var(--clip5)"><div><b>clip5</b><span class="mut">Clipper de mastering. Más volumen sin romper el golpe.</span><span class="b">Comprar · USD 19</span></div><svg class="ui" viewBox="0 0 320 200"><use href="#ui-clip"/></svg></div><div class="sec" style="--c:var(--sampler5)"><div><b>sampler5</b><span class="mut">Un loop, 16 pads. Cortás y tocás.</span><span class="b">Comprar · USD 24</span></div><svg class="ui" viewBox="0 0 320 200"><use href="#ui-pads"/></svg></div><div class="sec" style="--c:var(--drum5)"><div><b>drum5</b><span class="mut">Batería de 16 pads.</span><span class="b o">Avisarme</span></div><svg class="ui" viewBox="0 0 320 200"><use href="#ui-pads"/></svg></div></div></div>
+        <div class="cap"><span class="code">4C</span><h3>Todo en la portada</h3><p>Sin páginas aparte: cada plugin es un tramo de la portada y el menú salta entre ellos. Lo más simple de hacer y mantener; queda corto si después querés contar mucho de cada uno.</p></div>
+      </label>
+    </div>
+  </section>
+
+  <section class="q q5">
+    <div class="q-h"><h2>5. Compra</h2><p>El cobro sigue siendo por Mercado Pago en los dos casos.</p></div>
+    <div class="opts n2">
+      <label class="opt"><input type="radio" name="q5" id="q5a" value="A">
+        <div class="m" aria-hidden="true"><div class="v s5a"><div class="pg"><div class="g3"><div class="card" style="--c:var(--clip5)"><div class="ph"><svg class="ui" viewBox="0 0 320 200"><use href="#ui-clip"/></svg></div><b>clip5</b></div><div class="card" style="--c:var(--sampler5)"><div class="ph"><svg class="ui" viewBox="0 0 320 200"><use href="#ui-pads"/></svg></div><b>sampler5</b></div><div class="card" style="--c:var(--drum5)"><div class="ph"><svg class="ui" viewBox="0 0 320 200"><use href="#ui-pads"/></svg></div><b>drum5</b></div></div></div><div class="dr"><b>Carrito</b><div class="it"><span>clip5</span><span class="mono">USD 19</span></div><div class="it"><span>sampler5</span><span class="mono">USD 24</span></div><div class="it tot"><span>Total</span><span class="mono">USD 43</span></div><span class="b">Pagar con Mercado Pago</span></div></div></div>
+        <div class="cap"><span class="code">5A</span><h3>Carrito</h3><p>Sumás varios plugins y pagás una vez. Es lo que ya tiene la web actual; agrega un paso antes de pagar.</p></div>
+      </label>
+      <label class="opt"><input type="radio" name="q5" id="q5b" value="B">
+        <div class="m" aria-hidden="true"><div class="v s5b" style="--c:var(--clip5)"><div class="st"><svg class="ui" viewBox="0 0 320 200"><use href="#ui-clip"/></svg><span class="b">Comprar · USD 19</span></div><span class="ar">→</span><div class="st"><b>Mercado Pago</b><span class="mut">Tarjeta o dinero en cuenta</span></div><span class="ar">→</span><div class="st"><b>Tu email</b><span class="mut">Instalador y clave de licencia</span></div></div></div>
+        <div class="cap"><span class="code">5B</span><h3>Compra directa</h3><p>Cada botón lleva derecho al pago de ese producto. Sin carrito: quien quiere más de uno compra el pack.</p></div>
+      </label>
+    </div>
+  </section>
+
+  <div class="bar"><span>Tu elección</span><output id="out" for="q1a q2a q3a q4a q5a"></output><button type="button" id="copy">Copiar para el chat</button></div>
+  </form>
+</main>
+
+<script>
+const f = document.getElementById('f'), out = document.getElementById('out'), copy = document.getElementById('copy'), K = 'vst5-opciones';
+const pick = () => [1,2,3,4,5].map(n => n + (f['q' + n].value || '–')).join(' · ');
+function draw(){
+  out.textContent = pick();
+  try { localStorage.setItem(K, JSON.stringify(Object.fromEntries(new FormData(f)))); } catch {}
+}
+try { const s = JSON.parse(localStorage.getItem(K) || '{}'); for (const k in s) if (f[k]) f[k].value = s[k]; } catch {}
+f.addEventListener('change', draw);
+f.addEventListener('submit', e => e.preventDefault());
+draw();
+copy.addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText('Elijo para la web de vst5: ' + pick()); copy.textContent = 'Copiado'; }
+  catch { getSelection().selectAllChildren(out); copy.textContent = 'Seleccionado: copialo a mano'; }
+  setTimeout(() => copy.textContent = 'Copiar para el chat', 2500);
+});
+</script>
