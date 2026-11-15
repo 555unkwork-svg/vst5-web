@@ -1,0 +1,538 @@
+<meta charset="utf-8">
+<title>vst5</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="vst5: plugins de audio basados en máquinas clásicas, con el workflow de hoy. Hechos en Argentina.">
+<link rel="icon" href="logo/vst5-favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: vitrina (elección 1B·2B·3B·4B·5A). Página clara con bandas oscuras: franja de oferta, fila de promos,
+   carrusel de un plugin a la vez, grilla de tienda, ficha de compra por plugin (#clip5…) y carrito lateral.
+   Tokens = BRAND.md. El color de cada plugin solo marca lo activo; el LED solo en piezas de vst5. */
+:root{
+  --tinta:#171614; --chasis:#3A3834; --gris:#6E6A62; --alu:#D8D5CE; --hueso:#F1EFEA; --led:#FF5B14;
+  --clip5:#F2C230; --sampler5:#D93A2B; --drum5:#6FA83A;
+  --bg:#F1EFEA; --fg:#171614; --muted:#6E6A62; --line:#D8D5CE; --card:#FAF9F6; --shade:#E6E3DC;
+  --band:#171614; --band-fg:#F1EFEA; --band-muted:#B5B1A9;
+  --ok:#2F7A3A;
+  --d:"Archivo",ui-sans-serif,system-ui,sans-serif; --m:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --out:cubic-bezier(.16,1,.3,1);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#121110;--fg:#F1EFEA;--muted:#B5B1A9;--line:#33302C;--card:#1B1A18;--shade:#22211F;--band:#22211F;--ok:#5FBF6E;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121110;--fg:#F1EFEA;--muted:#B5B1A9;--line:#33302C;--card:#1B1A18;--shade:#22211F;--band:#22211F;--ok:#5FBF6E;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:80px}
+body{background:var(--bg);color:var(--fg);font:400 16px/1.55 var(--d);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--bg)}
+h1,h2,h3,p{margin:0}
+h1,h2,h3{font-weight:800;line-height:1.04;text-wrap:balance}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--fg);outline-offset:3px;border-radius:4px}
+.wrap{max-width:1240px;margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.mono{font:500 12px var(--m);letter-spacing:.08em;text-transform:uppercase}
+.muted{color:var(--muted)}
+.num{font-family:var(--m);font-weight:500;font-variant-numeric:tabular-nums}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* Franja de oferta + menú */
+.strip{display:block;background:var(--led);color:var(--tinta);text-align:center;padding:9px 16px;font-weight:600;font-size:14px;text-decoration:none}
+.strip:hover{text-decoration:underline;text-underline-offset:3px}
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:var(--bg);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:32px;height:68px}
+.logo{display:block;color:var(--fg)}
+.logo svg{display:block;height:30px;width:auto}
+.nav ul{display:flex;gap:26px;list-style:none;margin:0;padding:0}
+.nav ul a{text-decoration:none;font-weight:500}
+.nav ul a:hover,.nav ul a[aria-current]{text-decoration:underline;text-underline-offset:6px;text-decoration-thickness:2px}
+.cart-btn{margin-left:auto;display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:7px 8px 7px 16px;font-weight:600;font-size:14px;cursor:pointer}
+.cart-btn b{min-width:24px;height:24px;border-radius:12px;background:var(--fg);color:var(--bg);display:grid;place-items:center;font:500 12px var(--m);padding-inline:6px}
+@media (max-width:760px){.nav ul{display:none}}
+
+/* Botones */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:999px;padding:13px 22px;font-weight:600;font-size:15px;cursor:pointer;text-decoration:none;white-space:nowrap;transition:transform .15s,background-color .2s,color .2s}
+.btn:active{transform:translateY(1px)}
+.btn-main{background:var(--fg);color:var(--bg)}
+.btn-line{background:transparent;box-shadow:inset 0 0 0 1px var(--line)}
+.btn-line:hover{background:var(--card)}
+.btn-light{background:var(--band-fg);color:var(--tinta)}
+.btn-ghost{background:transparent;color:var(--band-fg);box-shadow:inset 0 0 0 1px #57544E}
+.btn.in{background:var(--ok);color:#fff}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.btn-wide{width:100%}
+
+/* Promos */
+.chips{display:flex;gap:12px;overflow-x:auto;padding-block:16px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;display:flex;align-items:center;gap:14px;min-width:270px;border:1px solid var(--line);background:var(--card);border-radius:8px;padding:10px 18px 10px 10px;text-decoration:none}
+.chip:hover{border-color:var(--fg)}
+.chip i{flex:none;display:grid;place-items:center;width:56px;height:56px;border-radius:50%;background:var(--c,var(--fg));color:var(--tinta);font:500 10px/1.1 var(--m);letter-spacing:.06em;font-style:normal;text-align:center}
+.chip i.inv{background:var(--fg);color:var(--bg)}
+.chip span{display:grid;line-height:1.3}
+.chip b{font-weight:700}
+
+/* Carrusel */
+.hero{position:relative;background:var(--band);color:var(--band-fg);border-radius:14px;overflow:hidden}
+.slides{display:grid}
+.slide{grid-area:1/1;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);align-items:center;gap:32px;padding:56px 0 76px 56px;opacity:0;visibility:hidden;transition:opacity .5s var(--out),visibility .5s}
+.slide.on{opacity:1;visibility:visible}
+.slide .tx{display:flex;flex-direction:column;align-items:flex-start;gap:16px;min-width:0}
+.slide .tx .mono{color:var(--band-muted)}
+.slide h2{font-size:clamp(44px,6.4vw,88px);font-stretch:118%;letter-spacing:-.015em}
+.slide p{font-size:19px;color:var(--band-muted);max-width:22em}
+.slide .row{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.slide .art{min-width:0;transform:translateX(24px);transition:transform .7s var(--out)}
+.slide.on .art{transform:none}
+.slide .art svg{display:block;width:118%;height:auto;filter:drop-shadow(0 24px 40px rgba(0,0,0,.45))}
+.slide .trio{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding-right:56px}
+.slide .trio svg{width:100%}
+.hero-ctl{position:absolute;left:56px;bottom:26px;display:flex;align-items:center;gap:10px}
+.hero-ctl .dot{width:34px;height:20px;border:0;padding:0;background:none;cursor:pointer;display:grid;align-items:center}
+.hero-ctl .dot::before{content:"";height:3px;border-radius:2px;background:#57544E}
+.hero-ctl .dot[aria-current="true"]::before{background:var(--band-fg)}
+.hero-ctl .arr{width:32px;height:32px;border-radius:50%;border:1px solid #57544E;background:none;color:var(--band-fg);cursor:pointer;display:grid;place-items:center;font-size:15px}
+.hero-ctl .arr:hover{border-color:var(--band-fg)}
+@media (max-width:820px){
+  .slide{grid-template-columns:1fr;padding:32px 20px 72px;gap:24px}
+  .slide .art{order:-1}
+  .slide .art svg{width:100%}
+  .slide .trio{padding-right:0}
+  .hero-ctl{left:20px}
+}
+
+/* Secciones */
+.sec{padding-block:64px 0}
+.sec-h{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:12px 24px;margin-bottom:24px}
+.sec-h h2{font-size:clamp(30px,4vw,46px);font-stretch:112%}
+.sec-h h2 span{color:var(--muted)}
+.sec-h a{font-weight:600;text-underline-offset:4px}
+
+/* Grilla de tienda */
+.grid{display:grid;gap:18px}
+@media (min-width:640px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media (min-width:1000px){.grid{grid-template-columns:repeat(4,1fr)}}
+.card{display:flex;flex-direction:column;border:1px solid var(--line);background:var(--card);border-radius:10px;overflow:hidden;min-width:0}
+.card .pic{display:block;position:relative;background:var(--shade);padding:26px 18px;text-decoration:none}
+.card .pic svg{display:block;width:100%;height:auto;transition:transform .4s var(--out)}
+.card .pic:hover svg{transform:scale(1.03)}
+.badge{position:absolute;top:10px;right:10px;background:var(--card);color:var(--fg);border-radius:4px;padding:3px 8px;font:500 11px var(--m);letter-spacing:.06em;text-transform:uppercase}
+.card .body{display:flex;flex-direction:column;gap:4px;padding:16px 18px 18px;flex:1}
+.card h3{font-size:22px;font-stretch:108%}
+.card h3 a{text-decoration:none}
+.card h3 a:hover{text-decoration:underline;text-underline-offset:4px}
+.card .price{margin-top:auto;padding-top:14px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.card .price b{font:500 20px var(--m)}
+.card .price small{font:500 12px var(--m);color:var(--muted)}
+.card .btn{margin-top:12px}
+
+/* Bandas */
+.band{background:var(--band);color:var(--band-fg);border-radius:14px;padding:48px;display:grid;grid-template-columns:auto 1fr;gap:20px 48px;align-items:center}
+.band svg{width:150px;height:150px;color:var(--band-fg)}
+.band h2{font-size:clamp(30px,4vw,46px);font-stretch:118%}
+.band p{color:var(--band-muted);font-size:18px;max-width:34em;margin-top:12px}
+@media (max-width:700px){.band{grid-template-columns:1fr;padding:32px 22px}.band svg{width:96px;height:96px}}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:18px}
+@media (min-width:820px){.steps{grid-template-columns:repeat(3,1fr)}}
+.steps li{border-top:2px solid var(--fg);padding-top:14px;display:grid;gap:6px}
+.steps .n{font:500 13px var(--m);color:var(--muted)}
+.steps h3{font-size:21px}
+
+/* Ficha de plugin */
+.crumbs{display:flex;gap:8px;padding-block:20px;font-size:14px;color:var(--muted)}
+.crumbs a{text-underline-offset:3px}
+.ficha{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:40px;align-items:start}
+@media (max-width:900px){.ficha{grid-template-columns:1fr;gap:24px}}
+@media (min-width:901px){.buy{position:sticky;top:92px}}
+.gal-main{background:var(--shade);border-radius:12px;padding:40px 28px;display:grid}
+.gal-main svg{width:100%;height:auto}
+#galMain svg{grid-area:1/1}
+.gal-cap{margin-top:10px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.thumbs{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.thumbs button{width:110px;border:1px solid var(--line);background:var(--shade);border-radius:8px;padding:10px 8px 6px;cursor:pointer;display:grid;gap:4px;font-size:12px;font-weight:600}
+.thumbs button[aria-pressed="true"]{border-color:var(--fg);box-shadow:inset 0 0 0 1px var(--fg)}
+.thumbs svg{width:100%;height:auto}
+.buy{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:28px;display:flex;flex-direction:column;gap:14px}
+.buy .plogo{color:var(--fg)}
+.buy .plogo svg{height:44px;width:auto;display:block}
+.buy .tag{font-size:18px;color:var(--muted);margin-top:-6px}
+.buy .ars{font:500 34px/1 var(--m);font-variant-numeric:tabular-nums}
+.buy .was{font:500 15px var(--m);color:var(--muted);text-decoration:line-through}
+.buy .usd{font:500 13px var(--m);color:var(--muted)}
+.buy ul{list-style:none;margin:6px 0 0;padding:14px 0 0;border-top:1px solid var(--line);display:grid;gap:8px;font-size:14px}
+.buy li{display:flex;justify-content:space-between;gap:12px}
+.buy li span:last-child{text-align:right;font-family:var(--m);font-size:13px}
+.note{font-size:14px;color:var(--muted)}
+.tabs{margin-top:48px;border-bottom:1px solid var(--line);display:flex;gap:28px;overflow-x:auto}
+.tabs button{border:0;background:none;padding:0 0 12px;font-weight:600;font-size:16px;cursor:pointer;white-space:nowrap;color:var(--muted)}
+.tabs button[aria-selected="true"]{color:var(--fg);box-shadow:inset 0 -3px 0 var(--fg)}
+.panel{padding-block:32px 0}
+.feats{display:grid;gap:28px 40px}
+@media (min-width:760px){.feats{grid-template-columns:repeat(2,1fr)}}
+@media (min-width:1080px){.feats{grid-template-columns:repeat(3,1fr)}}
+.feats div{display:grid;gap:6px;align-content:start}
+.feats h3{font-size:20px}
+.feats p{color:var(--muted);max-width:36ch}
+.lead{font-size:clamp(22px,2.6vw,30px);font-weight:600;font-stretch:108%;line-height:1.25;max-width:30em;margin-bottom:32px;text-wrap:balance}
+.demos{display:grid;gap:12px;max-width:760px}
+.demo{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:16px;border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--card)}
+.demo .play{width:42px;height:42px;border-radius:50%;border:0;background:var(--fg);color:var(--bg);display:grid;place-items:center}
+.demo .play[disabled]{opacity:.35}
+.demo b{display:block}
+.specs{display:grid;grid-template-columns:minmax(0,14em) 1fr;max-width:760px;margin:0}
+.specs dt,.specs dd{margin:0;padding:12px 0;border-top:1px solid var(--line)}
+.specs dt{color:var(--muted)}
+.faq{max-width:760px}
+.faq details{border-top:1px solid var(--line);padding:16px 0}
+.faq summary{font-weight:600;font-size:18px;cursor:pointer}
+.faq details p{color:var(--muted);margin-top:8px;max-width:60ch}
+.more{display:grid;gap:18px}
+@media (min-width:760px){.more{grid-template-columns:repeat(3,1fr)}}
+
+/* Pie */
+footer{margin-top:80px;border-top:1px solid var(--line);padding-block:32px calc(32px + env(safe-area-inset-bottom,0px))}
+footer .wrap{display:flex;flex-wrap:wrap;gap:16px 32px;align-items:center;justify-content:space-between}
+footer .logo svg{height:26px}
+
+/* Carrito */
+.scrim{position:fixed;inset:0;background:rgba(18,17,16,.45);opacity:0;pointer-events:none;transition:opacity .25s;z-index:70}
+.scrim.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(420px,100%);background:var(--bg);border-left:1px solid var(--line);z-index:80;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .35s var(--out);visibility:hidden;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-right:env(safe-area-inset-right,0px)}
+.drawer.open{transform:none;visibility:visible}
+.drawer header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--line)}
+.drawer h2{font-size:26px;font-stretch:112%}
+.x{border:1px solid var(--line);background:var(--card);border-radius:50%;width:38px;height:38px;cursor:pointer}
+.lines{flex:1;overflow:auto;padding:8px 24px}
+.line{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:16px 0;border-bottom:1px solid var(--line)}
+.line i{width:12px;height:12px;border-radius:50%}
+.line b{display:block}
+.line button{border:0;background:none;padding:0;color:var(--muted);text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-size:14px}
+.line .p{font:500 15px var(--m)}
+.empty{padding:24px 0;color:var(--muted)}
+.drawer footer{margin:0;padding:20px 24px;display:grid;gap:12px;border-top:1px solid var(--line)}
+.tot{display:flex;justify-content:space-between;font-weight:700;font-size:18px}
+.tot span:last-child{font-family:var(--m);font-weight:500}
+.err{color:var(--sampler5);font-size:14px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--fg);color:var(--bg);padding:12px 18px;border-radius:10px;font-weight:500;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s var(--out);z-index:90;max-width:calc(100% - 32px)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="logo-vst5" viewBox="0 0 232.3 64.0"><g transform="translate(0 0) scale(1)"><line x1="15.74" y1="48.26" x2="12.20" y2="51.80" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="10.13" y1="39.11" x2="5.37" y2="40.65" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="9.28" y1="28.40" x2="4.34" y2="27.62" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="13.39" y1="18.48" x2="9.35" y2="15.54" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="21.56" y1="11.51" x2="19.29" y2="7.05" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="32.00" y1="10.00" x2="32.00" y2="2.00" stroke="#FF5B14" stroke-width="4" stroke-linecap="round"/><line x1="42.44" y1="11.51" x2="44.71" y2="7.05" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="50.61" y1="18.48" x2="54.65" y2="15.54" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="54.72" y1="28.40" x2="59.66" y2="27.62" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="53.87" y1="39.11" x2="58.63" y2="40.65" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="48.26" y1="48.26" x2="51.80" y2="51.80" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><circle cx="32" cy="32" r="19" fill="currentColor"/><line x1="32" y1="27" x2="32" y2="17" stroke-width="5" stroke-linecap="round" stroke="#FF5B14"/></g><path d="M104.16 51.95L92.73 51.95L78.12 21.33L89.77 21.33L95.63 35.19Q96.04 36.06 96.53 37.36Q97.02 38.67 97.55 40.03Q98.07 41.40 98.47 42.44L98.47 42.44L99.00 42.44Q99.40 41.40 99.89 40.00Q100.39 38.61 100.91 37.28Q101.43 35.94 101.78 35.07L101.78 35.07L107.58 21.33L118.77 21.33L104.16 51.95ZM139.42 52.65L139.42 52.65Q136 52.65 132.72 52.10Q129.45 51.55 126.81 50.41Q124.17 49.28 122.60 47.49Q121.04 45.69 121.04 43.19L121.04 43.19Q121.04 42.96 121.07 42.73Q121.09 42.50 121.15 42.27L121.15 42.27L132.17 42.27Q132.11 42.44 132.11 42.58Q132.11 42.73 132.11 42.85L132.11 42.85Q132.11 44.06 133.16 44.82Q134.20 45.57 135.86 45.92Q137.51 46.27 139.48 46.27L139.48 46.27Q141.10 46.27 142.93 46.06Q144.76 45.86 146.00 45.28Q147.25 44.70 147.25 43.48L147.25 43.48Q147.25 42.15 145.60 41.63Q143.95 41.11 141.19 40.79Q138.44 40.47 134.96 40.00L134.96 40.00Q132.35 39.66 130.03 39.05Q127.71 38.44 125.91 37.36Q124.11 36.29 123.10 34.64Q122.08 32.99 122.08 30.61L122.08 30.61Q122.08 27.82 123.44 25.91Q124.81 24.00 127.24 22.84Q129.68 21.68 132.93 21.15Q136.17 20.63 139.94 20.63L139.94 20.63Q143.25 20.63 146.30 21.15Q149.34 21.68 151.75 22.75Q154.15 23.82 155.55 25.47Q156.94 27.13 156.94 29.39L156.94 29.39Q156.94 29.62 156.94 29.85Q156.94 30.09 156.88 30.26L156.88 30.26L145.92 30.26L145.92 29.85Q145.92 28.87 145.02 28.26Q144.12 27.65 142.76 27.36Q141.39 27.07 139.83 27.07L139.83 27.07Q139.19 27.07 138.03 27.10Q136.87 27.13 135.65 27.36Q134.43 27.59 133.59 28.06Q132.75 28.52 132.75 29.39L132.75 29.39Q132.75 30.49 134.17 30.98Q135.59 31.48 137.94 31.71Q140.29 31.94 143.02 32.29L143.02 32.29Q145.80 32.58 148.50 33.10Q151.20 33.62 153.31 34.64Q155.43 35.65 156.68 37.45Q157.92 39.25 157.92 42.09L157.92 42.09Q157.92 45.11 156.56 47.14Q155.20 49.17 152.70 50.39Q150.21 51.60 146.82 52.13Q143.42 52.65 139.42 52.65ZM179.21 52.65L179.21 52.65Q175.38 52.65 172.80 51.78Q170.22 50.91 168.89 48.76Q167.55 46.62 167.55 42.79L167.55 42.79L167.55 28.64L161.58 28.64L161.58 21.33L167.96 21.33L170.10 12.22L178.28 12.22L178.28 21.33L186.81 21.33L186.81 28.64L178.28 28.64L178.28 40.82Q178.28 43.02 179.21 44.21Q180.14 45.40 183.04 45.40L183.04 45.40L186.81 45.40L186.81 51.60Q186.00 51.89 184.58 52.13Q183.15 52.36 181.70 52.50Q180.25 52.65 179.21 52.65ZM212.68 52.65L212.68 52.65Q205.89 52.65 201.22 50.94Q196.55 49.23 194.15 46.18Q191.74 43.14 191.74 39.19L191.74 39.19L202.18 39.19Q202.24 41.11 203.45 42.50Q204.67 43.89 206.79 44.64Q208.91 45.40 211.63 45.40L211.63 45.40Q214.18 45.40 216.33 44.64Q218.48 43.89 219.78 42.41Q221.09 40.93 221.09 38.67L221.09 38.67Q221.09 36.47 219.96 35.02Q218.82 33.57 216.77 32.84Q214.71 32.12 211.86 32.12L211.86 32.12Q209.83 32.12 208.12 32.49Q206.41 32.87 205.14 33.62Q203.86 34.38 203.05 35.54L203.05 35.54L193.83 34.38L195.91 12.05L228.80 12.05L228.80 20.86L204.27 20.86L203.51 28.35Q204.44 27.71 206.15 27.04Q207.86 26.37 210.18 25.85Q212.50 25.33 215.29 25.33L215.29 25.33Q220.39 25.33 224.19 26.87Q227.99 28.40 230.13 31.39Q232.28 34.38 232.28 38.84L232.28 38.84Q232.28 42.85 229.90 45.98Q227.52 49.11 223.12 50.88Q218.71 52.65 212.68 52.65Z" fill="currentColor"/></symbol>
+  <symbol id="logo-k" viewBox="0 0 64.0 64.0"><g transform="translate(0 0) scale(1)"><line x1="15.74" y1="48.26" x2="12.20" y2="51.80" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="10.13" y1="39.11" x2="5.37" y2="40.65" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="9.28" y1="28.40" x2="4.34" y2="27.62" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="13.39" y1="18.48" x2="9.35" y2="15.54" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="21.56" y1="11.51" x2="19.29" y2="7.05" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="32.00" y1="10.00" x2="32.00" y2="2.00" stroke="#FF5B14" stroke-width="4" stroke-linecap="round"/><line x1="42.44" y1="11.51" x2="44.71" y2="7.05" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="50.61" y1="18.48" x2="54.65" y2="15.54" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="54.72" y1="28.40" x2="59.66" y2="27.62" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="53.87" y1="39.11" x2="58.63" y2="40.65" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="48.26" y1="48.26" x2="51.80" y2="51.80" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><circle cx="32" cy="32" r="19" fill="currentColor"/><line x1="32" y1="27" x2="32" y2="17" stroke-width="5" stroke-linecap="round" stroke="#FF5B14"/></g></symbol>
+  <symbol id="logo-clip5" viewBox="0 0 246.7 64.0"><g transform="translate(0 0) scale(1)"><line x1="15.74" y1="48.26" x2="12.20" y2="51.80" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="10.13" y1="39.11" x2="5.37" y2="40.65" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="9.28" y1="28.40" x2="4.34" y2="27.62" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="13.39" y1="18.48" x2="9.35" y2="15.54" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="21.56" y1="11.51" x2="19.29" y2="7.05" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="32.00" y1="10.00" x2="32.00" y2="2.00" stroke="#F2C230" stroke-width="4" stroke-linecap="round"/><line x1="42.44" y1="11.51" x2="44.71" y2="7.05" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="50.61" y1="18.48" x2="54.65" y2="15.54" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="54.72" y1="28.40" x2="59.66" y2="27.62" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="53.87" y1="39.11" x2="58.63" y2="40.65" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="48.26" y1="48.26" x2="51.80" y2="51.80" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><circle cx="32" cy="32" r="19" fill="currentColor"/><line x1="32" y1="27" x2="32" y2="17" stroke-width="5" stroke-linecap="round" stroke="#F2C230"/></g><path d="M100.79 53.72L100.79 53.72Q94.65 53.72 90.09 51.95Q85.54 50.18 83.08 46.65Q80.61 43.11 80.61 37.71L80.61 37.71Q80.61 32.32 83.08 28.78Q85.54 25.24 90.09 23.47Q94.65 21.71 100.79 21.71L100.79 21.71Q104.80 21.71 108.28 22.52Q111.76 23.33 114.45 24.95Q117.15 26.58 118.63 28.98Q120.11 31.39 120.11 34.58L120.11 34.58L109.26 34.58Q109.26 32.90 108.13 31.62Q107 30.35 105.09 29.68Q103.17 29.01 100.79 29.01L100.79 29.01Q97.72 29.01 95.69 30.03Q93.66 31.04 92.64 32.87Q91.63 34.70 91.63 37.13L91.63 37.13L91.63 38.29Q91.63 40.73 92.67 42.56Q93.72 44.38 95.84 45.43Q97.95 46.47 101.20 46.47L101.20 46.47Q103.58 46.47 105.49 45.72Q107.41 44.96 108.54 43.66Q109.67 42.35 109.67 40.79L109.67 40.79L120.11 40.79Q120.11 44.09 118.60 46.53Q117.09 48.97 114.45 50.56Q111.81 52.16 108.31 52.94Q104.80 53.72 100.79 53.72ZM137.22 53.03L126.49 53.03L126.49 10.98L137.22 10.98L137.22 53.03ZM155.49 18.17L144.76 18.17L144.76 10.98L155.49 10.98L155.49 18.17ZM155.49 53.03L144.76 53.03L144.76 22.40L155.49 22.40L155.49 53.03ZM173.76 64.16L163.03 64.16L163.03 22.40L171.73 22.40L172.60 27.22L173.06 27.22Q175.38 24.14 178.49 22.92Q181.59 21.71 185.07 21.71L185.07 21.71Q189.77 21.71 193.39 23.45Q197.02 25.19 199.08 28.72Q201.13 32.26 201.13 37.71L201.13 37.71Q201.13 43.17 199.08 46.73Q197.02 50.30 193.45 52.01Q189.88 53.72 185.36 53.72L185.36 53.72Q183.33 53.72 181.24 53.29Q179.15 52.85 177.33 51.89Q175.50 50.94 174.22 49.43L174.22 49.43L173.76 49.43L173.76 64.16ZM182.05 45.72L182.05 45.72Q184.78 45.72 186.61 44.76Q188.43 43.80 189.36 42.09Q190.29 40.38 190.29 38.24L190.29 38.24L190.29 37.25Q190.29 34.99 189.36 33.28Q188.43 31.57 186.58 30.64Q184.72 29.71 181.99 29.71L181.99 29.71Q179.27 29.71 177.41 30.70Q175.56 31.68 174.63 33.42Q173.70 35.16 173.70 37.54L173.70 37.54L173.70 37.89Q173.70 39.63 174.22 41.08Q174.74 42.53 175.79 43.54Q176.83 44.56 178.40 45.14Q179.96 45.72 182.05 45.72ZM227.12 53.72L227.12 53.72Q220.33 53.72 215.66 52.01Q210.99 50.30 208.59 47.25Q206.18 44.21 206.18 40.27L206.18 40.27L216.62 40.27Q216.68 42.18 217.90 43.57Q219.11 44.96 221.23 45.72Q223.35 46.47 226.07 46.47L226.07 46.47Q228.63 46.47 230.77 45.72Q232.92 44.96 234.22 43.48Q235.53 42.01 235.53 39.74L235.53 39.74Q235.53 37.54 234.40 36.09Q233.27 34.64 231.21 33.91Q229.15 33.19 226.31 33.19L226.31 33.19Q224.28 33.19 222.57 33.57Q220.85 33.94 219.58 34.70Q218.30 35.45 217.49 36.61L217.49 36.61L208.27 35.45L210.36 13.12L243.24 13.12L243.24 21.94L218.71 21.94L217.95 29.42Q218.88 28.78 220.59 28.11Q222.30 27.45 224.62 26.93Q226.94 26.40 229.73 26.40L229.73 26.40Q234.83 26.40 238.63 27.94Q242.43 29.48 244.58 32.46Q246.72 35.45 246.72 39.92L246.72 39.92Q246.72 43.92 244.34 47.05Q241.97 50.18 237.56 51.95Q233.15 53.72 227.12 53.72Z" fill="currentColor"/></symbol>
+  <symbol id="logo-sampler5" viewBox="0 0 410.6 64.0"><g transform="translate(0 0) scale(1)"><line x1="15.74" y1="48.26" x2="12.20" y2="51.80" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="10.13" y1="39.11" x2="5.37" y2="40.65" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="9.28" y1="28.40" x2="4.34" y2="27.62" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="13.39" y1="18.48" x2="9.35" y2="15.54" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="21.56" y1="11.51" x2="19.29" y2="7.05" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="32.00" y1="10.00" x2="32.00" y2="2.00" stroke="#D93A2B" stroke-width="4" stroke-linecap="round"/><line x1="42.44" y1="11.51" x2="44.71" y2="7.05" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="50.61" y1="18.48" x2="54.65" y2="15.54" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="54.72" y1="28.40" x2="59.66" y2="27.62" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="53.87" y1="39.11" x2="58.63" y2="40.65" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="48.26" y1="48.26" x2="51.80" y2="51.80" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><circle cx="32" cy="32" r="19" fill="currentColor"/><line x1="32" y1="27" x2="32" y2="17" stroke-width="5" stroke-linecap="round" stroke="#D93A2B"/></g><path d="M98.47 53.72L98.47 53.72Q95.05 53.72 91.78 53.17Q88.50 52.62 85.86 51.49Q83.22 50.36 81.65 48.56Q80.09 46.76 80.09 44.27L80.09 44.27Q80.09 44.04 80.12 43.80Q80.15 43.57 80.20 43.34L80.20 43.34L91.22 43.34Q91.17 43.51 91.17 43.66Q91.17 43.80 91.17 43.92L91.17 43.92Q91.17 45.14 92.21 45.89Q93.25 46.65 94.91 46.99Q96.56 47.34 98.53 47.34L98.53 47.34Q100.16 47.34 101.98 47.14Q103.81 46.94 105.06 46.36Q106.30 45.78 106.30 44.56L106.30 44.56Q106.30 43.22 104.65 42.70Q103.00 42.18 100.24 41.86Q97.49 41.54 94.01 41.08L94.01 41.08Q91.40 40.73 89.08 40.12Q86.76 39.51 84.96 38.44Q83.16 37.37 82.15 35.71Q81.13 34.06 81.13 31.68L81.13 31.68Q81.13 28.90 82.50 26.98Q83.86 25.07 86.29 23.91Q88.73 22.75 91.98 22.23Q95.23 21.71 99.00 21.71L99.00 21.71Q102.30 21.71 105.35 22.23Q108.39 22.75 110.80 23.82Q113.21 24.90 114.60 26.55Q115.99 28.20 115.99 30.46L115.99 30.46Q115.99 30.70 115.99 30.93Q115.99 31.16 115.93 31.33L115.93 31.33L104.97 31.33L104.97 30.93Q104.97 29.94 104.07 29.33Q103.17 28.72 101.81 28.43Q100.45 28.14 98.88 28.14L98.88 28.14Q98.24 28.14 97.08 28.17Q95.92 28.20 94.70 28.43Q93.49 28.67 92.64 29.13Q91.80 29.59 91.80 30.46L91.80 30.46Q91.80 31.57 93.22 32.06Q94.65 32.55 97.00 32.78Q99.34 33.02 102.07 33.36L102.07 33.36Q104.85 33.65 107.55 34.18Q110.25 34.70 112.37 35.71Q114.48 36.73 115.73 38.53Q116.98 40.32 116.98 43.17L116.98 43.17Q116.98 46.18 115.61 48.21Q114.25 50.24 111.76 51.46Q109.26 52.68 105.87 53.20Q102.48 53.72 98.47 53.72ZM134.84 53.72L134.84 53.72Q132.00 53.72 129.53 53.32Q127.07 52.91 125.24 51.89Q123.41 50.88 122.40 49.11Q121.38 47.34 121.38 44.62L121.38 44.62Q121.38 40.96 123.36 38.84Q125.33 36.73 128.98 35.77Q132.64 34.81 137.59 34.55Q142.55 34.29 148.53 34.29L148.53 34.29L148.53 33.36Q148.53 31.57 147.63 30.52Q146.73 29.48 145.02 29.01Q143.31 28.55 140.76 28.55L140.76 28.55Q138.90 28.55 137.16 28.84Q135.42 29.13 134.32 29.74Q133.22 30.35 133.22 31.39L133.22 31.39L133.22 31.86L122.37 31.86Q122.31 31.62 122.31 31.45Q122.31 31.28 122.31 30.99L122.31 30.99Q122.31 28.26 124.46 26.17Q126.60 24.08 130.84 22.89Q135.07 21.71 141.28 21.71L141.28 21.71Q147.08 21.71 151.08 22.72Q155.08 23.74 157.14 25.97Q159.20 28.20 159.20 31.97L159.20 31.97L159.20 44.21Q159.20 45.20 159.66 45.83Q160.13 46.47 161.11 46.47L161.11 46.47L164.19 46.47L164.19 52.62Q163.38 52.97 161.58 53.34Q159.78 53.72 157.75 53.72L157.75 53.72Q154.91 53.72 153.17 53.14Q151.43 52.56 150.59 51.55Q149.75 50.53 149.40 49.31L149.40 49.31L148.93 49.31Q147.31 50.65 145.14 51.66Q142.96 52.68 140.41 53.20Q137.86 53.72 134.84 53.72ZM137.86 46.94L137.86 46.94Q139.19 46.94 140.96 46.62Q142.73 46.30 144.47 45.66Q146.21 45.02 147.37 44.01Q148.53 42.99 148.53 41.54L148.53 41.54L148.53 39.80Q142.79 39.80 139.13 40.27Q135.48 40.73 133.74 41.69Q132.00 42.64 132.00 44.15L132.00 44.15Q132.00 45.31 132.84 45.92Q133.68 46.53 135.04 46.73Q136.41 46.94 137.86 46.94ZM178.69 53.03L167.96 53.03L167.96 22.40L176.66 22.40L177.35 27.51L177.88 27.51Q179.44 25.36 181.50 24.11Q183.56 22.87 185.91 22.29Q188.26 21.71 190.58 21.71L190.58 21.71Q194.87 21.71 197.74 23.16Q200.61 24.61 202.06 27.51L202.06 27.51L202.58 27.51Q204.15 25.36 206.24 24.11Q208.33 22.87 210.68 22.29Q213.02 21.71 215.34 21.71L215.34 21.71Q219.64 21.71 222.48 23.13Q225.32 24.55 226.77 27.42Q228.22 30.29 228.22 34.58L228.22 34.58L228.22 53.03L217.49 53.03L217.49 36.03Q217.49 34.47 217.08 33.28Q216.68 32.09 215.90 31.30Q215.11 30.52 213.95 30.12Q212.79 29.71 211.28 29.71L211.28 29.71Q209.14 29.71 207.34 30.64Q205.54 31.57 204.47 33.22Q203.40 34.87 203.40 37.08L203.40 37.08L203.40 53.03L192.72 53.03L192.72 36.03Q192.72 34.47 192.32 33.28Q191.91 32.09 191.13 31.30Q190.35 30.52 189.19 30.12Q188.03 29.71 186.52 29.71L186.52 29.71Q184.37 29.71 182.57 30.64Q180.78 31.57 179.73 33.22Q178.69 34.87 178.69 37.08L178.69 37.08L178.69 53.03ZM246.32 64.16L235.59 64.16L235.59 22.40L244.29 22.40L245.16 27.22L245.62 27.22Q247.94 24.14 251.04 22.92Q254.15 21.71 257.63 21.71L257.63 21.71Q262.32 21.71 265.95 23.45Q269.57 25.19 271.63 28.72Q273.69 32.26 273.69 37.71L273.69 37.71Q273.69 43.17 271.63 46.73Q269.57 50.30 266.01 52.01Q262.44 53.72 257.92 53.72L257.92 53.72Q255.89 53.72 253.80 53.29Q251.71 52.85 249.88 51.89Q248.06 50.94 246.78 49.43L246.78 49.43L246.32 49.43L246.32 64.16ZM254.61 45.72L254.61 45.72Q257.34 45.72 259.16 44.76Q260.99 43.80 261.92 42.09Q262.85 40.38 262.85 38.24L262.85 38.24L262.85 37.25Q262.85 34.99 261.92 33.28Q260.99 31.57 259.13 30.64Q257.28 29.71 254.55 29.71L254.55 29.71Q251.83 29.71 249.97 30.70Q248.11 31.68 247.19 33.42Q246.26 35.16 246.26 37.54L246.26 37.54L246.26 37.89Q246.26 39.63 246.78 41.08Q247.30 42.53 248.35 43.54Q249.39 44.56 250.96 45.14Q252.52 45.72 254.61 45.72ZM290.69 53.03L279.96 53.03L279.96 10.98L290.69 10.98L290.69 53.03ZM317.60 53.72L317.60 53.72Q311.33 53.72 306.69 52.04Q302.05 50.36 299.47 46.79Q296.89 43.22 296.89 37.71L296.89 37.71Q296.89 32.38 299.42 28.81Q301.94 25.24 306.49 23.47Q311.04 21.71 317.13 21.71L317.13 21.71Q323.51 21.71 328.01 23.45Q332.50 25.19 334.88 28.67Q337.26 32.15 337.26 37.37L337.26 37.37L337.26 39.86L308.14 39.86Q308.26 42.30 309.42 43.86Q310.58 45.43 312.70 46.15Q314.81 46.88 317.71 46.88L317.71 46.88Q319.28 46.88 320.73 46.56Q322.18 46.24 323.37 45.66Q324.56 45.08 325.28 44.21Q326.01 43.34 326.12 42.30L326.12 42.30L337.14 42.30Q337.14 44.91 335.69 47.02Q334.24 49.14 331.63 50.65Q329.02 52.16 325.43 52.94Q321.83 53.72 317.60 53.72ZM308.14 34.18L308.14 34.18L325.83 34.18Q325.83 32.90 325.23 31.86Q324.62 30.81 323.49 30.09Q322.35 29.36 320.82 28.96Q319.28 28.55 317.48 28.55L317.48 28.55Q314.76 28.55 312.75 29.25Q310.75 29.94 309.59 31.22Q308.43 32.49 308.14 34.18ZM354.20 53.03L343.47 53.03L343.47 22.40L352.17 22.40L352.86 27.62L353.38 27.62Q354.25 25.77 355.68 24.43Q357.10 23.10 358.89 22.40Q360.69 21.71 362.72 21.71L362.72 21.71Q363.88 21.71 364.96 21.85Q366.03 22.00 366.96 22.40L366.96 22.40L366.96 30.81L361.85 30.81Q359.82 30.81 358.37 31.48Q356.92 32.15 355.99 33.28Q355.07 34.41 354.63 35.83Q354.20 37.25 354.20 38.87L354.20 38.87L354.20 53.03ZM391.03 53.72L391.03 53.72Q384.24 53.72 379.57 52.01Q374.90 50.30 372.50 47.25Q370.09 44.21 370.09 40.27L370.09 40.27L380.53 40.27Q380.59 42.18 381.80 43.57Q383.02 44.96 385.14 45.72Q387.26 46.47 389.98 46.47L389.98 46.47Q392.53 46.47 394.68 45.72Q396.83 44.96 398.13 43.48Q399.44 42.01 399.44 39.74L399.44 39.74Q399.44 37.54 398.31 36.09Q397.17 34.64 395.12 33.91Q393.06 33.19 390.21 33.19L390.21 33.19Q388.18 33.19 386.47 33.57Q384.76 33.94 383.49 34.70Q382.21 35.45 381.40 36.61L381.40 36.61L372.18 35.45L374.26 13.12L407.15 13.12L407.15 21.94L382.62 21.94L381.86 29.42Q382.79 28.78 384.50 28.11Q386.21 27.45 388.53 26.93Q390.85 26.40 393.64 26.40L393.64 26.40Q398.74 26.40 402.54 27.94Q406.34 29.48 408.48 32.46Q410.63 35.45 410.63 39.92L410.63 39.92Q410.63 43.92 408.25 47.05Q405.87 50.18 401.47 51.95Q397.06 53.72 391.03 53.72Z" fill="currentColor"/></symbol>
+  <symbol id="logo-drum5" viewBox="0 0 304.7 64.0"><g transform="translate(0 0) scale(1)"><line x1="15.74" y1="48.26" x2="12.20" y2="51.80" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="10.13" y1="39.11" x2="5.37" y2="40.65" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="9.28" y1="28.40" x2="4.34" y2="27.62" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="13.39" y1="18.48" x2="9.35" y2="15.54" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="21.56" y1="11.51" x2="19.29" y2="7.05" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="32.00" y1="10.00" x2="32.00" y2="2.00" stroke="#6FA83A" stroke-width="4" stroke-linecap="round"/><line x1="42.44" y1="11.51" x2="44.71" y2="7.05" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="50.61" y1="18.48" x2="54.65" y2="15.54" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="54.72" y1="28.40" x2="59.66" y2="27.62" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="53.87" y1="39.11" x2="58.63" y2="40.65" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="48.26" y1="48.26" x2="51.80" y2="51.80" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><circle cx="32" cy="32" r="19" fill="currentColor"/><line x1="32" y1="27" x2="32" y2="17" stroke-width="5" stroke-linecap="round" stroke="#6FA83A"/></g><path d="M96.50 53.72L96.50 53.72Q91.86 53.72 88.24 52.01Q84.61 50.30 82.52 46.73Q80.44 43.17 80.44 37.71L80.44 37.71Q80.44 32.26 82.52 28.72Q84.61 25.19 88.18 23.45Q91.75 21.71 96.27 21.71L96.27 21.71Q98.30 21.71 100.39 22.17Q102.48 22.63 104.30 23.59Q106.13 24.55 107.41 26.06L107.41 26.06L107.87 26.06L107.87 10.98L118.60 10.98L118.60 53.03L109.90 53.03L109.09 48.27L108.57 48.27Q106.30 51.29 103.17 52.50Q100.04 53.72 96.50 53.72ZM99.63 45.72L99.63 45.72Q102.42 45.72 104.25 44.73Q106.07 43.75 107 42.01Q107.93 40.27 107.93 37.95L107.93 37.95L107.93 37.54Q107.93 35.80 107.41 34.35Q106.88 32.90 105.84 31.88Q104.80 30.87 103.23 30.29Q101.66 29.71 99.58 29.71L99.58 29.71Q96.85 29.71 95.02 30.67Q93.20 31.62 92.27 33.31Q91.34 34.99 91.34 37.25L91.34 37.25L91.34 38.24Q91.34 40.44 92.30 42.15Q93.25 43.86 95.08 44.79Q96.91 45.72 99.63 45.72ZM136.87 53.03L126.14 53.03L126.14 22.40L134.84 22.40L135.54 27.62L136.06 27.62Q136.93 25.77 138.35 24.43Q139.77 23.10 141.57 22.40Q143.37 21.71 145.40 21.71L145.40 21.71Q146.56 21.71 147.63 21.85Q148.70 22.00 149.63 22.40L149.63 22.40L149.63 30.81L144.53 30.81Q142.50 30.81 141.05 31.48Q139.60 32.15 138.67 33.28Q137.74 34.41 137.31 35.83Q136.87 37.25 136.87 38.87L136.87 38.87L136.87 53.03ZM167.20 53.72L167.20 53.72Q160.59 53.72 157.23 50.50Q153.86 47.28 153.86 40.90L153.86 40.90L153.86 22.40L164.54 22.40L164.54 39.40Q164.54 40.96 165 42.18Q165.46 43.40 166.31 44.18Q167.15 44.96 168.39 45.34Q169.64 45.72 171.21 45.72L171.21 45.72Q173.53 45.72 175.41 44.79Q177.30 43.86 178.40 42.21Q179.50 40.56 179.50 38.41L179.50 38.41L179.50 22.40L190.23 22.40L190.23 53.03L181.59 53.03L180.83 47.92L180.31 47.92Q178.69 50.07 176.54 51.31Q174.40 52.56 172.02 53.14Q169.64 53.72 167.20 53.72ZM208.50 53.03L197.77 53.03L197.77 22.40L206.47 22.40L207.17 27.51L207.69 27.51Q209.25 25.36 211.31 24.11Q213.37 22.87 215.72 22.29Q218.07 21.71 220.39 21.71L220.39 21.71Q224.68 21.71 227.55 23.16Q230.42 24.61 231.87 27.51L231.87 27.51L232.40 27.51Q233.96 25.36 236.05 24.11Q238.14 22.87 240.49 22.29Q242.84 21.71 245.16 21.71L245.16 21.71Q249.45 21.71 252.29 23.13Q255.13 24.55 256.58 27.42Q258.03 30.29 258.03 34.58L258.03 34.58L258.03 53.03L247.30 53.03L247.30 36.03Q247.30 34.47 246.90 33.28Q246.49 32.09 245.71 31.30Q244.92 30.52 243.76 30.12Q242.60 29.71 241.10 29.71L241.10 29.71Q238.95 29.71 237.15 30.64Q235.35 31.57 234.28 33.22Q233.21 34.87 233.21 37.08L233.21 37.08L233.21 53.03L222.54 53.03L222.54 36.03Q222.54 34.47 222.13 33.28Q221.72 32.09 220.94 31.30Q220.16 30.52 219.00 30.12Q217.84 29.71 216.33 29.71L216.33 29.71Q214.18 29.71 212.39 30.64Q210.59 31.57 209.54 33.22Q208.50 34.87 208.50 37.08L208.50 37.08L208.50 53.03ZM285.12 53.72L285.12 53.72Q278.33 53.72 273.66 52.01Q268.99 50.30 266.59 47.25Q264.18 44.21 264.18 40.27L264.18 40.27L274.62 40.27Q274.68 42.18 275.90 43.57Q277.11 44.96 279.23 45.72Q281.35 46.47 284.07 46.47L284.07 46.47Q286.63 46.47 288.77 45.72Q290.92 44.96 292.22 43.48Q293.53 42.01 293.53 39.74L293.53 39.74Q293.53 37.54 292.40 36.09Q291.27 34.64 289.21 33.91Q287.15 33.19 284.31 33.19L284.31 33.19Q282.28 33.19 280.56 33.57Q278.85 33.94 277.58 34.70Q276.30 35.45 275.49 36.61L275.49 36.61L266.27 35.45L268.36 13.12L301.24 13.12L301.24 21.94L276.71 21.94L275.95 29.42Q276.88 28.78 278.59 28.11Q280.30 27.45 282.62 26.93Q284.94 26.40 287.73 26.40L287.73 26.40Q292.83 26.40 296.63 27.94Q300.43 29.48 302.58 32.46Q304.72 35.45 304.72 39.92L304.72 39.92Q304.72 43.92 302.34 47.05Q299.97 50.18 295.56 51.95Q291.15 53.72 285.12 53.72Z" fill="currentColor"/></symbol>
+</defs></svg>
+
+<a class="strip" href="#pack">Pack vst5: los tres plugins en un solo pago, USD 49 ›</a>
+<nav class="nav" aria-label="Principal">
+  <div class="wrap">
+    <a class="logo" href="#" aria-label="vst5, inicio"><svg viewBox="0 0 232.3 64"><use href="#logo-vst5"/></svg></a>
+    <ul>
+      <li><a href="#clip5">clip5</a></li>
+      <li><a href="#sampler5">sampler5</a></li>
+      <li><a href="#drum5">drum5</a></li>
+      <li><a href="#pack">Pack</a></li>
+      <li><a href="#soporte">Soporte</a></li>
+    </ul>
+    <button class="cart-btn" type="button" id="cartOpen">Carrito <b id="cartCount">0</b></button>
+  </div>
+</nav>
+
+<main id="app"></main>
+
+<footer>
+  <div class="wrap">
+    <a class="logo" href="#" aria-label="vst5, inicio"><svg viewBox="0 0 232.3 64"><use href="#logo-vst5"/></svg></a>
+    <span class="mono muted">Máquinas clásicas, workflow de hoy · Hecho en Argentina</span>
+  </div>
+</footer>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Carrito" aria-hidden="true">
+  <header><h2>Carrito</h2><button class="x" type="button" id="cartClose" aria-label="Cerrar carrito">✕</button></header>
+  <div class="lines" id="lines"></div>
+  <footer>
+    <div class="tot"><span>Total</span><span id="total"></span></div>
+    <button class="btn btn-main btn-wide" type="button" id="checkout">Pagar con Mercado Pago</button>
+    <p class="note">Tarjeta, débito o dinero en cuenta. Te llega por email el instalador y tu clave de licencia.</p>
+    <p class="err" id="coMsg" hidden></p>
+  </footer>
+</aside>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="precios.js"></script>
+<script>
+(async () => {
+const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+// Respaldo por si productos.json no carga: mismos valores que el archivo.
+let CFG = {dolarMep:1580,factorArgentina:0.6,redondeoArs:500,productos:{clip5:{nombre:"clip5",usd:19,disponible:true},sampler5:{nombre:"sampler5",usd:24,disponible:true},drum5:{nombre:"drum5",usd:24,disponible:false},pack:{nombre:"Pack vst5",usd:49,disponible:true,incluye:["clip5","sampler5","drum5"]}}};
+try { const r = await fetch('productos.json'); if (r.ok) CFG = await r.json(); } catch (e) {}
+const P = CFG.productos, ars = id => Precios.ars(P[id].usd, CFG);
+const pesos = n => new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0}).format(n);
+const COLOR = {clip5:'#F2C230', sampler5:'#D93A2B', drum5:'#6FA83A'};
+
+/* ---------- Interfaces dibujadas (placeholder hasta tener capturas reales con los temas nuevos) ---------- */
+const TEMAS = { // tres temas por plugin (BRAND.md): oficial, oscuro, vst5
+  oficial: {bg:'#D8D5CE', panel:'#C9C5BC', scr:'#171614', ink:'#3A3834'},
+  oscuro:  {bg:'#2A2826', panel:'#3A3834', scr:'#121110', ink:'#171614'},
+  vst5:    {bg:'#6E6A62', panel:'#7E7A72', scr:'#3A3834', ink:'#2A2826'},
+};
+const beat = x => `M${x} 0v-34l3 52 4-30 5 18 6-8 8 4h14`;
+const beats = (x0, n, step = 40) => Array.from({length:n}, (_, i) => beat(x0 + i*step)).join('');
+const knob = (x, y, s, c, t) => `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-19.1 19.1A27 27 0 1 1 19.1 19.1" fill="none" stroke="${t.panel==='#C9C5BC'?'#A8A399':'#6E6A62'}" stroke-width="3" stroke-linecap="round"/><path d="M-19.1 19.1A27 27 0 0 1 0-27" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round"/><circle r="21" fill="${t.ink}"/><path d="M0-6v-12" stroke="#F1EFEA" stroke-width="3" stroke-linecap="round"/></g>`;
+function ui(id, tema = 'oscuro'){
+  const t = TEMAS[tema], c = COLOR[id], wave = tema === 'oficial' ? '#F1EFEA' : '#F1EFEA';
+  if (id === 'clip5') return `<svg viewBox="0 0 320 200" role="img" aria-label="Interfaz de clip5, tema ${tema}">
+    <rect width="320" height="200" rx="10" fill="${t.bg}"/>
+    <rect x="10" y="10" width="78" height="180" rx="6" fill="${t.panel}"/>
+    ${knob(49,72,1,c,t)}${knob(32,156,.42,c,t)}${knob(66,156,.42,c,t)}
+    <rect x="96" y="10" width="214" height="22" rx="6" fill="${t.panel}"/><rect x="150" y="16" width="100" height="10" rx="3" fill="${t.bg}"/>
+    <rect x="96" y="38" width="214" height="112" rx="6" fill="${t.scr}"/>
+    <path d="M104 66v-14M144 66v-14M184 66v-14M224 66v-14M264 66v-14" stroke="${c}" stroke-width="1.6"/>
+    <path d="${beats(104,5)}" transform="translate(0 100)" fill="none" stroke="${wave}" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M96 66h214" stroke="${c}" stroke-width="1.4" stroke-dasharray="5 4"/>
+    <rect x="96" y="156" width="104" height="34" rx="6" fill="${t.panel}"/><rect x="206" y="156" width="50" height="34" rx="6" fill="${t.panel}"/><rect x="262" y="156" width="48" height="34" rx="6" fill="${t.panel}"/>
+    <rect x="104" y="171" width="88" height="4" rx="2" fill="${t.ink}"/><circle cx="160" cy="173" r="6" fill="${c}"/>
+    <rect x="270" y="165" width="14" height="16" rx="3" fill="${t.ink}"/><rect x="288" y="165" width="14" height="16" rx="3" fill="${c}"/></svg>`;
+  const on = id === 'drum5' ? [12,5,6,1,10] : [0,6,13,9];
+  let pads = '';
+  for (let i = 0; i < 16; i++) pads += `<rect x="${10 + (i%4)*47}" y="${76 + Math.floor(i/4)*29}" width="44" height="26" rx="3" fill="${on.includes(i) ? c : (tema==='oficial' ? '#B5B1A9' : '#57544E')}"/>`;
+  const marks = id === 'drum5' ? 'M58 14v50M78 14v50M98 14v50M118 14v50M138 14v50' : 'M58 14v50M138 14v50M218 14v50';
+  return `<svg viewBox="0 0 320 200" role="img" aria-label="Interfaz de ${id}, tema ${tema}">
+    <rect width="320" height="200" rx="10" fill="${t.bg}"/>
+    <rect x="10" y="10" width="300" height="58" rx="6" fill="${t.scr}"/>
+    <path d="${beats(18,7)}" transform="translate(0 44)" fill="none" stroke="${wave}" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="${marks}" stroke="${c}" stroke-width="1.4"/>
+    ${pads}
+    <rect x="204" y="76" width="106" height="114" rx="6" fill="${t.panel}"/>
+    ${knob(233,106,.5,c,t)}${knob(281,106,.5,c,t)}${knob(233,160,.5,c,t)}${knob(281,160,.5,c,t)}</svg>`;
+}
+
+/* ---------- Contenido ---------- */
+const DAWS = 'FL Studio, Ableton Live, Reaper, Studio One, Cubase y Bitwig';
+const INFO = {
+  clip5: {tag:'Clipper de mastering', titular:'Más volumen sin romper el golpe.', badge:'Nuevo',
+    lead:'Recorta los picos antes del limitador y deja el ataque entero. Suena bien en 5; después ajustás el techo y la densidad.',
+    feats:[['Cuatro curvas de recorte','De la más blanda a la más dura. Elegís la que le va al material.'],['Densidad','Ganancia no lineal que suma cuerpo antes del recorte.'],['Techo estricto','El pico real (true peak) no pasa del techo que pusiste.'],['Mezcla paralela','Sumás la señal original para recuperar el ataque.'],['Suavizado y Tono','Controlan el brillo que deja el recorte en los agudos.'],['Oversampling hasta 8x','Menos aliasing cuando recortás fuerte.']],
+    formatos:'VST3, AU y CLAP', sistemas:'Windows y macOS', daws:DAWS + '. En Logic Pro, como AU.',
+    demos:['Beat de boom bap','Bus de batería','Master completo'], lite:true},
+  sampler5: {tag:'Un loop, 16 pads', titular:'Cargás un loop. Lo corta. Lo tocás.', badge:'Nuevo',
+    lead:'Detecta los golpes, estima el BPM y reparte el loop en 16 pads que tocás desde el controlador, como en una MPC.',
+    feats:[['Corta solo','Por golpes, por grilla, en partes iguales, al azar o a mano.'],['BPM y tonalidad','Los detecta, y te lleva el loop a la tonalidad que necesitás.'],['16 pads por MIDI','Desde C5 de FL Studio, o con el mouse.'],['Sigue el tempo','Se sincroniza con el proyecto y estira sin cambiar el tono.'],['Cortes favoritos','No se pierden cuando volvés a cortar.'],['Todo en el proyecto','La sesión guarda el audio: no se pierde si movés el archivo.']],
+    formatos:'VST3', sistemas:'Windows', daws:DAWS + '.',
+    demos:['Soul en 16 pads','Loop de jazz recortado','Cambio de tonalidad']},
+  drum5: {tag:'Batería de 16 pads', titular:'Mantené el pad. Rolea solo.', badge:'Pronto',
+    lead:'Una batería de 16 pads con roll por pad, como el note repeat de las MPC clásicas, y un browser que ordena tus samples.',
+    feats:[['Roll por pad','Mantenés el pad y repite el golpe en la grilla: 1/8, 1/16, 1/32 y tresillos.'],['Browser con categorías','Reconoce kick, snare, hi-hat y más por el nombre del archivo.'],['Choke y 16 salidas','Grupos de corte para los hi-hats y cada pad a su canal del mixer.'],['Cada pad, a mano','Volumen, paneo, pitch de ±24 st, decay, reverse y mono.']],
+    formatos:'VST3', sistemas:'Windows y Linux', daws:DAWS + '.',
+    demos:['Roll de hi-hat en 1/32','Kit armado desde el browser']},
+};
+const PACK = {tag:'Los tres, un solo pago', titular:'Los tres plugins. Un solo pago.', lead:'clip5 y sampler5 hoy, y drum5 cuando salga, sin pagar de nuevo. Cada plugin nuevo que entre al pack también lo recibís.'};
+const FAQ = [
+  ['¿Por qué «en 5»?','En una perilla de 0 a 10, el 5 es el mediodía: el punto de partida. Los plugins de vst5 están pensados para sonar bien desde ahí. Después los girás a tu gusto.'],
+  ['¿Cómo recibo el plugin?','Al aprobarse el pago te llega un email con el link de descarga y tu clave de licencia.'],
+  ['¿Por qué cobran en pesos?','Porque queremos que un productor argentino pueda pagar sus herramientas. El precio en pesos sale del precio en dólares con un descuento para Argentina y se actualiza una vez por mes.'],
+  ['¿Las actualizaciones se pagan?','No. Las actualizaciones de la misma versión principal (de 1.0 a 1.9, por ejemplo) están incluidas.'],
+];
+const faqHtml = list => `<div class="faq">${list.map(([q,a],i) => `<details${i?'':' open'}><summary>${q}</summary><p>${a}</p></details>`).join('')}</div>`;
+const plogo = id => `<svg viewBox="${id==='clip5'?'0 0 246.7 64':id==='sampler5'?'0 0 410.6 64':'0 0 304.7 64'}" aria-label="${id}"><use href="#logo-${id}"/></svg>`;
+
+/* ---------- Vistas ---------- */
+const btnAdd = (id, cls = 'btn-main') => P[id].disponible
+  ? `<button class="btn ${cls} add" type="button" data-id="${id}">Agregar al carrito</button>`
+  : `<button class="btn ${cls}" type="button" disabled>Disponible pronto</button>`;
+const priceTxt = id => `${pesos(ars(id))}`;
+
+function home(){
+  const slide = (id, i) => {
+    if (id === 'pack') return `<div class="slide" data-i="${i}" role="group" aria-roledescription="diapositiva" aria-label="Pack vst5">
+      <div class="tx"><span class="mono">Pack vst5 · pago único</span><h2>Los tres.</h2><p>clip5, sampler5 y drum5 por ${priceTxt('pack')}.</p>
+      <div class="row"><button class="btn btn-light add" type="button" data-id="pack">Agregar al carrito</button><a class="btn btn-ghost" href="#pack">Ver el pack</a></div></div>
+      <div class="art trio">${ui('clip5')}${ui('sampler5')}${ui('drum5')}</div></div>`;
+    const f = INFO[id], av = P[id].disponible;
+    return `<div class="slide" data-i="${i}" role="group" aria-roledescription="diapositiva" aria-label="${id}">
+      <div class="tx"><span class="mono">${id} · ${av ? '1.0.0' : 'próximamente'}</span><h2>${id}</h2><p>${f.titular}</p>
+      <div class="row">${av ? `<button class="btn btn-light add" type="button" data-id="${id}">Comprar · ${priceTxt(id)}</button>` : ''}<a class="btn btn-ghost" href="#${id}">${av ? 'Ver más' : 'Conocelo'}</a></div></div>
+      <div class="art">${ui(id)}</div></div>`;
+  };
+  const order = ['clip5','sampler5','pack','drum5'];
+  const card = id => {
+    const f = INFO[id] || PACK, isPack = id === 'pack';
+    return `<article class="card">
+      <a class="pic" href="#${id}" tabindex="-1" aria-hidden="true">${isPack ? `<span class="badge">Ahorrás ${pesos(ars('clip5')+ars('sampler5')+ars('drum5')-ars('pack'))}</span><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${ui('clip5')}${ui('sampler5')}${ui('drum5')}</div>` : `<span class="badge">${f.badge}</span>${ui(id)}`}</a>
+      <div class="body"><h3><a href="#${id}">${P[id].nombre}</a></h3><span class="muted">${f.tag}</span>
+        <div class="price"><b>${priceTxt(id)}</b><small>USD ${P[id].usd}</small></div>${btnAdd(id)}</div></article>`;
+  };
+  return `<div class="wrap">
+    <div class="chips" role="list">
+      <a class="chip" role="listitem" href="#clip5" style="--c:var(--clip5)"><i>GRATIS</i><span><b>clip5 lite</b><span class="muted">Probalo sin pagar</span></span></a>
+      <a class="chip" role="listitem" href="#pack"><i class="inv">PACK</i><span><b>Los tres plugins</b><span class="muted">USD ${P.pack.usd}, un solo pago</span></span></a>
+      <a class="chip" role="listitem" href="#sampler5" style="--c:var(--sampler5)"><i>NUEVO</i><span><b>sampler5 1.0.0</b><span class="muted">Un loop, 16 pads</span></span></a>
+      <a class="chip" role="listitem" href="#drum5" style="--c:var(--drum5)"><i>PRONTO</i><span><b>drum5</b><span class="muted">Batería de 16 pads</span></span></a>
+    </div>
+    <section class="hero" aria-roledescription="carrusel" aria-label="Destacados">
+      <div class="slides" id="slides" aria-live="off">${order.map(slide).join('')}</div>
+      <div class="hero-ctl">
+        <button class="arr" type="button" id="prev" aria-label="Anterior">‹</button>
+        ${order.map((id,i) => `<button class="dot" type="button" data-go="${i}" aria-label="Ver ${P[id].nombre}"></button>`).join('')}
+        <button class="arr" type="button" id="next" aria-label="Siguiente">›</button>
+        <button class="arr" type="button" id="pause" aria-label="Pausar">❚❚</button>
+      </div>
+    </section>
+    <section class="sec" aria-labelledby="h-plugins">
+      <div class="sec-h"><h2 id="h-plugins">Plugins <span>· máquinas clásicas, workflow de hoy</span></h2></div>
+      <div class="grid">${['clip5','sampler5','drum5','pack'].map(card).join('')}</div>
+    </section>
+    <section class="sec">
+      <div class="band"><svg viewBox="0 0 64 64" aria-hidden="true"><use href="#logo-k"/></svg>
+        <div><h2>Todo arranca en 5.</h2><p>En una perilla de 0 a 10, el 5 es el mediodía. Cada plugin de vst5 sale de fábrica sonando bien ahí. Después lo girás hasta que sea tuyo.</p></div></div>
+    </section>
+    <section class="sec" aria-labelledby="h-compra">
+      <div class="sec-h"><h2 id="h-compra">Cómo comprás</h2><p class="muted">El pago pasa por Mercado Pago. Nunca vemos los datos de tu tarjeta.</p></div>
+      <ol class="steps">
+        <li><span class="n">Paso 1</span><h3>Armás el carrito</h3><p class="muted">Un plugin o el pack. Si el pack está en el carrito, no te cobramos los sueltos.</p></li>
+        <li><span class="n">Paso 2</span><h3>Pagás con Mercado Pago</h3><p class="muted">Tarjeta de crédito, débito o dinero en cuenta.</p></li>
+        <li><span class="n">Paso 3</span><h3>Te llega por email</h3><p class="muted">El link de descarga y tu clave de licencia.</p></li>
+      </ol>
+    </section>
+  </div>`;
+}
+
+function ficha(id){
+  const isPack = id === 'pack', f = isPack ? PACK : INFO[id], av = P[id].disponible;
+  const suma = ars('clip5') + ars('sampler5') + ars('drum5');
+  const gal = isPack
+    ? `<div class="gal-main" style="grid-template-columns:1fr 1fr;gap:14px">${ui('clip5')}${ui('sampler5')}<div style="grid-column:span 2;max-width:50%;justify-self:center">${ui('drum5')}</div></div>
+       <div class="gal-cap"><span>clip5, sampler5 y drum5</span><span>Imágenes de referencia</span></div>`
+    : `<div class="gal-main" id="galMain">${ui(id,'oficial')}</div>
+       <div class="gal-cap"><span id="galCap">Tema oficial</span><span>Tres temas: oficial, oscuro y vst5</span></div>
+       <div class="thumbs" role="group" aria-label="Temas">${Object.keys(TEMAS).map((t,i) => `<button type="button" data-tema="${t}" aria-pressed="${!i}">${ui(id,t)}<span>${t[0].toUpperCase()+t.slice(1)}</span></button>`).join('')}</div>`;
+  const tabs = isPack
+    ? [['incluye','Qué incluye', `<div class="more">${['clip5','sampler5','drum5'].map(p => `<article class="card"><a class="pic" href="#${p}" tabindex="-1" aria-hidden="true">${ui(p)}</a><div class="body"><h3><a href="#${p}">${p}</a></h3><span class="muted">${INFO[p].tag}</span><div class="price"><b>${priceTxt(p)}</b><small>suelto</small></div></div></article>`).join('')}</div>`],
+       ['preguntas','Preguntas', faqHtml(FAQ)]]
+    : [['que','Qué hace', `<p class="lead">${f.lead}</p><div class="feats">${f.feats.map(([h,p]) => `<div><h3>${h}</h3><p>${p}</p></div>`).join('')}</div>`],
+       ['demos','Demos', `<div class="demos">${f.demos.map(d => `<div class="demo"><button class="play" type="button" disabled aria-label="Escuchar ${d}">▶</button><div><b>${d}</b><span class="muted">Antes y después</span></div><span class="mono muted">Pendiente</span></div>`).join('')}</div><p class="note" style="margin-top:14px">Las demos de audio todavía no están grabadas.</p>`],
+       ['requisitos','Requisitos', `<dl class="specs"><dt>Formatos</dt><dd>${f.formatos}</dd><dt>Sistemas</dt><dd>${f.sistemas}</dd><dt>DAW</dt><dd>${f.daws}</dd><dt>Licencia</dt><dd>Pago único. Actualizaciones de la versión 1 incluidas.</dd><dt>Idioma</dt><dd>Español</dd></dl>`],
+       ['preguntas','Preguntas', faqHtml(FAQ)]];
+  return `<div class="wrap">
+    <nav class="crumbs" aria-label="Ubicación"><a href="#">Inicio</a><span>›</span><span>${P[id].nombre}</span></nav>
+    <div class="ficha">
+      <div>${gal}</div>
+      <aside class="buy" aria-label="Comprar ${P[id].nombre}">
+        <div class="plogo">${isPack ? `<h1 style="font-size:40px;font-stretch:118%">Pack vst5</h1>` : `<h1 class="sr">${id}</h1>${plogo(id)}`}</div>
+        <p class="tag">${f.tag}</p>
+        <p style="font-size:17px">${f.titular}</p>
+        <div>${isPack ? `<div class="was">${pesos(suma)}</div>` : ''}<div class="ars">${priceTxt(id)}</div><div class="usd">USD ${P[id].usd} · pago único</div></div>
+        ${av ? btnAdd(id) : `<button class="btn btn-main" type="button" disabled>Disponible pronto</button><p class="note">Si comprás el pack hoy, drum5 te llega cuando salga.</p>`}
+        ${f.lite ? `<button class="btn btn-line" type="button" data-soon="La descarga de clip5 lite todavía no está activa.">Descargar clip5 lite gratis</button>` : ''}
+        ${isPack ? '' : `<ul><li><span class="muted">Formatos</span><span>${f.formatos}</span></li><li><span class="muted">Sistemas</span><span>${f.sistemas}</span></li><li><span class="muted">Versión</span><span>${av ? '1.0.0' : '—'}</span></li></ul>`}
+      </aside>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Detalle">${tabs.map(([k,t],i) => `<button type="button" role="tab" id="tab-${k}" aria-controls="pn-${k}" aria-selected="${!i}" tabindex="${i?-1:0}">${t}</button>`).join('')}</div>
+    ${tabs.map(([k,,html],i) => `<section class="panel" role="tabpanel" id="pn-${k}" aria-labelledby="tab-${k}"${i?' hidden':''}>${html}</section>`).join('')}
+  </div>`;
+}
+
+function soporte(){
+  return `<div class="wrap"><nav class="crumbs" aria-label="Ubicación"><a href="#">Inicio</a><span>›</span><span>Soporte</span></nav>
+    <div class="sec-h"><h1 style="font-size:clamp(34px,5vw,56px);font-stretch:112%">Soporte</h1></div>${faqHtml(FAQ)}</div>`;
+}
+
+/* ---------- Ruteo por hash (#clip5, #sampler5, #drum5, #pack, #soporte) ---------- */
+let timer = null;
+function route(){
+  clearInterval(timer);
+  const h = location.hash.slice(1), app = $('#app');
+  app.innerHTML = P[h] ? ficha(h) : h === 'soporte' ? soporte() : home();
+  $$('.nav ul a').forEach(a => a.toggleAttribute('aria-current', a.getAttribute('href') === '#' + h));
+  if (P[h]) document.title = `${P[h].nombre} · vst5`; else document.title = 'vst5';
+  scrollTo(0, 0);
+  if ($('#slides')) carrusel();
+  if ($('[role=tablist]')) pestanias();
+  $$('[data-tema]').forEach(b => b.addEventListener('click', () => {
+    $('#galMain').innerHTML = ui(h, b.dataset.tema);
+    $('#galCap').textContent = 'Tema ' + b.dataset.tema;
+    $$('[data-tema]').forEach(x => x.setAttribute('aria-pressed', x === b));
+  }));
+  render();
+}
+
+function carrusel(){
+  const slides = $$('.slide'), dots = $$('.dot'), quiet = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let i = 0, playing = !quiet;
+  const go = n => { i = (n + slides.length) % slides.length;
+    slides.forEach((s, k) => { s.classList.toggle('on', k === i); s.toggleAttribute('inert', k !== i); });
+    dots.forEach((d, k) => d.setAttribute('aria-current', k === i)); };
+  const play = on => { playing = on; clearInterval(timer); if (on) timer = setInterval(() => go(i + 1), 6000);
+    $('#pause').textContent = on ? '❚❚' : '▶'; $('#pause').setAttribute('aria-label', on ? 'Pausar' : 'Reproducir'); };
+  $('#prev').onclick = () => { go(i - 1); play(false); };
+  $('#next').onclick = () => { go(i + 1); play(false); };
+  $('#pause').onclick = () => play(!playing);
+  dots.forEach(d => d.onclick = () => { go(+d.dataset.go); play(false); });
+  const hero = $('.hero');
+  hero.addEventListener('pointerenter', () => playing && clearInterval(timer));
+  hero.addEventListener('pointerleave', () => playing && play(true));
+  hero.addEventListener('focusin', () => clearInterval(timer));
+  go(0); play(playing);
+}
+
+function pestanias(){
+  const tabs = $$('[role=tab]');
+  const sel = t => { tabs.forEach(x => { const on = x === t; x.setAttribute('aria-selected', on); x.tabIndex = on ? 0 : -1; $('#' + x.getAttribute('aria-controls')).hidden = !on; }); t.focus(); };
+  tabs.forEach((t, k) => { t.onclick = () => sel(t);
+    t.onkeydown = e => { const d = {ArrowRight:1, ArrowLeft:-1}[e.key]; if (d){ e.preventDefault(); sel(tabs[(k + d + tabs.length) % tabs.length]); } }; });
+}
+
+/* ---------- Carrito ---------- */
+let cart = [];
+try { cart = JSON.parse(localStorage.getItem('vst5-carrito') || '[]'); } catch (e) {}
+const drawer = $('#drawer'), scrim = $('#scrim');
+const open = on => { drawer.classList.toggle('open', on); scrim.classList.toggle('open', on); drawer.setAttribute('aria-hidden', !on); if (on) $('#cartClose').focus(); };
+function render(){
+  const items = Precios.armarCarrito(cart, CFG); cart = items.map(i => i.id);
+  try { localStorage.setItem('vst5-carrito', JSON.stringify(cart)); } catch (e) {}
+  $('#cartCount').textContent = items.length;
+  $('#lines').innerHTML = items.length ? items.map(i => `<div class="line"><i style="background:${COLOR[i.id] || 'var(--fg)'}"></i><div><b>${i.nombre}</b><button type="button" data-rm="${i.id}">Quitar</button></div><span class="p">${pesos(i.ars)}</span></div>`).join('')
+    : '<p class="empty">Todavía no agregaste nada.</p>';
+  $('#total').textContent = pesos(items.reduce((a, i) => a + i.ars, 0));
+  $('#checkout').disabled = !items.length;
+  $$('.add').forEach(b => { const id = b.dataset.id, inPack = cart.includes('pack') && id !== 'pack' && P.pack.incluye.includes(id);
+    if (!b.dataset.txt) b.dataset.txt = b.textContent;
+    const inCart = cart.includes(id) || inPack;
+    b.classList.toggle('in', inCart); b.textContent = inCart ? (inPack ? 'Incluido en el pack' : 'En el carrito ✓') : b.dataset.txt; });
+}
+document.addEventListener('click', e => {
+  const add = e.target.closest('.add'); if (add){ const id = add.dataset.id; if (!cart.includes(id)) cart.push(id); render(); open(true); return; }
+  const rm = e.target.closest('[data-rm]'); if (rm){ cart = cart.filter(x => x !== rm.dataset.rm); render(); return; }
+  const soon = e.target.closest('[data-soon]'); if (soon) toast(soon.dataset.soon);
+});
+let tt; const toast = msg => { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('on'), 3200); };
+$('#cartOpen').onclick = () => open(true);
+$('#cartClose').onclick = () => open(false);
+scrim.onclick = () => open(false);
+addEventListener('keydown', e => { if (e.key === 'Escape') open(false); });
+$('#checkout').addEventListener('click', async () => {
+  const btn = $('#checkout'), msg = $('#coMsg'); btn.disabled = true; btn.textContent = 'Conectando con Mercado Pago…'; msg.hidden = true;
+  try {
+    const r = await fetch('/api/crear-preferencia', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ids:cart})});
+    const d = await r.json().catch(() => ({}));
+    if (r.ok && d.url){ location.href = d.url; return; }
+    throw new Error(d.error || 'El pago todavía no está activo en esta versión de la página.');
+  } catch (e) {
+    msg.textContent = /fetch|JSON/i.test(e.message) ? 'El pago todavía no está activo en esta versión de la página.' : e.message; msg.hidden = false;
+  }
+  btn.disabled = false; btn.textContent = 'Pagar con Mercado Pago';
+});
+
+/* ---------- Vuelta de Mercado Pago ---------- */
+const pago = new URLSearchParams(location.search).get('pago');
+const TXT = {aprobado:'Pago aprobado. En unos minutos te llega el email con el instalador y tu clave.', pendiente:'Tu pago quedó pendiente. Cuando Mercado Pago lo apruebe, te llega el email.', rechazado:'El pago no se pudo hacer. Probá con otro medio de pago.'};
+if (TXT[pago]){ if (pago === 'aprobado') cart = []; setTimeout(() => toast(TXT[pago]), 300); }
+
+addEventListener('hashchange', route);
+route();
+})();
+</script>
